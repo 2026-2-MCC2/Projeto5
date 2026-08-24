@@ -14,7 +14,7 @@ Vide tutoriais do PI.
 
 ## Nome do Grupo
 
-## Integrantes: <a href="https://www.linkedin.com/in/victorbarq/">Stefany Anne Apaza de Freitas </a>, <a href="https://www.linkedin.com/in/victorbarq/">Enzo Augusto Pedroza Gonçalves</a>, <a href="https://www.linkedin.com/in/victorbarq/">Ikki de Fenix</a>, <a href="https://www.linkedin.com/in/victorbarq/">Yusuke Urameshi</a>, <a href="https://www.linkedin.com/in/victorbarq/">Roronoa Zoro</a>
+## Integrantes: <a href="https://www.linkedin.com/in/victorbarq/">Stefany Anne Apaza de Freitas </a>, <a href="https://www.linkedin.com/in/victorbarq/">Enzo Augusto Pedroza Gonçalves</a>, <a href="https://www.linkedin.com/in/victorbarq/">Ikki de Fenix</a>, <a href="https://www.linkedin.com/in/victorbarq/"> Felipe Câmara Noguchi </a>, <a href="[https://www.linkedin.com/in/victorbarq/](https://www.linkedin.com/in/felipe-noguchi-19934a382/)">Roronoa Zoro</a>
 
 ## Professores Orientadores: <a href="https://www.linkedin.com/in/victorbarq/">Dr. Victor Von Doom</a>, <a href="https://www.linkedin.com/in/victorbarq/">Me. Saitama</a>, <a href="https://www.linkedin.com/in/victorbarq/">Dr. Strange</a>, <a href="https://www.linkedin.com/in/victorbarq/">Me. Yoda</a>, <a href="https://www.linkedin.com/in/victorbarq/">Dr. Gero</a>
 
