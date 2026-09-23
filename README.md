@@ -10,13 +10,29 @@ Vide tutoriais do PI.
 <a href= "https://www.fecap.br/"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhZPrRa89Kma0ZZogxm0pi-tCn_TLKeHGVxywp-LXAFGR3B1DPouAJYHgKZGV0XTEf4AE&usqp=CAU" alt="FECAP - Fundação de Comércio Álvares Penteado" border="0"></a>
 </p>
 
-# Nome do Projeto
+# TrocaTicket
 
-## Nome do Grupo
+## Grupo Nexus
 
-## Integrantes: <a href="https://www.linkedin.com/in/victorbarq/">Stefany Anne Apaza de Freitas </a>, <a href="https://www.linkedin.com/in/victorbarq/">Enzo Augusto Pedroza Gonçalves</a>, <a href="[https://www.linkedin.com/in/victorbarq/](https://www.linkedin.com/in/leonardo-fran%C3%A7a-68bb97349/)">Leonardo Batista França</a>, <a href="https://www.linkedin.com/in/victorbarq/"> Felipe Câmara Noguchi </a>
+## Integrantes: 
+<a href="https://www.linkedin.com/in/victorbarq/">Enzo Augusto Pedroza Gonçalves</a>
 
-## Professores Orientadores: <a href="https://www.linkedin.com/in/dolemes/">David de Oliveira Lemes</a>, <a href="https://www.linkedin.com/in/francisco-escobar/">Francisco de Souza Escobar</a>, <a href="https://www.linkedin.com/in/katia-bossi/">Kátia Bossi</a>, <a href="https://www.linkedin.com/in/cristina-machado-corr%C3%AAa-leite-630309160/">Cristina Machado Corrêa Leite </a>, <a href="https://www.linkedin.com/in/jesuslisboagomes/">Jésus Gomes</a>
+<a href="https://www.linkedin.com/in/victorbarq/">Felipe Câmara Noguchi</a>
+
+<a href="https://www.linkedin.com/in/leonardo-fran%C3%A7a-68bb97349/">Leonardo Batista França</a>
+
+<a href="https://www.linkedin.com/in/victorbarq/">Stefany Anne Apaza de Freitas</a>
+
+## Professores Orientadores: 
+<a href="https://www.linkedin.com/in/dolemes/">David de Oliveira Lemes</a>
+
+<a href="https://www.linkedin.com/in/francisco-escobar/">Francisco de Souza Escobar</a>
+
+<a href="https://www.linkedin.com/in/katia-bossi/">Kátia Bossi</a>
+
+<a href="https://www.linkedin.com/in/cristina-machado-corr%C3%AAa-leite-630309160/">Cristina Machado Corrêa Leite </a>
+
+<a href="https://www.linkedin.com/in/jesuslisboagomes/">Jésus Gomes</a>
 
 ## Descrição
 
@@ -26,11 +42,9 @@ Vide tutoriais do PI.
 </p>
 
 
-De um a dois parágrafos sobre o que é seu projeto e o que ele faz.
-<br><br>
-Meu projeto ajuda estudantes FECAP a configurarem seus githubs.
-<br><br>
-May the force be with you!
+O TrocaTicket é uma plataforma voltada para o planejamento e organização de eventos, conectando organizadores e fornecedores em um mesmo ambiente. A plataforma permite que organizadores criem seus eventos, cadastrem os custos necessários e publiquem os itens para cotação.
+
+Os fornecedores aprovados podem visualizar os eventos disponíveis e enviar propostas para os itens de custo. A partir das propostas recebidas, o organizador pode comparar as opções, selecionar as propostas e consolidar os custos do evento. Com essas informações, a plataforma também permite calcular o ticket estimado de acordo com o custo total, público e margem de lucro.
 <br><br>
 
 ## 🛠 Estrutura de pastas
