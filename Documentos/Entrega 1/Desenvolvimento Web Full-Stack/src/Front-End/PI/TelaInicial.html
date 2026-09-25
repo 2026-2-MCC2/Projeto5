@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrocaTicket - Plataforma Completa de Eventos</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Importação da fonte Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- =========================================
+         1. SECÇÃO HERO
+         ========================================= -->
+    <div class="hero-container">
+        
+        <!-- Navbar -->
+        <header class="navbar">
+            <div class="logo">
+                <span class="logo-icon"></span>
+                <div class="logo-text">
+                    <strong>TrocaTicket</strong>
+                    <small>EVENTOS & INGRESSOS</small>
+                </div>
+            </div>
+
+            <nav class="nav-links">
+                <a href="#">SOBRE</a>
+                <a href="#">PLATAFORMA <span class="arrow-down"></span></a>
+                <a href="#">EVENTOS</a>
+                <a href="#">RECURSOS <span class="arrow-down"></span></a>
+            </nav>
+
+            <div class="nav-auth">
+                <a href="Entrar.html" class="btn-login">ENTRAR</a>
+                <a href="CriarConta.html" class="btn-signup-nav">CRIAR CONTA <span class="arrow-up">↗</span></a>
+            </div>
+        </header>
+
+        <!-- Conteúdo Hero -->
+        <main class="hero-content">
+            <h1 class="dotted-title">TrocaTicket</h1>
+            <p class="description">
+                Compre, revenda e gerencie ingressos em um único<br>
+                ecossistema, com mais clareza, segurança e controle em todas<br>
+                as etapas.
+            </p>
+
+            <div class="cta-buttons">
+                <a href="CriarConta.html" class="btn-primary">
+                    CRIAR CONTA 
+                    <span class="icon-circle">↗</span>
+                </a>
+                <a href="#" class="btn-secondary">EXPLORAR PLATAFORMA</a>
+            </div>
+        </main>
+
+        <div class="help-button">?</div>
+    </div>
+
+
+    <!-- =========================================
+         2. SECÇÃO DE EVENTOS EM DESTAQUE
+         ========================================= -->
+    <section class="featured-events-section">
+        <div class="section-container">
+            
+            <div class="section-header">
+                <div>
+                    <span class="sub-title">DESCOBERTA DE EVENTOS</span>
+                    <h2 class="main-title">EVENTOS EM DESTAQUE</h2>
+                </div>
+                <a href="#" class="btn-catalog">EXPLORAR CATÁLOGO</a>
+            </div>
+
+            <div class="events-grid">
+                
+                <!-- Cartão 1: Gastronomia -->
+                <div class="event-card">
+                    <div class="card-media">
+                        <span class="event-icon">🍽️</span>
+                    </div>
+                    <div class="card-content">
+                        <span class="category">GASTRONOMIA</span>
+                        <h3 class="event-title">Festival Gastronômico SP</h3>
+                        <div class="card-footer">
+                            <div class="event-info">
+                                <p>📅 15 Mar 2025</p>
+                                <p>📍 Parque Ibirapuera</p>
+                            </div>
+                            <div class="event-price">R$ 80</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cartão 2: Tecnologia -->
+                <div class="event-card">
+                    <div class="card-media">
+                        <span class="event-icon">💻</span>
+                    </div>
+                    <div class="card-content">
+                        <span class="category">TECNOLOGIA</span>
+                        <h3 class="event-title">Congresso Tech Brasil</h3>
+                        <div class="card-footer">
+                            <div class="event-info">
+                                <p>📅 20 Abr 2025</p>
+                                <p>📍 Expo Center Norte</p>
+                            </div>
+                            <div class="event-price">R$ 290</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cartão 3: Música -->
+                <div class="event-card">
+                    <div class="card-media">
+                        <span class="event-icon">🎵</span>
+                    </div>
+                    <div class="card-content">
+                        <span class="category">MÚSICA</span>
+                        <h3 class="event-title">Show Nacional – Turnê Verão</h3>
+                        <div class="card-footer">
+                            <div class="event-info">
+                                <p>📅 01 Mai 2025</p>
+                                <p>📍 Arena Anhembi</p>
+                            </div>
+                            <div class="event-price">R$ 150</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cartão 4: Negócios -->
+                <div class="event-card">
+                    <div class="card-media">
+                        <span class="event-icon">🌱</span>
+                    </div>
+                    <div class="card-content">
+                        <span class="category">NEGÓCIOS</span>
+                        <h3 class="event-title">Expo Sustentabilidade</h3>
+                        <div class="card-footer">
+                            <div class="event-info">
+                                <p>📅 28 Jul 2025</p>
+                                <p>📍 Ciesp Campinas</p>
+                            </div>
+                            <div class="event-price">R$ 120</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- =========================================
+         3. SECÇÃO DE RECURSOS / GERENCIAMENTO
+         ========================================= -->
+    <section class="features-section">
+        <div class="features-container">
+            
+            <div class="features-header">
+                <h2>Tudo o que você precisa<br>para viver e gerenciar eventos.</h2>
+                <p>Uma experiência simples e segura para organizadores e<br>participantes, do primeiro acesso até a entrada no evento.</p>
+            </div>
+
+            <div class="features-grid">
+                
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <span class="feature-icon">📁</span>
+                    </div>
+                    <h3>Crie e organize eventos</h3>
+                    <p>Centralize informações, lotes, participantes e vendas.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <span class="feature-icon">🎟️</span>
+                    </div>
+                    <h3>Venda e gerencie ingressos</h3>
+                    <p>Controle seus ingressos e acompanhe os pedidos em um único ambiente.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <span class="feature-icon">🔒</span>
+                    </div>
+                    <h3>Conta segura</h3>
+                    <p>Autenticação e proteção de dados integradas à plataforma.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <span class="feature-icon">✅</span>
+                    </div>
+                    <h3>Cadastro simples e rápido</h3>
+                    <p>Após criar sua conta, confirme seu endereço de e-mail para começar a usar a TrocaTicket.</p>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- =========================================
+         4. SECÇÃO DE ESTATÍSTICAS / MÉTRICAS
+         ========================================= -->
+    <section class="stats-section">
+        <div class="stats-container">
+            <div class="stat-item">
+                <h2>4.820+</h2>
+                <p>Fornecedores cadastrados</p>
+            </div>
+            <div class="stat-item">
+                <h2>1.847</h2>
+                <p>Eventos realizados</p>
+            </div>
+            <div class="stat-item">
+                <h2>R$ 340M+</h2>
+                <p>Movimentados na plataforma</p>
+            </div>
+            <div class="stat-item">
+                <h2>98%</h2>
+                <p>Taxa de satisfação</p>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- =========================================
+         5. RODAPÉ (FOOTER)
+         ========================================= -->
+    <footer class="footer-section">
+        <div class="footer-container">
+            
+            <div class="footer-top">
+                <!-- Marca / Descrição -->
+                <div class="footer-brand">
+                    <div class="logo">
+                        <span class="logo-icon"></span>
+                        <strong class="footer-logo-text">TrocaTicket</strong>
+                    </div>
+                    <p class="brand-desc">
+                        A plataforma de eventos do Brasil. Conectando organizadores, fornecedores e compradores.
+                    </p>
+                </div>
+
+                <!-- Colunas de Links -->
+                <div class="footer-links-grid">
+                    <div class="footer-col">
+                        <h4>PLATAFORMA</h4>
+                        <ul>
+                            <li><a href="#">Para Organizadores</a></li>
+                            <li><a href="#">Para Fornecedores</a></li>
+                            <li><a href="#">Painel Admin</a></li>
+                            <li><a href="#">Preços</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <h4>RECURSOS</h4>
+                        <ul>
+                            <li><a href="#">Documentação</a></li>
+                            <li><a href="#">API</a></li>
+                            <li><a href="#">Blog</a></li>
+                            <li><a href="#">Suporte</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <h4>EMPRESA</h4>
+                        <ul>
+                            <li><a href="#">Sobre nós</a></li>
+                            <li><a href="#">Carreiras</a></li>
+                            <li><a href="#">Privacidade</a></li>
+                            <li><a href="#">Termos</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Direitos de Autor e Links Inferiores -->
+            <div class="footer-bottom">
+                <p>© 2025 TrocaTicket. Todos os direitos reservados.</p>
+                <div class="legal-links">
+                    <a href="#">Termos</a>
+                    <a href="#">Privacidade</a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Botão de Ajuda Flutuante no Canto Inferior Direito -->
+        <div class="fixed-help-btn">?</div>
+    </footer>
+
+</body>
+</html>

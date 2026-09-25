@@ -1,0 +1,408 @@
+/* RESET BÁSICO */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    background-color: #fafbfd;
+    color: #0f172a;
+}
+
+/* LAYOUT PRINCIPAL */
+.page-container {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* =========================================
+   1. LADO ESQUERDO: FORMULÁRIO DE LOGIN
+   ========================================= */
+.left-section {
+    width: 50%;
+    background-color: #fafbfd;
+    padding: 30px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-y: auto;
+}
+
+.left-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-icon {
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(135deg, #a855f7, #ec4899);
+    border-radius: 6px;
+}
+
+.logo strong {
+    font-size: 16px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.link-top-action {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.link-top-action:hover {
+    color: #0f172a;
+}
+
+.form-wrapper {
+    max-width: 440px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.badge {
+    display: inline-block;
+    background-color: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 20px;
+}
+
+.main-title {
+    font-size: 34px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    color: #0f172a;
+    margin-bottom: 12px;
+}
+
+.subtitle {
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.highlight-blue {
+    color: #3b82f6;
+    font-weight: 600;
+}
+
+.highlight-orange {
+    color: #f97316;
+    font-weight: 600;
+}
+
+/* SELETOR DE PERFIL (BOTÕES) */
+.role-selector {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 25px;
+}
+
+.role-link {
+    text-decoration: none;
+}
+
+.role-btn {
+    border: 1px solid #e2e8f0;
+    background-color: #ffffff;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 800;
+    color: #94a3b8;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+}
+
+.role-btn:hover {
+    border-color: #cbd5e1;
+    color: #64748b;
+}
+
+.role-btn.active {
+    background-color: #000000;
+    color: #ffffff;
+    border-color: #000000;
+}
+
+/* FORMULÁRIO */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+}
+
+.label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.forgot-password {
+    font-size: 11px;
+    color: #94a3b8;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.forgot-password:hover {
+    color: #0f172a;
+}
+
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 12px;
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    font-size: 12px;
+    color: #94a3b8;
+    cursor: pointer;
+}
+
+.input-with-icon input {
+    width: 100%;
+    padding: 12px 35px 12px 36px;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #0f172a;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.input-with-icon input:focus {
+    border-color: #000000;
+}
+
+.input-with-icon input::placeholder {
+    color: #cbd5e1;
+}
+
+/* BOTÕES DE AÇÃO */
+.btn-submit {
+    background-color: #000000;
+    color: #ffffff;
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 5px;
+    transition: opacity 0.2s;
+}
+
+.btn-submit:hover {
+    opacity: 0.88;
+}
+
+.divider {
+    text-align: center;
+    position: relative;
+    margin: 20px 0;
+}
+
+.divider::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: #e2e8f0;
+}
+
+.divider span {
+    position: relative;
+    background-color: #fafbfd;
+    padding: 0 10px;
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.btn-google {
+    width: 100%;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background-color 0.2s;
+}
+
+.btn-google:hover {
+    background-color: #f8fafc;
+}
+
+.google-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.bottom-signup-text {
+    text-align: center;
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 25px;
+}
+
+.bottom-signup-text a {
+    color: #0f172a;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+/* =========================================
+   2. LADO DIREITO: PAINEL INFORMATIVO ESCURO
+   ========================================= */
+.right-section {
+    width: 50%;
+    background-color: #0a0a0c;
+    color: #ffffff;
+    padding: 80px 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.info-content {
+    max-width: 480px;
+}
+
+.info-title {
+    font-size: 38px;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -1px;
+    margin-bottom: 20px;
+}
+
+.info-description {
+    font-size: 14px;
+    color: #a1a1aa;
+    line-height: 1.6;
+    margin-bottom: 40px;
+}
+
+.features-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 12px;
+    border-radius: 12px;
+}
+
+.feature-icon {
+    font-size: 16px;
+    margin-top: 2px;
+    opacity: 0.6;
+}
+
+.feature-text h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 4px;
+}
+
+.feature-text p {
+    font-size: 12px;
+    color: #71717a;
+    line-height: 1.5;
+}
+
+/* Item Destacado */
+.feature-item.highlighted {
+    background-color: #121215;
+    border: 1px solid #1f1f23;
+    padding: 20px;
+}
+
+.feature-icon-check {
+    width: 24px;
+    height: 24px;
+    background-color: #06b6d4;
+    color: #000000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 900;
+    flex-shrink: 0;
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 900px) {
+    .page-container {
+        flex-direction: column;
+    }
+
+    .left-section, 
+    .right-section {
+        width: 100%;
+        padding: 40px 20px;
+    }
+}
