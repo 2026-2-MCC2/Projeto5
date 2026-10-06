@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registrar } from "../services/authService";
 import RightPanel from "../components/RightPanel";
-
+// login adm: admin@trocaticket.com - admin123
 const features = [
   { icon: "🏗", title: "Crie e organize eventos", desc: "Centralize informações, lotes, participantes e vendas." },
   { icon: "🎫", title: "Venda e gerencie ingressos", desc: "Controle seus ingressos e acompanhe os pedidos em um único ambiente." },
