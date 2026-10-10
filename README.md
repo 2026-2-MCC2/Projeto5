@@ -1,9 +1,3 @@
-```sh
-Utilize o site <https://www.toptal.com/developers/gitignore> para gerar seu arquivo gitignore e apague este campo.
-
-Vide tutoriais do PI.
-```
-
 # FECAP - Fundação de Comércio Álvares Penteado
 
 
@@ -51,72 +45,50 @@ Os fornecedores aprovados podem visualizar os eventos disponíveis e enviar prop
 
 ## 🛠 Estrutura de pastas
 
--Raiz<br>
-|<br>
-|-->documentos<br>
-  &emsp;|-->antigos<br>
-  &emsp;|Documentação.docx<br>
-|-->executáveis<br>
-  &emsp;|-->windows<br>
-  &emsp;|-->android<br>
-  &emsp;|-->HTML<br>
-|-->imagens<br>
-|-->src<br>
-  &emsp;|-->Backend<br>
-  &emsp;|-->Frontend<br>
-|readme.md<br>
-
-A pasta raiz contem dois arquivos que devem ser alterados:
-
-<b>README.MD</b>: Arquivo que serve como guia e explicação geral sobre seu projeto. O mesmo que você está lendo agora.
-
-Há também 4 pastas que seguem da seguinte forma:
-
-<b>documentos</b>: Toda a documentação estará nesta pasta.
-
-<b>executáveis</b>: Binários e executáveis do projeto devem estar nesta pasta.
-
-<b>imagens</b>: Imagens do sistema
-
-<b>src</b>: Pasta que contém o código fonte.
-
-## 🛠 Instalação
-
-<b>Android:</b>
-
-Faça o Download do JOGO.apk no seu celular.
-Execute o APK e siga as instruções de seu telefone.
-
-```sh
-Coloque código do prompt de comnando se for necessário
+```
+Projeto5/
+├── Documentos/                          # Entregas do PI, separadas por entrega e disciplina
+│   ├── Entrega 1/
+│   │   ├── Cálculo II/
+│   │   ├── Desenvolvimento Web Full-Stack/
+│   │   ├── Gestão Empresarial e Dinâmica das Organizações/
+│   │   ├── Projeto em Banco de Dados/
+│   │   └── Projeto Interdisciplinar/
+│   └── Entrega 2/                       # Mesmas disciplinas da Entrega 1
+├── imagens/                             # Imagens e logotipos do TrocaTicket
+├── src/
+│   └── frontend/                        # Front-end em React + Vite
+│       ├── public/
+│       └── src/
+│           ├── assets/
+│           ├── components/
+│           ├── context/
+│           ├── pages/
+│           └── services/
+└── README.md
 ```
 
-<b>Windows:</b>
+<b>Documentos</b>: toda a documentação das entregas, organizada por disciplina.
 
-Não há instalação! Apenas executável!
-Encontre o JOGO.exe na pasta executáveis e execute-o como qualquer outro programa.
+<b>imagens</b>: imagens do sistema.
 
-```sh
-Coloque código do prompt de comnando se for necessário
-```
-
-<b>HTML:</b>
-
-Não há instalação!
-Encontre o index.html na pasta executáveis e execute-o como uma página WEB (através de algum browser).
+<b>src</b>: código-fonte do projeto.
 
 ## 💻 Configuração para Desenvolvimento
 
-Descreva como instalar todas as dependências para desenvolvimento e como rodar um test-suite automatizado de algum tipo. Se necessário, faça isso para múltiplas plataformas.
-
-Para abrir este projeto você necessita das seguintes ferramentas:
-
--<a href="https://godotengine.org/download">GODOT</a>
+Para rodar este projeto você precisa do <a href="https://nodejs.org/">Node.js</a> instalado.
 
 ```sh
-make install
-npm test
-Coloque código do prompt de comnando se for necessário
+cd src/frontend
+npm install
+npm run dev
+```
+
+Outros comandos disponíveis em `src/frontend`:
+
+```sh
+npm run build    # gera a versão de produção em dist/
+npm run lint     # verifica o código com o oxlint
 ```
 
 ## 📋 Licença/License
