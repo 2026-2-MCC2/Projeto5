@@ -6,6 +6,10 @@ import Login from "./pages/Login";
 import CriarConta from "./pages/CriarConta";
 import Organizador from "./pages/Organizador";
 import Fornecedor from "./pages/Fornecedor";
+import Oportunidades from "./pages/fornecedor/Oportunidades";
+import EnviarProposta from "./pages/fornecedor/EnviarProposta";
+import MinhasPropostas from "./pages/fornecedor/MinhasPropostas";
+import Reputacao from "./pages/fornecedor/Reputacao";
 import Admin from "./pages/Admin";
 
 export default function App() {
@@ -32,7 +36,12 @@ export default function App() {
                 <Fornecedor />
               </ProtectedRoute>
             }
-          />
+          >
+            <Route index element={<Oportunidades />} />
+            <Route path="eventos/:id" element={<EnviarProposta />} />
+            <Route path="propostas" element={<MinhasPropostas />} />
+            <Route path="reputacao" element={<Reputacao />} />
+          </Route>
           <Route
             path="/admin"
             element={

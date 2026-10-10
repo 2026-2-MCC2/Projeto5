@@ -6,3 +6,8 @@
     margin: 0;
     font-family: "Inter", sans-serif;
   }
+
+  /* Áreas logadas (Layout): títulos e parágrafos sem margem padrão, como no Figma */
+  .area-logada :is(h1, h2, h3, h4, h5, h6, p) {
+    margin: 0;
+  }
