@@ -1,14 +1,8 @@
-import { useAuth } from "../context/AuthContext";
+import Layout from "../components/Layout";
 
+const nav = [{ rotulo: "Meus Eventos", para: "/organizador", end: true }];
+
+// Área do organizador: as telas de pages/organizador aparecem dentro do Layout.
 export default function Organizador() {
-  const { user, logout } = useAuth();
-
-  return (
-    <main>
-      <h1>Área do Organizador</h1>
-      <p>
-        Olá, {user.nome} <button onClick={logout}>Sair</button>
-      </p>
-    </main>
-  );
+  return <Layout nav={nav} />;
 }

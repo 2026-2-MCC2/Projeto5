@@ -1,12 +1,26 @@
 import { useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { Card, CardTitulo, Rotulo, Btn, Input, TextArea, Modal, TituloPagina, Tabela, Linha, Celula } from "../../components/ui";
+import {
+  Card,
+  CardTitulo,
+  CabecalhoCard,
+  Rotulo,
+  Btn,
+  Input,
+  TextArea,
+  ListaInfo,
+  ModalConfirmacao,
+  TituloPagina,
+  Tabela,
+  Linha,
+  Celula,
+  RodapeCard,
+  Valor,
+} from "../../components/ui";
 import { buscarEvento, enviarProposta } from "../../services/fornecedorService";
 import { dataCurta, moeda } from "../../utils/formatar";
 
 const colunas = ["Descrição", "Qtd. Solicitada", "Unidade", "Preço Ofertado (unit.)", "Subtotal"];
-
-const estiloValor = { fontFamily: "JetBrains Mono", fontWeight: 700, color: "#059669" };
 
 export default function EnviarProposta() {
   const { id } = useParams();
@@ -45,16 +59,17 @@ export default function EnviarProposta() {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: "1.5rem", alignItems: "start" }}>
         <div>
           <Card style={{ overflow: "hidden", marginBottom: "1.5rem" }}>
-            <div style={{ padding: "1.25rem 1.5rem", borderBottom: "1px solid #E5E7EB" }}>
-              <h3 style={{ fontFamily: "Outfit", fontSize: "1rem", fontWeight: 700, color: "#111827" }}>Formulário de Proposta</h3>
-              <p style={{ fontSize: "0.8125rem", color: "#9CA3AF", marginTop: "4px" }}>Preencha o preço ofertado para cada item solicitado</p>
-            </div>
+            <CabecalhoCard titulo="Formulário de Proposta" sub="Preencha o preço ofertado para cada item solicitado" />
 
             <Tabela colunas={colunas}>
               {evento.itens.map((item, i) => (
                 <Linha key={item.descricao} ultima={i === evento.itens.length - 1}>
                   <Celula style={{ fontSize: "0.875rem", color: "#111827" }}>{item.descricao}</Celula>
-                  <Celula style={{ fontFamily: "JetBrains Mono", fontSize: "0.875rem", color: "#6B7280" }}>{item.quantidade}</Celula>
+                  <Celula>
+                    <Valor cor="#6B7280" peso={400}>
+                      {item.quantidade}
+                    </Valor>
+                  </Celula>
                   <Celula style={{ fontSize: "0.875rem", color: "#6B7280" }}>{item.unidade}</Celula>
                   <Celula>
                     <div style={{ position: "relative", width: "130px" }}>
@@ -70,17 +85,19 @@ export default function EnviarProposta() {
                       />
                     </div>
                   </Celula>
-                  <Celula style={{ fontFamily: "JetBrains Mono", fontSize: "0.875rem", fontWeight: 600, color: precos[i] > 0 ? "#059669" : "#9CA3AF" }}>
-                    {precos[i] > 0 ? moeda(precos[i] * item.quantidade) : "—"}
+                  <Celula>
+                    <Valor cor={precos[i] > 0 ? "#059669" : "#9CA3AF"}>{precos[i] > 0 ? moeda(precos[i] * item.quantidade) : "—"}</Valor>
                   </Celula>
                 </Linha>
               ))}
             </Tabela>
 
-            <div style={{ padding: "14px 16px", background: "#F9FAFB", borderTop: "1px solid #E5E7EB", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <RodapeCard>
               <span style={{ fontFamily: "Outfit", fontWeight: 700, color: "#374151" }}>VALOR TOTAL DA PROPOSTA</span>
-              <span style={{ ...estiloValor, fontSize: "1.375rem" }}>{total > 0 ? moeda(total) : "—"}</span>
-            </div>
+              <Valor tamanho="1.375rem" peso={700}>
+                {total > 0 ? moeda(total) : "—"}
+              </Valor>
+            </RodapeCard>
           </Card>
 
           <Card style={{ padding: "1.25rem 1.5rem" }}>
@@ -96,20 +113,15 @@ export default function EnviarProposta() {
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <Card style={{ padding: "1.25rem" }}>
             <CardTitulo>Resumo do Evento</CardTitulo>
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-              {resumo.map(({ rotulo, valor }) => (
-                <div key={rotulo} style={{ display: "flex", justifyContent: "space-between", gap: "12px", fontSize: "0.8125rem" }}>
-                  <span style={{ color: "#9CA3AF" }}>{rotulo}</span>
-                  <span style={{ color: "#374151", fontWeight: 500, textAlign: "right" }}>{valor}</span>
-                </div>
-              ))}
-            </div>
+            <ListaInfo itens={resumo} />
           </Card>
 
           {total > 0 && (
-            <Card style={{ padding: "1.25rem", background: "rgba(5,150,105,0.04)", border: "1px solid rgba(5,150,105,0.2)" }}>
+            <Card variante="sucesso" style={{ padding: "1.25rem" }}>
               <Rotulo>Total da Proposta</Rotulo>
-              <div style={{ ...estiloValor, fontSize: "1.5rem" }}>{moeda(total)}</div>
+              <Valor tamanho="1.5rem" peso={700}>
+                {moeda(total)}
+              </Valor>
             </Card>
           )}
 
@@ -121,27 +133,17 @@ export default function EnviarProposta() {
       </div>
 
       {confirmando && (
-        <Modal onClose={() => setConfirmando(false)}>
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "2.5rem", marginBottom: "12px" }}>📤</div>
-            <h3 style={{ fontFamily: "Outfit", fontSize: "1.25rem", fontWeight: 700, color: "#111827", marginBottom: "8px" }}>Confirmar Envio</h3>
-            <p style={{ color: "#6B7280", fontSize: "0.875rem", marginBottom: "16px" }}>Sua proposta será enviada ao organizador do evento para análise.</p>
-            <div style={{ background: "#F9FAFB", borderRadius: "10px", padding: "12px", marginBottom: "1.5rem", textAlign: "left", border: "1px solid #E5E7EB" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.875rem" }}>
-                <span style={{ color: "#6B7280" }}>Valor total da proposta</span>
-                <span style={estiloValor}>{moeda(total)}</span>
-              </div>
-            </div>
-            <div style={{ display: "flex", gap: "10px" }}>
-              <Btn variante="ghost" style={{ flex: 1 }} onClick={() => setConfirmando(false)}>
-                Revisar
-              </Btn>
-              <Btn style={{ flex: 1 }} onClick={enviar}>
-                ✓ Enviar Proposta
-              </Btn>
-            </div>
-          </div>
-        </Modal>
+        <ModalConfirmacao
+          icone="📤"
+          titulo="Confirmar Envio"
+          descricao="Sua proposta será enviada ao organizador do evento para análise."
+          rotuloValor="Valor total da proposta"
+          valor={moeda(total)}
+          rotuloCancelar="Revisar"
+          rotuloConfirmar="✓ Enviar Proposta"
+          onCancelar={() => setConfirmando(false)}
+          onConfirmar={enviar}
+        />
       )}
     </>
   );

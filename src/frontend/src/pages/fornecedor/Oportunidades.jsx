@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, Badge, Btn, Chip, Input, TituloPagina } from "../../components/ui";
+import { Card, Badge, Btn, Chip, CampoBusca, TituloPagina, Valor, Vazio } from "../../components/ui";
 import { listarEventos } from "../../services/fornecedorService";
+import { CATEGORIAS_FORNECEDOR } from "../../data/categorias";
 import { dataCurta, faixaMoeda } from "../../utils/formatar";
 
 const TODAS = "Todas as Ofertas";
-const filtros = [TODAS, "Buffet & Gastronomia", "Sonorização & Luz", "Segurança", "Cenografia & Decoração", "Foto & Filmagem"];
+const filtros = [TODAS, ...CATEGORIAS_FORNECEDOR];
 
 export default function Oportunidades() {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ export default function Oportunidades() {
   const termo = busca.toLowerCase();
   const filtrados = eventos.filter((e) => {
     const casaBusca = !termo || e.nome.toLowerCase().includes(termo) || e.categoria.toLowerCase().includes(termo);
-    const casaFiltro = filtro === TODAS || e.necessidades.some((n) => n.startsWith(filtro));
+    const casaFiltro = filtro === TODAS || e.necessidades.includes(filtro);
     return casaBusca && casaFiltro;
   });
 
@@ -25,10 +26,7 @@ export default function Oportunidades() {
       <TituloPagina titulo="Eventos Disponíveis para Cotação" sub={`${eventos.length} oportunidades abertas para sua categoria`} />
 
       <Card style={{ marginBottom: "1.25rem", padding: "1rem 1.25rem" }}>
-        <div style={{ position: "relative" }}>
-          <span style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "#9CA3AF" }}>🔍</span>
-          <Input placeholder="Buscar por nome, categoria..." value={busca} onChange={(e) => setBusca(e.target.value)} style={{ paddingLeft: "36px" }} />
-        </div>
+        <CampoBusca placeholder="Buscar por nome, categoria..." valor={busca} onChange={setBusca} />
       </Card>
 
       <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "1.5rem" }}>
@@ -61,7 +59,9 @@ export default function Oportunidades() {
               </div>
               <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", justifyContent: "space-between", flexShrink: 0, gap: "12px" }}>
                 <div style={{ textAlign: "right" }}>
-                  <div style={{ fontFamily: "JetBrains Mono", fontSize: "0.9375rem", fontWeight: 700, color: "#059669" }}>{faixaMoeda(ev.orcamento)}</div>
+                  <Valor tamanho="0.9375rem" peso={700}>
+                    {faixaMoeda(ev.orcamento)}
+                  </Valor>
                   <div style={{ fontSize: "0.75rem", color: "#9CA3AF", marginTop: "2px" }}>Prazo: {dataCurta(ev.prazo)}</div>
                 </div>
                 <Btn tamanho="sm" onClick={() => navigate(`/fornecedor/eventos/${ev.id}`)}>
@@ -72,12 +72,7 @@ export default function Oportunidades() {
           </Card>
         ))}
 
-        {filtrados.length === 0 && (
-          <div style={{ textAlign: "center", padding: "3rem", color: "#9CA3AF" }}>
-            <div style={{ fontSize: "2rem", marginBottom: "12px" }}>📋</div>
-            <p>Nenhum evento encontrado para esta busca</p>
-          </div>
-        )}
+        {filtrados.length === 0 && <Vazio icone="📋" texto="Nenhum evento encontrado para esta busca" />}
       </div>
     </>
   );

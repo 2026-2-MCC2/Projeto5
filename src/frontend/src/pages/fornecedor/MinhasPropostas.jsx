@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Card, Rotulo, Badge, Btn, StatusBadge, TituloPagina, Tabela, Linha, Celula } from "../../components/ui";
+import { Card, Badge, Btn, Indicador, StatusBadge, TituloPagina, Tabela, Linha, Celula, Valor } from "../../components/ui";
 import { listarPropostas } from "../../services/fornecedorService";
 import { dataCurta, moeda } from "../../utils/formatar";
 
@@ -14,13 +14,6 @@ export default function MinhasPropostas() {
     .filter((p) => p.status === "Aprovada" || p.status === "Concluído")
     .reduce((soma, p) => soma + p.valor, 0);
 
-  const indicadores = [
-    { rotulo: "Total enviadas", valor: propostas.length, cor: "#6B7280" },
-    { rotulo: "Em análise", valor: contar("Em análise"), cor: "#D97706" },
-    { rotulo: "Aprovadas", valor: contar("Aprovada"), cor: "#059669" },
-    { rotulo: "Volume aprovado", valor: moeda(volumeAprovado), cor: "#2563EB", mono: true },
-  ];
-
   return (
     <>
       <TituloPagina titulo="Minhas Propostas" sub={`${propostas.length} propostas enviadas`}>
@@ -28,12 +21,10 @@ export default function MinhasPropostas() {
       </TituloPagina>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem", marginBottom: "2rem" }}>
-        {indicadores.map((k) => (
-          <Card key={k.rotulo} style={{ padding: "1.25rem" }}>
-            <Rotulo>{k.rotulo}</Rotulo>
-            <div style={{ fontFamily: k.mono ? "JetBrains Mono" : "Outfit", fontSize: "1.375rem", fontWeight: 700, color: k.cor }}>{k.valor}</div>
-          </Card>
-        ))}
+        <Indicador rotulo="Total enviadas" valor={propostas.length} cor="#6B7280" mono={false} tamanho="1.375rem" />
+        <Indicador rotulo="Em análise" valor={contar("Em análise")} cor="#D97706" mono={false} tamanho="1.375rem" />
+        <Indicador rotulo="Aprovadas" valor={contar("Aprovada")} cor="#059669" mono={false} tamanho="1.375rem" />
+        <Indicador rotulo="Volume aprovado" valor={moeda(volumeAprovado)} cor="#2563EB" tamanho="1.375rem" />
       </div>
 
       <Card style={{ overflow: "hidden" }}>
@@ -51,7 +42,9 @@ export default function MinhasPropostas() {
               <Celula>
                 <Badge>{p.categoria}</Badge>
               </Celula>
-              <Celula style={{ fontFamily: "JetBrains Mono", fontSize: "0.875rem", fontWeight: 600, color: "#059669" }}>{moeda(p.valor)}</Celula>
+              <Celula>
+                <Valor>{moeda(p.valor)}</Valor>
+              </Celula>
               <Celula style={{ fontSize: "0.8125rem", color: "#9CA3AF" }}>{dataCurta(p.enviadaEm)}</Celula>
               <Celula>
                 <StatusBadge status={p.status} />

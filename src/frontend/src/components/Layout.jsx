@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const rotuloPerfil = { organizador: "Organizador", fornecedor: "Fornecedor", admin: "Administrador" };
@@ -26,9 +26,9 @@ function hoverLink(fundo, cor) {
   };
 }
 
-// Estrutura das áreas logadas: cabeçalho com navegação + conteúdo.
+// Estrutura das áreas logadas: cabeçalho com navegação + a página da rota atual.
 // `nav` é uma lista de { rotulo, para, end }. O primeiro item é a página inicial da área.
-export default function Layout({ nav, children }) {
+export default function Layout({ nav }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -101,7 +101,7 @@ export default function Layout({ nav, children }) {
         </div>
       </header>
 
-      <main style={{ flex: 1, maxWidth: "1280px", margin: "0 auto", width: "100%", padding: "2rem 1.5rem" }}>{children}</main>
+      <main style={{ flex: 1, maxWidth: "1280px", margin: "0 auto", width: "100%", padding: "2rem 1.5rem" }}><Outlet /></main>
     </div>
   );
 }

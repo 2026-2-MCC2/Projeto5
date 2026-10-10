@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, CardTitulo, Btn, Chip, Estrelas, Modal, TextArea, TituloPagina, BarraProgresso } from "../../components/ui";
+import { Card, CardTitulo, Btn, Chip, Estrelas, Modal, TextArea, TituloPagina, BarraProgresso, BarraRotulada } from "../../components/ui";
 import { listarAvaliacoes, listarDesempenho } from "../../services/fornecedorService";
 import { mesAno } from "../../utils/formatar";
 
@@ -65,13 +65,7 @@ export default function Reputacao() {
             <CardTitulo>Desempenho</CardTitulo>
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               {listarDesempenho().map((m) => (
-                <div key={m.criterio}>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8125rem", marginBottom: "5px" }}>
-                    <span style={{ color: "#6B7280" }}>{m.criterio}</span>
-                    <span style={{ fontFamily: "JetBrains Mono", color: "#2563EB" }}>{m.nota}</span>
-                  </div>
-                  <BarraProgresso porcentagem={(m.nota / 5) * 100} cor="linear-gradient(90deg, #2563EB, #3B82F6)" altura="5px" />
-                </div>
+                <BarraRotulada key={m.criterio} rotulo={m.criterio} valor={m.nota} porcentagem={(m.nota / 5) * 100} altura="5px" />
               ))}
             </div>
           </Card>

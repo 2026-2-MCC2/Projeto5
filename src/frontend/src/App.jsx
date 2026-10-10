@@ -5,6 +5,11 @@ import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import CriarConta from "./pages/CriarConta";
 import Organizador from "./pages/Organizador";
+import MeusEventos from "./pages/organizador/MeusEventos";
+import CriarEvento from "./pages/organizador/CriarEvento";
+import DetalhesEvento from "./pages/organizador/DetalhesEvento";
+import Propostas from "./pages/organizador/Propostas";
+import ResultadoCustos from "./pages/organizador/ResultadoCustos";
 import Fornecedor from "./pages/Fornecedor";
 import Oportunidades from "./pages/fornecedor/Oportunidades";
 import EnviarProposta from "./pages/fornecedor/EnviarProposta";
@@ -28,7 +33,13 @@ export default function App() {
                 <Organizador />
               </ProtectedRoute>
             }
-          />
+          >
+            <Route index element={<MeusEventos />} />
+            <Route path="eventos/novo" element={<CriarEvento />} />
+            <Route path="eventos/:id" element={<DetalhesEvento />} />
+            <Route path="eventos/:id/propostas" element={<Propostas />} />
+            <Route path="eventos/:id/resultado" element={<ResultadoCustos />} />
+          </Route>
           <Route
             path="/fornecedor"
             element={

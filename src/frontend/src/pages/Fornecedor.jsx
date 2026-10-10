@@ -1,4 +1,3 @@
-import { Outlet } from "react-router-dom";
 import Layout from "../components/Layout";
 
 const nav = [
@@ -9,9 +8,5 @@ const nav = [
 
 // Área do fornecedor: as telas de pages/fornecedor aparecem dentro do Layout.
 export default function Fornecedor() {
-  return (
-    <Layout nav={nav}>
-      <Outlet />
-    </Layout>
-  );
+  return <Layout nav={nav} />;
 }
