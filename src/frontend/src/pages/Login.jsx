@@ -15,7 +15,7 @@ const labelStyle = {
   display: "block",
   fontSize: "0.8125rem",
   fontWeight: 500,
-  color: "#374151",
+  color: "var(--texto-2)",
   marginBottom: "6px",
 };
 
@@ -25,8 +25,8 @@ const inputWrapStyle = {
   gap: "10px",
   padding: "10px 14px",
   borderRadius: "9px",
-  background: "#fff",
-  border: "1px solid #E5E7EB",
+  background: "var(--superficie)",
+  border: "1px solid var(--borda)",
   transition: "border-color 0.15s ease",
 };
 
@@ -36,7 +36,7 @@ const inputInnerStyle = {
   border: "none",
   outline: "none",
   fontSize: "0.9rem",
-  color: "#0A0A0A",
+  color: "var(--texto)",
   fontFamily: "Inter",
 };
 
@@ -66,7 +66,7 @@ export default function Login() {
         style={{
           flex: "0 0 48%",
           maxWidth: "48%",
-          background: "#F9FAFB",
+          background: "var(--superficie-2)",
           display: "flex",
           flexDirection: "column",
           padding: "0 clamp(2rem, 5vw, 5rem)",
@@ -80,14 +80,14 @@ export default function Login() {
             style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", cursor: "pointer", padding: 0 }}
           >
             <MarcaLogo />
-            <span style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: "0.9375rem", color: "#0A0A0A" }}>TrocaTicket</span>
+            <span style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: "0.9375rem", color: "var(--texto)" }}>TrocaTicket</span>
           </button>
           <button
             type="button"
             onClick={() => navigate("/criar-conta")}
-            style={{ fontSize: "0.8125rem", color: "#6B7280", background: "none", border: "none", cursor: "pointer", fontFamily: "Inter", transition: "color 0.15s" }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = "#0A0A0A")}
-            onMouseLeave={(e) => (e.currentTarget.style.color = "#6B7280")}
+            style={{ fontSize: "0.8125rem", color: "var(--texto-suave)", background: "none", border: "none", cursor: "pointer", fontFamily: "Inter", transition: "color 0.15s" }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "var(--texto)")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "var(--texto-suave)")}
           >
             Criar conta
           </button>
@@ -95,19 +95,19 @@ export default function Login() {
 
         {/* Formulário */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", paddingBottom: "4rem" }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 12px", borderRadius: "999px", background: "#F3F4F6", border: "1px solid #E5E7EB", fontSize: "0.6875rem", fontWeight: 600, color: "#6B7280", letterSpacing: "0.06em", marginBottom: "1.5rem", width: "fit-content" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 12px", borderRadius: "999px", background: "var(--superficie-3)", border: "1px solid var(--borda)", fontSize: "0.6875rem", fontWeight: 600, color: "var(--texto-suave)", letterSpacing: "0.06em", marginBottom: "1.5rem", width: "fit-content" }}>
             <Icone icone={Lock} tamanho={14} />
             Acesso seguro
           </div>
 
-          <h1 style={{ fontFamily: "Outfit", fontSize: "clamp(1.625rem, 3vw, 2.25rem)", fontWeight: 800, color: "#0A0A0A", lineHeight: 1.2, margin: "0 0 10px" }}>
+          <h1 style={{ fontFamily: "Outfit", fontSize: "clamp(1.625rem, 3vw, 2.25rem)", fontWeight: 800, color: "var(--texto)", lineHeight: 1.2, margin: "0 0 10px" }}>
             Acesse sua conta
           </h1>
-          <p style={{ fontSize: "0.9375rem", color: "#6B7280", lineHeight: 1.6, margin: "0 0 2rem" }}>
+          <p style={{ fontSize: "0.9375rem", color: "var(--texto-suave)", lineHeight: 1.6, margin: "0 0 2rem" }}>
             Entre para acessar seu{" "}
             <span style={{ color: "#3B82F6", fontWeight: 500 }}>painel</span>, acompanhar seus{" "}
             <span style={{ color: "#F97316", fontWeight: 500 }}>ingressos</span>, eventos e todas as funcionalidades do{" "}
-            <span style={{ color: "#6B7280" }}>TrocaTicket</span>.
+            <span style={{ color: "var(--texto-suave)" }}>TrocaTicket</span>.
           </p>
 
           <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column" }}>
@@ -116,7 +116,7 @@ export default function Login() {
               <div>
                 <label style={labelStyle}>E-mail</label>
                 <div style={inputWrapStyle}>
-                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" style={{ flexShrink: 0, color: "#9CA3AF" }}>
+                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none" style={{ flexShrink: 0, color: "var(--texto-fraco)" }}>
                     <path d="M1 3.5A1.5 1.5 0 012.5 2h10A1.5 1.5 0 0114 3.5v8A1.5 1.5 0 0112.5 13h-10A1.5 1.5 0 011 11.5v-8zM2.5 3L7.5 7.5 12.5 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                   <input
@@ -126,8 +126,8 @@ export default function Login() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     style={inputInnerStyle}
-                    onFocus={(e) => (e.currentTarget.parentElement.style.borderColor = "#0A0A0A")}
-                    onBlur={(e) => (e.currentTarget.parentElement.style.borderColor = "#E5E7EB")}
+                    onFocus={(e) => (e.currentTarget.parentElement.style.borderColor = "var(--texto)")}
+                    onBlur={(e) => (e.currentTarget.parentElement.style.borderColor = "var(--borda)")}
                   />
                 </div>
               </div>
@@ -138,15 +138,15 @@ export default function Login() {
                   <label style={{ ...labelStyle, marginBottom: 0 }}>Senha</label>
                   <button
                     type="button"
-                    style={{ fontSize: "0.75rem", color: "#9CA3AF", background: "none", border: "none", cursor: "pointer", fontFamily: "Inter" }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = "#374151")}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = "#9CA3AF")}
+                    style={{ fontSize: "0.75rem", color: "var(--texto-fraco)", background: "none", border: "none", cursor: "pointer", fontFamily: "Inter" }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = "var(--texto-2)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "var(--texto-fraco)")}
                   >
                     Esqueceu sua senha?
                   </button>
                 </div>
                 <div style={inputWrapStyle}>
-                  <svg width="14" height="16" viewBox="0 0 14 16" fill="none" style={{ flexShrink: 0, color: "#9CA3AF" }}>
+                  <svg width="14" height="16" viewBox="0 0 14 16" fill="none" style={{ flexShrink: 0, color: "var(--texto-fraco)" }}>
                     <rect x="1" y="7" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.2" />
                     <path d="M4 7V4.5a3 3 0 016 0V7" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
                   </svg>
@@ -157,15 +157,15 @@ export default function Login() {
                     onChange={(e) => setPass(e.target.value)}
                     required
                     style={inputInnerStyle}
-                    onFocus={(e) => (e.currentTarget.parentElement.style.borderColor = "#0A0A0A")}
-                    onBlur={(e) => (e.currentTarget.parentElement.style.borderColor = "#E5E7EB")}
+                    onFocus={(e) => (e.currentTarget.parentElement.style.borderColor = "var(--texto)")}
+                    onBlur={(e) => (e.currentTarget.parentElement.style.borderColor = "var(--borda)")}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPass(!showPass)}
                     aria-label={showPass ? "Ocultar senha" : "Mostrar senha"}
                     className="tt-botao-icone"
-                    style={{ color: "#9CA3AF", padding: "2px" }}
+                    style={{ color: "var(--texto-fraco)", padding: "2px" }}
                   >
                     <Icone icone={showPass ? EyeOff : Eye} />
                   </button>
@@ -175,7 +175,7 @@ export default function Login() {
 
             {/* Mensagem de erro */}
             {erro && (
-              <div style={{ padding: "10px 14px", borderRadius: "9px", background: "#FEF2F2", border: "1px solid #FECACA", color: "#B91C1C", fontSize: "0.8125rem", marginBottom: "12px" }}>
+              <div style={{ padding: "10px 14px", borderRadius: "9px", background: "var(--erro-fundo)", border: "1px solid var(--erro-borda)", color: "var(--erro-texto)", fontSize: "0.8125rem", marginBottom: "12px" }}>
                 {erro}
               </div>
             )}
@@ -183,7 +183,7 @@ export default function Login() {
             {/* Botão entrar */}
             <button
               type="submit"
-              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", padding: "13px", borderRadius: "10px", background: "#0A0A0A", border: "none", color: "#fff", fontSize: "0.9375rem", fontWeight: 700, fontFamily: "Outfit", cursor: "pointer", marginBottom: "1.25rem", transition: "opacity 0.15s" }}
+              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", padding: "13px", borderRadius: "10px", background: "var(--destaque)", border: "none", color: "var(--destaque-texto)", fontSize: "0.9375rem", fontWeight: 700, fontFamily: "Outfit", cursor: "pointer", marginBottom: "1.25rem", transition: "opacity 0.15s" }}
               onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.88")}
               onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
             >
@@ -194,17 +194,17 @@ export default function Login() {
 
           {/* Divisor */}
           <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "1.25rem" }}>
-            <div style={{ flex: 1, height: "1px", background: "#E5E7EB" }} />
-            <span style={{ fontSize: "0.75rem", color: "#9CA3AF" }}>ou</span>
-            <div style={{ flex: 1, height: "1px", background: "#E5E7EB" }} />
+            <div style={{ flex: 1, height: "1px", background: "var(--borda)" }} />
+            <span style={{ fontSize: "0.75rem", color: "var(--texto-fraco)" }}>ou</span>
+            <div style={{ flex: 1, height: "1px", background: "var(--borda)" }} />
           </div>
 
           {/* Google (apenas visual por enquanto) */}
           <button
             type="button"
-            style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", padding: "12px", borderRadius: "10px", background: "#fff", border: "1px solid #E5E7EB", color: "#374151", fontSize: "0.875rem", fontWeight: 500, fontFamily: "Inter", cursor: "pointer", marginBottom: "2rem", transition: "border-color 0.15s, box-shadow 0.15s" }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#D1D5DB"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#E5E7EB"; e.currentTarget.style.boxShadow = "none"; }}
+            style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", padding: "12px", borderRadius: "10px", background: "var(--superficie)", border: "1px solid var(--borda)", color: "var(--texto-2)", fontSize: "0.875rem", fontWeight: 500, fontFamily: "Inter", cursor: "pointer", marginBottom: "2rem", transition: "border-color 0.15s, box-shadow 0.15s" }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--borda-2)"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--borda)"; e.currentTarget.style.boxShadow = "none"; }}
           >
             <svg width="18" height="18" viewBox="0 0 18 18">
               <path d="M17.64 9.2A10.2 10.2 0 0017.52 8H9v2.97h4.84A4.12 4.12 0 0112.09 13l-.01.1 2.4 1.86.17.02C16.31 13.4 17.64 11.46 17.64 9.2z" fill="#4285F4" />
@@ -215,12 +215,12 @@ export default function Login() {
             Entrar com Google
           </button>
 
-          <p style={{ textAlign: "center", fontSize: "0.875rem", color: "#9CA3AF", margin: 0 }}>
+          <p style={{ textAlign: "center", fontSize: "0.875rem", color: "var(--texto-fraco)", margin: 0 }}>
             Ainda não possui uma conta?{" "}
             <button
               type="button"
               onClick={() => navigate("/criar-conta")}
-              style={{ background: "none", border: "none", color: "#374151", fontWeight: 600, cursor: "pointer", fontFamily: "Inter", fontSize: "0.875rem", textDecoration: "underline", textUnderlineOffset: "2px" }}
+              style={{ background: "none", border: "none", color: "var(--texto-2)", fontWeight: 600, cursor: "pointer", fontFamily: "Inter", fontSize: "0.875rem", textDecoration: "underline", textUnderlineOffset: "2px" }}
             >
               Criar conta
             </button>
@@ -229,7 +229,7 @@ export default function Login() {
 
         {/* Rodapé */}
         <div style={{ height: "48px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <TextoComIcone icone={Lock} tamanho={14} style={{ fontSize: "0.75rem", color: "#D1D5DB" }}>Seus dados são tratados de forma segura.</TextoComIcone>
+          <TextoComIcone icone={Lock} tamanho={14} style={{ fontSize: "0.75rem", color: "var(--borda-2)" }}>Seus dados são tratados de forma segura.</TextoComIcone>
         </div>
       </div>
 

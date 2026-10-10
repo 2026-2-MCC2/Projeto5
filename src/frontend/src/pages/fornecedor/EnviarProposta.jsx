@@ -65,16 +65,16 @@ export default function EnviarProposta() {
             <Tabela colunas={colunas}>
               {evento.itens.map((item, i) => (
                 <Linha key={item.descricao} ultima={i === evento.itens.length - 1}>
-                  <Celula style={{ fontSize: "0.875rem", color: "#111827" }}>{item.descricao}</Celula>
+                  <Celula style={{ fontSize: "0.875rem", color: "var(--texto)" }}>{item.descricao}</Celula>
                   <Celula>
-                    <Valor cor="#6B7280" peso={400}>
+                    <Valor cor="var(--texto-suave)" peso={400}>
                       {item.quantidade}
                     </Valor>
                   </Celula>
-                  <Celula style={{ fontSize: "0.875rem", color: "#6B7280" }}>{item.unidade}</Celula>
+                  <Celula style={{ fontSize: "0.875rem", color: "var(--texto-suave)" }}>{item.unidade}</Celula>
                   <Celula>
                     <div style={{ position: "relative", width: "130px" }}>
-                      <span style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", fontSize: "0.75rem", color: "#9CA3AF", pointerEvents: "none" }}>R$</span>
+                      <span style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", fontSize: "0.75rem", color: "var(--texto-fraco)", pointerEvents: "none" }}>R$</span>
                       <Input
                         type="number"
                         min="0"
@@ -87,14 +87,14 @@ export default function EnviarProposta() {
                     </div>
                   </Celula>
                   <Celula>
-                    <Valor cor={precos[i] > 0 ? "#059669" : "#9CA3AF"}>{precos[i] > 0 ? moeda(precos[i] * item.quantidade) : "—"}</Valor>
+                    <Valor cor={precos[i] > 0 ? "#059669" : "var(--texto-fraco)"}>{precos[i] > 0 ? moeda(precos[i] * item.quantidade) : "—"}</Valor>
                   </Celula>
                 </Linha>
               ))}
             </Tabela>
 
             <RodapeCard>
-              <span style={{ fontFamily: "Outfit", fontWeight: 700, color: "#374151" }}>VALOR TOTAL DA PROPOSTA</span>
+              <span style={{ fontFamily: "Outfit", fontWeight: 700, color: "var(--texto-2)" }}>VALOR TOTAL DA PROPOSTA</span>
               <Valor tamanho="1.375rem" peso={700}>
                 {total > 0 ? moeda(total) : "—"}
               </Valor>
@@ -129,7 +129,7 @@ export default function EnviarProposta() {
           <Btn onClick={() => setConfirmando(true)} disabled={!podeEnviar} style={{ width: "100%" }}>
             Confirmar / Submeter Proposta
           </Btn>
-          {!podeEnviar && <p style={{ fontSize: "0.75rem", color: "#9CA3AF", textAlign: "center" }}>Preencha todos os campos de preço para enviar</p>}
+          {!podeEnviar && <p style={{ fontSize: "0.75rem", color: "var(--texto-fraco)", textAlign: "center" }}>Preencha todos os campos de preço para enviar</p>}
         </div>
       </div>
 

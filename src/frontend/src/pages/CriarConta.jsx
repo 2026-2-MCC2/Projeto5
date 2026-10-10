@@ -15,7 +15,7 @@ const labelStyle = {
   display: "block",
   fontSize: "0.8125rem",
   fontWeight: 500,
-  color: "#374151",
+  color: "var(--texto-2)",
   marginBottom: "6px",
 };
 
@@ -25,8 +25,8 @@ const inputWrapStyle = {
   gap: "10px",
   padding: "10px 14px",
   borderRadius: "9px",
-  background: "#fff",
-  border: "1px solid #E5E7EB",
+  background: "var(--superficie)",
+  border: "1px solid var(--borda)",
   transition: "border-color 0.15s ease",
 };
 
@@ -37,14 +37,14 @@ const inputInnerStyle = {
   border: "none",
   outline: "none",
   fontSize: "0.9rem",
-  color: "#0A0A0A",
+  color: "var(--texto)",
   fontFamily: "Inter",
 };
 
 const linkBtnStyle = {
   background: "none",
   border: "none",
-  color: "#374151",
+  color: "var(--texto-2)",
   fontWeight: 600,
   cursor: "pointer",
   fontFamily: "Inter",
@@ -58,13 +58,13 @@ const eyeBtnStyle = {
   background: "none",
   border: "none",
   cursor: "pointer",
-  color: "#9CA3AF",
+  color: "var(--texto-fraco)",
   fontSize: "0.75rem",
   padding: 0,
 };
 
-const focar = (e) => (e.currentTarget.parentElement.style.borderColor = "#0A0A0A");
-const desfocar = (e) => (e.currentTarget.parentElement.style.borderColor = "#E5E7EB");
+const focar = (e) => (e.currentTarget.parentElement.style.borderColor = "var(--texto)");
+const desfocar = (e) => (e.currentTarget.parentElement.style.borderColor = "var(--borda)");
 
 export default function CriarConta() {
   const navigate = useNavigate();
@@ -103,7 +103,7 @@ export default function CriarConta() {
         style={{
           flex: "0 0 48%",
           maxWidth: "48%",
-          background: "#F9FAFB",
+          background: "var(--superficie-2)",
           display: "flex",
           flexDirection: "column",
           padding: "0 clamp(2rem, 5vw, 5rem)",
@@ -117,14 +117,14 @@ export default function CriarConta() {
             style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", cursor: "pointer", padding: 0 }}
           >
             <MarcaLogo />
-            <span style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: "0.9375rem", color: "#0A0A0A" }}>TrocaTicket</span>
+            <span style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: "0.9375rem", color: "var(--texto)" }}>TrocaTicket</span>
           </button>
           <button
             type="button"
             onClick={() => navigate("/login")}
-            style={{ fontSize: "0.8125rem", color: "#6B7280", background: "none", border: "none", cursor: "pointer", fontFamily: "Inter", transition: "color 0.15s" }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = "#0A0A0A")}
-            onMouseLeave={(e) => (e.currentTarget.style.color = "#6B7280")}
+            style={{ fontSize: "0.8125rem", color: "var(--texto-suave)", background: "none", border: "none", cursor: "pointer", fontFamily: "Inter", transition: "color 0.15s" }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "var(--texto)")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "var(--texto-suave)")}
           >
             Entrar
           </button>
@@ -132,15 +132,15 @@ export default function CriarConta() {
 
         {/* Formulário */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", paddingBottom: "3rem" }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 12px", borderRadius: "999px", background: "#F3F4F6", border: "1px solid #E5E7EB", fontSize: "0.6875rem", fontWeight: 600, color: "#6B7280", letterSpacing: "0.06em", marginBottom: "1.25rem", width: "fit-content" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 12px", borderRadius: "999px", background: "var(--superficie-3)", border: "1px solid var(--borda)", fontSize: "0.6875rem", fontWeight: 600, color: "var(--texto-suave)", letterSpacing: "0.06em", marginBottom: "1.25rem", width: "fit-content" }}>
             <Icone icone={Ticket} tamanho={14} />
             Criação de conta
           </div>
 
-          <h1 style={{ fontFamily: "Outfit", fontSize: "clamp(1.5rem, 3vw, 2.125rem)", fontWeight: 800, color: "#0A0A0A", lineHeight: 1.2, margin: "0 0 8px" }}>
+          <h1 style={{ fontFamily: "Outfit", fontSize: "clamp(1.5rem, 3vw, 2.125rem)", fontWeight: 800, color: "var(--texto)", lineHeight: 1.2, margin: "0 0 8px" }}>
             Crie sua conta
           </h1>
-          <p style={{ fontSize: "0.9375rem", color: "#6B7280", lineHeight: 1.6, margin: "0 0 1.5rem" }}>
+          <p style={{ fontSize: "0.9375rem", color: "var(--texto-suave)", lineHeight: 1.6, margin: "0 0 1.5rem" }}>
             Comece <span style={{ color: "#3B82F6", fontWeight: 500 }}>gratuitamente</span> e tenha{" "}
             <span style={{ color: "#F97316", fontWeight: 500 }}>acesso</span> ao ecossistema TrocaTicket para{" "}
             <span style={{ color: "#3B82F6", fontWeight: 500 }}>descobrir</span>, organizar e{" "}
@@ -162,9 +162,9 @@ export default function CriarConta() {
                   letterSpacing: "0.06em",
                   textTransform: "uppercase",
                   cursor: "pointer",
-                  background: perfil === r ? "#0A0A0A" : "transparent",
-                  border: `1px solid ${perfil === r ? "#0A0A0A" : "#D1D5DB"}`,
-                  color: perfil === r ? "#fff" : "#9CA3AF",
+                  background: perfil === r ? "var(--destaque)" : "transparent",
+                  border: `1px solid ${perfil === r ? "var(--destaque)" : "var(--borda-2)"}`,
+                  color: perfil === r ? "var(--destaque-texto)" : "var(--texto-fraco)",
                   transition: "all 0.15s ease",
                 }}
               >
@@ -179,7 +179,7 @@ export default function CriarConta() {
               <div>
                 <label style={labelStyle}>Nome completo</label>
                 <div style={inputWrapStyle}>
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0, color: "#9CA3AF" }}>
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0, color: "var(--texto-fraco)" }}>
                     <circle cx="7" cy="4.5" r="2.5" stroke="currentColor" strokeWidth="1.2" />
                     <path d="M1 13c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
                   </svg>
@@ -191,7 +191,7 @@ export default function CriarConta() {
               <div>
                 <label style={labelStyle}>E-mail</label>
                 <div style={inputWrapStyle}>
-                  <svg width="14" height="12" viewBox="0 0 14 12" fill="none" style={{ flexShrink: 0, color: "#9CA3AF" }}>
+                  <svg width="14" height="12" viewBox="0 0 14 12" fill="none" style={{ flexShrink: 0, color: "var(--texto-fraco)" }}>
                     <rect x="0.5" y="0.5" width="13" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.1" />
                     <path d="M1 1.5L7 7L13 1.5" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" />
                   </svg>
@@ -204,7 +204,7 @@ export default function CriarConta() {
                 <div>
                   <label style={labelStyle}>Senha</label>
                   <div style={inputWrapStyle}>
-                    <svg width="12" height="14" viewBox="0 0 12 14" fill="none" style={{ flexShrink: 0, color: "#9CA3AF" }}>
+                    <svg width="12" height="14" viewBox="0 0 12 14" fill="none" style={{ flexShrink: 0, color: "var(--texto-fraco)" }}>
                       <rect x="0.5" y="6.5" width="11" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.1" />
                       <path d="M3 6.5V4a3 3 0 016 0v2.5" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" />
                     </svg>
@@ -226,7 +226,7 @@ export default function CriarConta() {
                 <div>
                   <label style={labelStyle}>Confirmar senha</label>
                   <div style={inputWrapStyle}>
-                    <svg width="12" height="14" viewBox="0 0 12 14" fill="none" style={{ flexShrink: 0, color: "#9CA3AF" }}>
+                    <svg width="12" height="14" viewBox="0 0 12 14" fill="none" style={{ flexShrink: 0, color: "var(--texto-fraco)" }}>
                       <rect x="0.5" y="6.5" width="11" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.1" />
                       <path d="M3 6.5V4a3 3 0 016 0v2.5" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" />
                     </svg>
@@ -249,19 +249,19 @@ export default function CriarConta() {
             </div>
 
             {/* Termos */}
-            <div style={{ display: "flex", alignItems: "flex-start", gap: "10px", marginBottom: "1.25rem", padding: "10px 12px", background: "#fff", border: "1px solid #E5E7EB", borderRadius: "9px" }}>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: "10px", marginBottom: "1.25rem", padding: "10px 12px", background: "var(--superficie)", border: "1px solid var(--borda)", borderRadius: "9px" }}>
               <button
                 type="button"
                 onClick={() => setAceito(!aceito)}
-                style={{ width: "18px", height: "18px", borderRadius: "4px", border: `2px solid ${aceito ? "#0A0A0A" : "#D1D5DB"}`, background: aceito ? "#0A0A0A" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, cursor: "pointer", marginTop: "1px", padding: 0, transition: "all 0.15s ease" }}
+                style={{ width: "18px", height: "18px", borderRadius: "4px", border: `2px solid ${aceito ? "var(--destaque)" : "var(--borda-2)"}`, background: aceito ? "var(--destaque)" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, cursor: "pointer", marginTop: "1px", padding: 0, transition: "all 0.15s ease" }}
               >
                 {aceito && (
                   <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                    <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M1 4L3.5 6.5L9 1" stroke="var(--destaque-texto)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 )}
               </button>
-              <p style={{ fontSize: "0.8125rem", color: "#6B7280", lineHeight: 1.55, margin: 0 }}>
+              <p style={{ fontSize: "0.8125rem", color: "var(--texto-suave)", lineHeight: 1.55, margin: 0 }}>
                 Ao criar sua conta, você concorda com nossos{" "}
                 <button type="button" style={linkBtnStyle}>Termos de Uso</button> e com a{" "}
                 <button type="button" style={linkBtnStyle}>Política de Privacidade</button>.
@@ -270,14 +270,14 @@ export default function CriarConta() {
 
             {/* Erro */}
             {erro && (
-              <div style={{ padding: "10px 14px", borderRadius: "9px", background: "#FEF2F2", border: "1px solid #FECACA", color: "#B91C1C", fontSize: "0.8125rem", marginBottom: "12px" }}>
+              <div style={{ padding: "10px 14px", borderRadius: "9px", background: "var(--erro-fundo)", border: "1px solid var(--erro-borda)", color: "var(--erro-texto)", fontSize: "0.8125rem", marginBottom: "12px" }}>
                 {erro}
               </div>
             )}
 
             {/* Sucesso */}
             {sucesso && (
-              <div style={{ padding: "10px 14px", borderRadius: "9px", background: "#F0FDF4", border: "1px solid #BBF7D0", color: "#15803D", fontSize: "0.8125rem", marginBottom: "12px" }}>
+              <div style={{ padding: "10px 14px", borderRadius: "9px", background: "var(--sucesso-fundo)", border: "1px solid var(--ok-borda)", color: "var(--ok-texto)", fontSize: "0.8125rem", marginBottom: "12px" }}>
                 {sucesso}
               </div>
             )}
@@ -286,7 +286,7 @@ export default function CriarConta() {
             <button
               type="submit"
               disabled={!!sucesso}
-              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", padding: "13px", borderRadius: "10px", background: "#0A0A0A", border: "none", color: "#fff", fontSize: "0.9375rem", fontWeight: 700, fontFamily: "Outfit", cursor: sucesso ? "default" : "pointer", marginBottom: "1.125rem", opacity: sucesso ? 0.6 : 1, transition: "opacity 0.15s" }}
+              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", padding: "13px", borderRadius: "10px", background: "var(--destaque)", border: "none", color: "var(--destaque-texto)", fontSize: "0.9375rem", fontWeight: 700, fontFamily: "Outfit", cursor: sucesso ? "default" : "pointer", marginBottom: "1.125rem", opacity: sucesso ? 0.6 : 1, transition: "opacity 0.15s" }}
             >
               Criar conta
               <Icone icone={ArrowRight} />
@@ -295,17 +295,17 @@ export default function CriarConta() {
 
           {/* Divisor */}
           <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "1.125rem" }}>
-            <div style={{ flex: 1, height: "1px", background: "#E5E7EB" }} />
-            <span style={{ fontSize: "0.75rem", color: "#9CA3AF" }}>ou</span>
-            <div style={{ flex: 1, height: "1px", background: "#E5E7EB" }} />
+            <div style={{ flex: 1, height: "1px", background: "var(--borda)" }} />
+            <span style={{ fontSize: "0.75rem", color: "var(--texto-fraco)" }}>ou</span>
+            <div style={{ flex: 1, height: "1px", background: "var(--borda)" }} />
           </div>
 
           {/* Google (apenas visual por enquanto) */}
           <button
             type="button"
-            style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", padding: "12px", borderRadius: "10px", background: "#fff", border: "1px solid #E5E7EB", color: "#374151", fontSize: "0.875rem", fontWeight: 500, fontFamily: "Inter", cursor: "pointer", marginBottom: "1.5rem", transition: "border-color 0.15s, box-shadow 0.15s" }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#D1D5DB"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#E5E7EB"; e.currentTarget.style.boxShadow = "none"; }}
+            style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", padding: "12px", borderRadius: "10px", background: "var(--superficie)", border: "1px solid var(--borda)", color: "var(--texto-2)", fontSize: "0.875rem", fontWeight: 500, fontFamily: "Inter", cursor: "pointer", marginBottom: "1.5rem", transition: "border-color 0.15s, box-shadow 0.15s" }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--borda-2)"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--borda)"; e.currentTarget.style.boxShadow = "none"; }}
           >
             <svg width="18" height="18" viewBox="0 0 18 18">
               <path d="M17.64 9.2A10.2 10.2 0 0017.52 8H9v2.97h4.84A4.12 4.12 0 0112.09 13l-.01.1 2.4 1.86.17.02C16.31 13.4 17.64 11.46 17.64 9.2z" fill="#4285F4" />
@@ -316,7 +316,7 @@ export default function CriarConta() {
             Criar conta com Google
           </button>
 
-          <p style={{ textAlign: "center", fontSize: "0.875rem", color: "#9CA3AF", margin: 0 }}>
+          <p style={{ textAlign: "center", fontSize: "0.875rem", color: "var(--texto-fraco)", margin: 0 }}>
             Já possui uma conta?{" "}
             <button type="button" onClick={() => navigate("/login")} style={{ ...linkBtnStyle, fontSize: "0.875rem" }}>
               Entrar
@@ -326,7 +326,7 @@ export default function CriarConta() {
 
         {/* Rodapé */}
         <div style={{ height: "48px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <TextoComIcone icone={Lock} tamanho={14} style={{ fontSize: "0.75rem", color: "#D1D5DB" }}>Seus dados são tratados de forma segura.</TextoComIcone>
+          <TextoComIcone icone={Lock} tamanho={14} style={{ fontSize: "0.75rem", color: "var(--borda-2)" }}>Seus dados são tratados de forma segura.</TextoComIcone>
         </div>
       </div>
 

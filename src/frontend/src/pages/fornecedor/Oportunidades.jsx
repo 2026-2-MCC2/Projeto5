@@ -42,17 +42,17 @@ export default function Oportunidades() {
             <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap" }}>
               <div style={{ flex: 1, minWidth: "200px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-                  <h3 style={{ fontFamily: "Outfit", fontSize: "1.0625rem", fontWeight: 700, color: "#111827" }}>{ev.nome}</h3>
+                  <h3 style={{ fontFamily: "Outfit", fontSize: "1.0625rem", fontWeight: 700, color: "var(--texto)" }}>{ev.nome}</h3>
                   <Badge>{ev.categoria}</Badge>
                 </div>
-                <div style={{ display: "flex", gap: "16px", fontSize: "0.8125rem", color: "#9CA3AF", marginBottom: "12px", flexWrap: "wrap" }}>
+                <div style={{ display: "flex", gap: "16px", fontSize: "0.8125rem", color: "var(--texto-fraco)", marginBottom: "12px", flexWrap: "wrap" }}>
                   <TextoComIcone icone={Calendar}>{dataCurta(ev.data)}</TextoComIcone>
                   <TextoComIcone icone={MapPin}>{ev.local}</TextoComIcone>
                   <TextoComIcone icone={Users}>{ev.convidados.toLocaleString("pt-BR")} convidados</TextoComIcone>
                 </div>
                 <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
                   {ev.necessidades.map((n) => (
-                    <span key={n} style={{ fontSize: "0.6875rem", padding: "3px 8px", borderRadius: "4px", background: "#F3F4F6", border: "1px solid #E5E7EB", color: "#6B7280" }}>
+                    <span key={n} style={{ fontSize: "0.6875rem", padding: "3px 8px", borderRadius: "4px", background: "var(--superficie-3)", border: "1px solid var(--borda)", color: "var(--texto-suave)" }}>
                       {n}
                     </span>
                   ))}
@@ -63,7 +63,7 @@ export default function Oportunidades() {
                   <Valor tamanho="0.9375rem" peso={700}>
                     {faixaMoeda(ev.orcamento)}
                   </Valor>
-                  <div style={{ fontSize: "0.75rem", color: "#9CA3AF", marginTop: "2px" }}>Prazo: {dataCurta(ev.prazo)}</div>
+                  <div style={{ fontSize: "0.75rem", color: "var(--texto-fraco)", marginTop: "2px" }}>Prazo: {dataCurta(ev.prazo)}</div>
                 </div>
                 <Btn tamanho="sm" iconeDepois={ArrowRight} onClick={() => navigate(`/fornecedor/eventos/${ev.id}`)}>
                   Ver Detalhes &amp; Cotar

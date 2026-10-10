@@ -26,16 +26,16 @@ function CardIndicador({ icone, rotulo, valor, cor }) {
     <Card style={{ padding: "1.25rem 1.5rem" }}>
       <Icone icone={icone} tamanho={20} style={{ color: cor, marginBottom: "10px" }} />
       <div style={{ fontFamily: "Outfit", fontSize: "2rem", fontWeight: 800, color: cor, lineHeight: 1, marginBottom: "4px" }}>{valor}</div>
-      <div style={{ fontSize: "0.8125rem", color: "#9CA3AF", fontWeight: 500 }}>{rotulo}</div>
+      <div style={{ fontSize: "0.8125rem", color: "var(--texto-fraco)", fontWeight: 500 }}>{rotulo}</div>
     </Card>
   );
 }
 
 function Paginacao({ pagina, total, onChange }) {
   if (total <= 1) return null;
-  const estilo = (ativo) => ({ padding: "7px 12px", borderRadius: "7px", background: ativo ? "#EFF6FF" : "#FFFFFF", border: `1px solid ${ativo ? "#BFDBFE" : "#E5E7EB"}`, color: ativo ? "#1D4ED8" : "#6B7280", fontSize: "0.8125rem", cursor: "pointer" });
+  const estilo = (ativo) => ({ padding: "7px 12px", borderRadius: "7px", background: ativo ? "var(--ativo-fundo)" : "var(--superficie)", border: `1px solid ${ativo ? "var(--ativo-borda)" : "var(--borda)"}`, color: ativo ? "var(--ativo-texto)" : "var(--texto-suave)", fontSize: "0.8125rem", cursor: "pointer" });
   return (
-    <div style={{ padding: "14px 16px", borderTop: "1px solid #E5E7EB", display: "flex", justifyContent: "center", gap: "6px" }}>
+    <div style={{ padding: "14px 16px", borderTop: "1px solid var(--borda)", display: "flex", justifyContent: "center", gap: "6px" }}>
       <button type="button" style={estilo(false)} onClick={() => onChange(Math.max(1, pagina - 1))}>
         Anterior
       </button>
@@ -68,7 +68,7 @@ export default function Dashboard() {
     { rotulo: "Eventos Criados", valor: eventos.length, cor: "#2563EB", icone: CalendarPlus },
     { rotulo: "Com Propostas", valor: eventos.filter((e) => e.propostas.length > 0).length, cor: "#059669", icone: ClipboardList },
     { rotulo: "Em Andamento", valor: comStatus("Em andamento"), cor: "#D97706", icone: Activity },
-    { rotulo: "Aguardando Data", valor: comStatus("Aguardando Data"), cor: "#6B7280", icone: Clock },
+    { rotulo: "Aguardando Data", valor: comStatus("Aguardando Data"), cor: "var(--texto-suave)", icone: Clock },
     { rotulo: "Concluídos", valor: comStatus("Concluído"), cor: "#059669", icone: CircleCheck },
     { rotulo: "Fornecedores", valor: fornecedores.length, cor: "#EA580C", icone: Building2 },
   ];
@@ -101,7 +101,7 @@ export default function Dashboard() {
       </div>
 
       <Card style={{ overflow: "hidden" }}>
-        <div style={{ padding: "1.25rem 1.5rem", borderBottom: "1px solid #E5E7EB", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}>
+        <div style={{ padding: "1.25rem 1.5rem", borderBottom: "1px solid var(--borda)", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}>
           <div style={{ display: "flex", gap: "6px" }}>
             {[ABA_EVENTOS, ABA_FORNECEDORES].map((t) => (
               <Chip key={t} rotulo={t} ativo={aba === t} onClick={() => trocarAba(t)} redondo={false} />
@@ -116,9 +116,9 @@ export default function Dashboard() {
           <Tabela colunas={["Evento", "Organizador", "Data", "Propostas", "Status", ""]}>
             {naPagina.map((ev, i) => (
               <Linha key={ev.id} ultima={i === naPagina.length - 1}>
-                <Celula style={{ fontSize: "0.875rem", fontWeight: 600, color: "#111827" }}>{ev.nome}</Celula>
-                <Celula style={{ fontSize: "0.875rem", color: "#6B7280" }}>{ev.organizador ?? "—"}</Celula>
-                <Celula style={{ fontSize: "0.8125rem", color: "#9CA3AF" }}>{dataCurta(ev.data)}</Celula>
+                <Celula style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--texto)" }}>{ev.nome}</Celula>
+                <Celula style={{ fontSize: "0.875rem", color: "var(--texto-suave)" }}>{ev.organizador ?? "—"}</Celula>
+                <Celula style={{ fontSize: "0.8125rem", color: "var(--texto-fraco)" }}>{dataCurta(ev.data)}</Celula>
                 <Celula style={{ fontFamily: "Outfit", fontWeight: 700, fontSize: "0.9375rem", color: "#2563EB" }}>{ev.propostas.length}</Celula>
                 <Celula>
                   <StatusBadge status={ev.status} />
@@ -135,9 +135,9 @@ export default function Dashboard() {
           <Tabela colunas={["Fornecedor", "E-mail", "Aguardando", "Status", ""]}>
             {naPagina.map((u, i) => (
               <Linha key={u.id} ultima={i === naPagina.length - 1}>
-                <Celula style={{ fontSize: "0.875rem", fontWeight: 600, color: "#111827" }}>{u.nome}</Celula>
-                <Celula style={{ fontSize: "0.8125rem", color: "#6B7280" }}>{u.email}</Celula>
-                <Celula style={{ fontSize: "0.8125rem", color: "#6B7280" }}>{u.criadoEm ? tempoDesde(u.criadoEm) : "—"}</Celula>
+                <Celula style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--texto)" }}>{u.nome}</Celula>
+                <Celula style={{ fontSize: "0.8125rem", color: "var(--texto-suave)" }}>{u.email}</Celula>
+                <Celula style={{ fontSize: "0.8125rem", color: "var(--texto-suave)" }}>{u.criadoEm ? tempoDesde(u.criadoEm) : "—"}</Celula>
                 <Celula>
                   <StatusBadge status="Aguardando Aprovação" />
                 </Celula>
@@ -152,7 +152,7 @@ export default function Dashboard() {
         )}
 
         {linhas.length === 0 && (
-          <p style={{ textAlign: "center", padding: "2rem", color: "#9CA3AF", fontSize: "0.875rem" }}>
+          <p style={{ textAlign: "center", padding: "2rem", color: "var(--texto-fraco)", fontSize: "0.875rem" }}>
             {aba === ABA_EVENTOS ? "Nenhum evento cadastrado neste período" : "Nenhum fornecedor aguardando aprovação"}
           </p>
         )}
@@ -163,7 +163,7 @@ export default function Dashboard() {
       {vendo && (
         <Modal onClose={() => setVendo(null)}>
           <CabecalhoModal onFechar={() => setVendo(null)}>
-            <h3 style={{ fontFamily: "Outfit", fontSize: "1.125rem", fontWeight: 700, color: "#111827" }}>{vendo.nome}</h3>
+            <h3 style={{ fontFamily: "Outfit", fontSize: "1.125rem", fontWeight: 700, color: "var(--texto)" }}>{vendo.nome}</h3>
           </CabecalhoModal>
           <ListaDetalhes
             itens={[

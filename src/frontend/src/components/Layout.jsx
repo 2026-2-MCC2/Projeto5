@@ -11,9 +11,9 @@ const estiloLink = (ativo) => ({
   fontSize: "0.8125rem",
   fontWeight: 500,
   textDecoration: "none",
-  background: ativo ? "#EFF6FF" : "transparent",
-  border: `1px solid ${ativo ? "#BFDBFE" : "transparent"}`,
-  color: ativo ? "#1D4ED8" : "#6B7280",
+  background: ativo ? "var(--ativo-fundo)" : "transparent",
+  border: `1px solid ${ativo ? "var(--ativo-borda)" : "transparent"}`,
+  color: ativo ? "var(--ativo-texto)" : "var(--texto-suave)",
   transition: "all 0.15s ease",
   whiteSpace: "nowrap",
 });
@@ -40,16 +40,16 @@ export default function Layout({ nav, contexto }) {
   }
 
   return (
-    <div className="area-logada" style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "#F5F6FA", fontFamily: "Inter, sans-serif", color: "#111827" }}>
-      <header style={{ background: "#FFFFFF", borderBottom: "1px solid #E5E7EB", position: "sticky", top: 0, zIndex: 40, boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+    <div className="area-logada" style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "var(--fundo)", fontFamily: "Inter, sans-serif", color: "var(--texto)" }}>
+      <header style={{ background: "var(--superficie)", borderBottom: "1px solid var(--borda)", position: "sticky", top: 0, zIndex: 40, boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem", height: "58px", display: "flex", alignItems: "center", gap: "1rem" }}>
           <button
             type="button"
             onClick={() => navigate(-1)}
             title="Voltar"
-            style={{ display: "flex", alignItems: "center", gap: "5px", padding: "6px 12px", borderRadius: "7px", background: "#F3F4F6", border: "1px solid #E5E7EB", color: "#374151", fontSize: "0.8125rem", fontWeight: 500, cursor: "pointer", flexShrink: 0, transition: "background 0.15s, border-color 0.15s" }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "#E5E7EB"; e.currentTarget.style.borderColor = "#D1D5DB"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "#F3F4F6"; e.currentTarget.style.borderColor = "#E5E7EB"; }}
+            style={{ display: "flex", alignItems: "center", gap: "5px", padding: "6px 12px", borderRadius: "7px", background: "var(--superficie-3)", border: "1px solid var(--borda)", color: "var(--texto-2)", fontSize: "0.8125rem", fontWeight: 500, cursor: "pointer", flexShrink: 0, transition: "background 0.15s, border-color 0.15s" }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "var(--borda)"; e.currentTarget.style.borderColor = "var(--borda-2)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "var(--superficie-3)"; e.currentTarget.style.borderColor = "var(--borda)"; }}
           >
             <Icone icone={ChevronLeft} tamanho={16} />
             Voltar
@@ -62,8 +62,8 @@ export default function Layout({ nav, contexto }) {
           >
             <MarcaLogo />
             <div>
-              <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: "0.9375rem", color: "#111827", lineHeight: 1.1 }}>TrocaTicket</div>
-              <div style={{ fontSize: "0.5rem", color: "#9CA3AF", letterSpacing: "0.1em", textTransform: "uppercase", lineHeight: 1 }}>Eventos &amp; Ingressos</div>
+              <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: "0.9375rem", color: "var(--texto)", lineHeight: 1.1 }}>TrocaTicket</div>
+              <div style={{ fontSize: "0.5rem", color: "var(--texto-fraco)", letterSpacing: "0.1em", textTransform: "uppercase", lineHeight: 1 }}>Eventos &amp; Ingressos</div>
             </div>
           </button>
 
@@ -74,8 +74,8 @@ export default function Layout({ nav, contexto }) {
                 to={item.para}
                 end={item.end}
                 style={({ isActive }) => estiloLink(isActive)}
-                onMouseEnter={hoverLink("#F9FAFB", "#374151")}
-                onMouseLeave={hoverLink("transparent", "#6B7280")}
+                onMouseEnter={hoverLink("var(--superficie-2)", "var(--texto-2)")}
+                onMouseLeave={hoverLink("transparent", "var(--texto-suave)")}
               >
                 {item.rotulo}
                 {item.contador > 0 && (
@@ -88,15 +88,15 @@ export default function Layout({ nav, contexto }) {
           </nav>
 
           <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
-            <span style={{ fontSize: "0.6875rem", fontWeight: 600, padding: "3px 9px", borderRadius: "5px", background: "#F3F4F6", color: "#6B7280", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+            <span style={{ fontSize: "0.6875rem", fontWeight: 600, padding: "3px 9px", borderRadius: "5px", background: "var(--superficie-3)", color: "var(--texto-suave)", letterSpacing: "0.05em", textTransform: "uppercase" }}>
               {ROTULO_PERFIL[user.perfil]}
             </span>
             <button
               type="button"
               onClick={sairDaConta}
-              style={{ fontSize: "0.8125rem", color: "#9CA3AF", background: "none", border: "none", padding: 0, cursor: "pointer", transition: "color 0.15s" }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#374151")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "#9CA3AF")}
+              style={{ fontSize: "0.8125rem", color: "var(--texto-fraco)", background: "none", border: "none", padding: 0, cursor: "pointer", transition: "color 0.15s" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--texto-2)")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--texto-fraco)")}
             >
               Sair
             </button>

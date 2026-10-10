@@ -9,10 +9,10 @@ import { criarEvento, novoItem } from "../../services/organizadorService";
 
 const passos = ["Informações Básicas", "Composição de Custos", "Fornecedores", "Publicar"];
 
-const estiloCampoBranco = { background: "#FFFFFF", padding: "10px 13px", borderRadius: "8px" };
+const estiloCampoBranco = { background: "var(--superficie)", padding: "10px 13px", borderRadius: "8px" };
 
 function TituloSecao({ children }) {
-  return <h3 style={{ fontFamily: "Outfit", fontSize: "1.0625rem", fontWeight: 700, color: "#111827", marginBottom: "1.25rem" }}>{children}</h3>;
+  return <h3 style={{ fontFamily: "Outfit", fontSize: "1.0625rem", fontWeight: 700, color: "var(--texto)", marginBottom: "1.25rem" }}>{children}</h3>;
 }
 
 export default function CriarEvento() {
@@ -70,7 +70,7 @@ export default function CriarEvento() {
               <button
                 type="button"
                 onClick={() => irPara(i)}
-                style={{ display: "flex", alignItems: "center", gap: "8px", padding: "7px 12px", borderRadius: "8px", background: atual ? "#EFF6FF" : "transparent", border: "none", cursor: "pointer" }}
+                style={{ display: "flex", alignItems: "center", gap: "8px", padding: "7px 12px", borderRadius: "8px", background: atual ? "var(--ativo-fundo)" : "transparent", border: "none", cursor: "pointer" }}
               >
                 <div
                   style={{
@@ -83,16 +83,16 @@ export default function CriarEvento() {
                     fontSize: "0.6875rem",
                     fontWeight: 700,
                     flexShrink: 0,
-                    background: feita ? "#2563EB" : atual ? "#BFDBFE" : "#F3F4F6",
-                    color: feita ? "#fff" : atual ? "#1D4ED8" : "#9CA3AF",
-                    border: `2px solid ${feita || atual ? "#2563EB" : "#E5E7EB"}`,
+                    background: feita ? "#2563EB" : atual ? "var(--ativo-borda)" : "var(--superficie-3)",
+                    color: feita ? "#fff" : atual ? "var(--ativo-texto)" : "var(--texto-fraco)",
+                    border: `2px solid ${feita || atual ? "#2563EB" : "var(--borda)"}`,
                   }}
                 >
                   {feita ? <Icone icone={Check} tamanho={14} /> : i + 1}
                 </div>
-                <span style={{ fontSize: "0.8125rem", fontWeight: atual ? 600 : 400, color: atual ? "#1D4ED8" : feita ? "#6B7280" : "#9CA3AF", whiteSpace: "nowrap" }}>{p}</span>
+                <span style={{ fontSize: "0.8125rem", fontWeight: atual ? 600 : 400, color: atual ? "var(--ativo-texto)" : feita ? "var(--texto-suave)" : "var(--texto-fraco)", whiteSpace: "nowrap" }}>{p}</span>
               </button>
-              {i < passos.length - 1 && <div style={{ width: "20px", height: "2px", background: feita ? "#2563EB" : "#E5E7EB", flexShrink: 0 }} />}
+              {i < passos.length - 1 && <div style={{ width: "20px", height: "2px", background: feita ? "#2563EB" : "var(--borda)", flexShrink: 0 }} />}
             </div>
           );
         })}
@@ -108,7 +108,7 @@ export default function CriarEvento() {
               </Campo>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
                 <Campo rotulo="Data do Evento *">
-                  <Input type="date" value={data} onChange={(e) => setData(e.target.value)} style={{ ...estiloCampoBranco, colorScheme: "light" }} />
+                  <Input type="date" value={data} onChange={(e) => setData(e.target.value)} style={estiloCampoBranco} />
                 </Campo>
                 <Campo rotulo="Nº de Convidados">
                   <Input type="number" min="0" placeholder="Ex: 500" value={convidados} onChange={(e) => setConvidados(e.target.value)} style={estiloCampoBranco} />
@@ -130,7 +130,7 @@ export default function CriarEvento() {
                     key={c.rotulo}
                     type="button"
                     onClick={() => setCategoria(c.rotulo)}
-                    style={{ padding: "16px 10px", borderRadius: "10px", textAlign: "center", background: ativa ? "#EFF6FF" : "#F9FAFB", border: `2px solid ${ativa ? "#2563EB" : "#E5E7EB"}`, color: ativa ? "#1D4ED8" : "#6B7280", cursor: "pointer", transition: "all 0.15s" }}
+                    style={{ padding: "16px 10px", borderRadius: "10px", textAlign: "center", background: ativa ? "var(--ativo-fundo)" : "var(--superficie-2)", border: `2px solid ${ativa ? "#2563EB" : "var(--borda)"}`, color: ativa ? "var(--ativo-texto)" : "var(--texto-suave)", cursor: "pointer", transition: "all 0.15s" }}
                   >
                     <Icone icone={c.icone} tamanho={24} style={{ marginBottom: "6px" }} />
                     <div style={{ fontSize: "0.8125rem", fontWeight: 600 }}>{c.rotulo}</div>
@@ -163,11 +163,11 @@ export default function CriarEvento() {
         <Card style={{ padding: "1.5rem" }}>
           <TituloSecao>Fornecedores Selecionados</TituloSecao>
           {fornecedores.length === 0 ? (
-            <p style={{ color: "#9CA3AF", fontSize: "0.875rem" }}>Nenhum fornecedor selecionado. Volte à primeira etapa para escolher.</p>
+            <p style={{ color: "var(--texto-fraco)", fontSize: "0.875rem" }}>Nenhum fornecedor selecionado. Volte à primeira etapa para escolher.</p>
           ) : (
             <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
               {fornecedores.map((f) => (
-                <div key={f} style={{ padding: "7px 14px", borderRadius: "8px", background: "#EFF6FF", border: "1px solid #BFDBFE", color: "#1D4ED8", fontSize: "0.875rem", fontWeight: 500 }}>
+                <div key={f} style={{ padding: "7px 14px", borderRadius: "8px", background: "var(--ativo-fundo)", border: "1px solid var(--ativo-borda)", color: "var(--ativo-texto)", fontSize: "0.875rem", fontWeight: 500 }}>
                   <TextoComIcone icone={Check}>{f}</TextoComIcone>
                 </div>
               ))}
@@ -179,12 +179,12 @@ export default function CriarEvento() {
       {passo === 3 && (
         <Card style={{ padding: "2.5rem", textAlign: "center" }}>
           <IconeDestaque icone={pendencias.length ? ClipboardList : Rocket} variante={pendencias.length ? "warning" : "info"} />
-          <h3 style={{ fontFamily: "Outfit", fontSize: "1.5rem", fontWeight: 700, color: "#111827", marginBottom: "8px" }}>
+          <h3 style={{ fontFamily: "Outfit", fontSize: "1.5rem", fontWeight: 700, color: "var(--texto)", marginBottom: "8px" }}>
             {pendencias.length ? "Quase lá!" : "Pronto para publicar!"}
           </h3>
           {pendencias.length ? (
             <div style={{ maxWidth: "420px", margin: "0 auto 2rem" }}>
-              <p style={{ color: "#6B7280", fontSize: "0.9375rem", marginBottom: "12px" }}>Complete estas etapas para publicar o evento:</p>
+              <p style={{ color: "var(--texto-suave)", fontSize: "0.9375rem", marginBottom: "12px" }}>Complete estas etapas para publicar o evento:</p>
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                 {pendencias.map((i) => (
                   <Btn key={i} variante="danger" iconeDepois={ArrowRight} onClick={() => irPara(i)}>
@@ -194,7 +194,7 @@ export default function CriarEvento() {
               </div>
             </div>
           ) : (
-            <p style={{ color: "#6B7280", fontSize: "0.9375rem", maxWidth: "400px", margin: "0 auto 2rem" }}>
+            <p style={{ color: "var(--texto-suave)", fontSize: "0.9375rem", maxWidth: "400px", margin: "0 auto 2rem" }}>
               Seu evento será visível para os fornecedores selecionados, que poderão enviar propostas comerciais.
             </p>
           )}

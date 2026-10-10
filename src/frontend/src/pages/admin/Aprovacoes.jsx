@@ -70,10 +70,10 @@ export default function Aprovacoes() {
               <div style={{ flex: 1, minWidth: "200px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" }}>
                   <Badge variante={variantePerfil[u.perfil]}>{ROTULO_PERFIL[u.perfil]}</Badge>
-                  <h3 style={{ fontFamily: "Outfit", fontSize: "1rem", fontWeight: 700, color: "#111827" }}>{u.nome}</h3>
+                  <h3 style={{ fontFamily: "Outfit", fontSize: "1rem", fontWeight: 700, color: "var(--texto)" }}>{u.nome}</h3>
                 </div>
-                <p style={{ fontSize: "0.8125rem", color: "#6B7280", marginBottom: "4px" }}>{u.email}</p>
-                <p style={{ fontSize: "0.75rem", color: "#9CA3AF" }}>Aguardando {aguardando(u)}</p>
+                <p style={{ fontSize: "0.8125rem", color: "var(--texto-suave)", marginBottom: "4px" }}>{u.email}</p>
+                <p style={{ fontSize: "0.75rem", color: "var(--texto-fraco)" }}>Aguardando {aguardando(u)}</p>
               </div>
               <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
                 <Btn variante="ghost" tamanho="sm" onClick={() => setVendo(u)}>
@@ -97,7 +97,7 @@ export default function Aprovacoes() {
         <Modal onClose={() => setVendo(null)}>
           <CabecalhoModal onFechar={() => setVendo(null)}>
             <Badge variante={variantePerfil[vendo.perfil]}>{ROTULO_PERFIL[vendo.perfil]}</Badge>
-            <h3 style={{ fontFamily: "Outfit", fontSize: "1.125rem", fontWeight: 700, color: "#111827", marginTop: "8px" }}>{vendo.nome}</h3>
+            <h3 style={{ fontFamily: "Outfit", fontSize: "1.125rem", fontWeight: 700, color: "var(--texto)", marginTop: "8px" }}>{vendo.nome}</h3>
           </CabecalhoModal>
           <ListaDetalhes itens={detalhes(vendo)} />
           <div style={{ display: "flex", gap: "10px" }}>
@@ -113,8 +113,8 @@ export default function Aprovacoes() {
 
       {rejeitando && (
         <Modal onClose={fecharRejeicao}>
-          <h3 style={{ fontFamily: "Outfit", fontSize: "1.125rem", fontWeight: 700, color: "#111827", marginBottom: "8px" }}>Rejeitar: {rejeitando.nome}</h3>
-          <p style={{ fontSize: "0.875rem", color: "#6B7280", marginBottom: "16px" }}>Informe o motivo da rejeição. O solicitante verá esse motivo ao tentar entrar.</p>
+          <h3 style={{ fontFamily: "Outfit", fontSize: "1.125rem", fontWeight: 700, color: "var(--texto)", marginBottom: "8px" }}>Rejeitar: {rejeitando.nome}</h3>
+          <p style={{ fontSize: "0.875rem", color: "var(--texto-suave)", marginBottom: "16px" }}>Informe o motivo da rejeição. O solicitante verá esse motivo ao tentar entrar.</p>
           <TextArea
             placeholder="Ex: Documentação incompleta, CNPJ inválido, categoria não suportada..."
             value={motivo}
@@ -139,7 +139,7 @@ export default function Aprovacoes() {
           titulo="Aprovar cadastro?"
           descricao={
             <>
-              <strong style={{ color: "#111827" }}>{aprovando.nome}</strong> será aprovado e terá acesso completo à plataforma.
+              <strong style={{ color: "var(--texto)" }}>{aprovando.nome}</strong> será aprovado e terá acesso completo à plataforma.
             </>
           }
           rotuloConfirmar="Confirmar Aprovação"

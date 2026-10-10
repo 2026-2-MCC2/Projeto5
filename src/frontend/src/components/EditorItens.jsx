@@ -48,7 +48,7 @@ export default function EditorItens({ itens, onChange, comAcordado = false }) {
                   value={item.acordado ?? ""}
                   onChange={(e) => alterar(item.id, "acordado", e.target.value === "" ? null : Number(e.target.value))}
                   destacado
-                  style={{ ...estiloNumero, width: "105px", color: "#1D4ED8" }}
+                  style={{ ...estiloNumero, width: "105px", color: "var(--ativo-texto)" }}
                 />
               </Celula>
             )}
@@ -64,8 +64,8 @@ export default function EditorItens({ itens, onChange, comAcordado = false }) {
           Adicionar Item
         </Btn>
         <div>
-          <span style={{ fontSize: "0.875rem", color: "#6B7280", marginRight: "12px" }}>Total Estimado</span>
-          <Valor cor="#111827" tamanho="1.125rem" peso={700}>
+          <span style={{ fontSize: "0.875rem", color: "var(--texto-suave)", marginRight: "12px" }}>Total Estimado</span>
+          <Valor cor="var(--texto)" tamanho="1.125rem" peso={700}>
             {moeda(somaEstimado(itens))}
           </Valor>
         </div>

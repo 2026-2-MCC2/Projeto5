@@ -9,7 +9,7 @@ const colunas = ["Categoria", "Fornecedor Selecionado", "Estimado", "Acordado", 
 
 // Economia positiva = gastou menos que o estimado.
 function ValorEconomia({ valor, peso = 400 }) {
-  if (valor === 0) return <Valor cor="#9CA3AF" peso={peso}>—</Valor>;
+  if (valor === 0) return <Valor cor="var(--texto-fraco)" peso={peso}>—</Valor>;
   return (
     <Valor cor={valor > 0 ? "#2563EB" : "#DC2626"} peso={peso}>
       {valor > 0 ? "- " : "+ "}
@@ -51,7 +51,7 @@ export default function ResultadoCustos() {
       </TituloPagina>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem", marginBottom: "2rem" }}>
-        <Indicador rotulo="Orçamento Estimado" valor={moeda(totalEstimado)} cor="#9CA3AF" riscado />
+        <Indicador rotulo="Orçamento Estimado" valor={moeda(totalEstimado)} cor="var(--texto-fraco)" riscado />
         <Indicador variante="sucesso" rotulo="Total Acordado" valor={moeda(totalAcordado)} cor="#059669" />
         <Indicador
           variante="info"
@@ -67,12 +67,12 @@ export default function ResultadoCustos() {
         <Tabela
           colunas={colunas}
           rodape={
-            <tr style={{ background: "#F9FAFB", borderTop: "2px solid #E5E7EB" }}>
-              <Celula colSpan={2} style={{ fontFamily: "Outfit", fontWeight: 700, color: "#374151" }}>
+            <tr style={{ background: "var(--superficie-2)", borderTop: "2px solid var(--borda)" }}>
+              <Celula colSpan={2} style={{ fontFamily: "Outfit", fontWeight: 700, color: "var(--texto-2)" }}>
                 TOTAL
               </Celula>
               <Celula>
-                <Valor cor="#9CA3AF" riscado>
+                <Valor cor="var(--texto-fraco)" riscado>
                   {moeda(totalEstimado)}
                 </Valor>
               </Celula>
@@ -89,10 +89,10 @@ export default function ResultadoCustos() {
         >
           {linhas.map((l, i) => (
             <Linha key={l.categoria} ultima={i === linhas.length - 1}>
-              <Celula style={{ fontSize: "0.875rem", fontWeight: 600, color: "#111827" }}>{l.categoria}</Celula>
-              <Celula style={{ fontSize: "0.875rem", color: "#6B7280" }}>{l.fornecedor}</Celula>
+              <Celula style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--texto)" }}>{l.categoria}</Celula>
+              <Celula style={{ fontSize: "0.875rem", color: "var(--texto-suave)" }}>{l.fornecedor}</Celula>
               <Celula>
-                <Valor cor="#9CA3AF" peso={400} riscado>
+                <Valor cor="var(--texto-fraco)" peso={400} riscado>
                   {moeda(l.estimado)}
                 </Valor>
               </Celula>
@@ -108,7 +108,7 @@ export default function ResultadoCustos() {
       </Card>
 
       <Card style={{ padding: "1.5rem", marginBottom: "2rem" }}>
-        <h3 style={{ fontFamily: "Outfit", fontSize: "1rem", fontWeight: 700, color: "#111827", marginBottom: "1rem" }}>Distribuição do Orçamento</h3>
+        <h3 style={{ fontFamily: "Outfit", fontSize: "1rem", fontWeight: 700, color: "var(--texto)", marginBottom: "1rem" }}>Distribuição do Orçamento</h3>
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           {linhas.map((l) => {
             const porcentagem = (l.acordado / totalAcordado) * 100;

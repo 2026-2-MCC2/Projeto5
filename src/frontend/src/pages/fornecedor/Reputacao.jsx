@@ -46,7 +46,7 @@ export default function Reputacao() {
             <div style={{ marginTop: "8px", marginBottom: "12px" }}>
               <Estrelas nota={media} />
             </div>
-            <div style={{ fontSize: "0.8125rem", color: "#9CA3AF" }}>Baseado em {avaliacoes.length} avaliações</div>
+            <div style={{ fontSize: "0.8125rem", color: "var(--texto-fraco)" }}>Baseado em {avaliacoes.length} avaliações</div>
           </Card>
 
           <Card style={{ padding: "1.25rem" }}>
@@ -58,7 +58,7 @@ export default function Reputacao() {
                     {d.estrela}
                   </TextoComIcone>
                   <BarraProgresso porcentagem={d.porcentagem} cor="#D97706" />
-                  <span style={{ color: "#9CA3AF", width: "24px", textAlign: "right", flexShrink: 0 }}>{d.quantidade}</span>
+                  <span style={{ color: "var(--texto-fraco)", width: "24px", textAlign: "right", flexShrink: 0 }}>{d.quantidade}</span>
                 </div>
               ))}
             </div>
@@ -88,16 +88,16 @@ export default function Reputacao() {
                 <Card key={a.id} style={{ padding: "1.25rem 1.5rem" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "10px", flexWrap: "wrap", gap: "8px" }}>
                     <div>
-                      <div style={{ fontFamily: "Outfit", fontWeight: 700, color: "#111827", marginBottom: "4px" }}>{a.evento}</div>
-                      <div style={{ fontSize: "0.8125rem", color: "#9CA3AF" }}>
+                      <div style={{ fontFamily: "Outfit", fontWeight: 700, color: "var(--texto)", marginBottom: "4px" }}>{a.evento}</div>
+                      <div style={{ fontSize: "0.8125rem", color: "var(--texto-fraco)" }}>
                         por {a.organizador} · {mesAno(a.data)}
                       </div>
                     </div>
                     <Estrelas nota={a.nota} />
                   </div>
-                  <p style={{ fontSize: "0.875rem", color: "#6B7280", lineHeight: 1.6, marginBottom: "10px" }}>{aberta ? a.comentario : a.resumo}</p>
+                  <p style={{ fontSize: "0.875rem", color: "var(--texto-suave)", lineHeight: 1.6, marginBottom: "10px" }}>{aberta ? a.comentario : a.resumo}</p>
                   <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                    <button type="button" className="tt-link" aria-expanded={aberta} onClick={() => alternar(a.id)} style={{ ...estiloLinkTexto, color: "#9CA3AF" }}>
+                    <button type="button" className="tt-link" aria-expanded={aberta} onClick={() => alternar(a.id)} style={{ ...estiloLinkTexto, color: "var(--texto-fraco)" }}>
                       <Icone icone={aberta ? ChevronUp : ChevronDown} tamanho={16} />
                       {aberta ? "Recolher" : "Ver comentário completo"}
                     </button>
@@ -114,8 +114,8 @@ export default function Reputacao() {
 
       {contestando !== null && (
         <Modal onClose={fecharContestacao}>
-          <h3 style={{ fontFamily: "Outfit", fontSize: "1.125rem", fontWeight: 700, color: "#111827", marginBottom: "8px" }}>Contestar Avaliação</h3>
-          <p style={{ fontSize: "0.875rem", color: "#6B7280", marginBottom: "16px" }}>Descreva o motivo da contestação. Nossa equipe analisará em até 5 dias úteis.</p>
+          <h3 style={{ fontFamily: "Outfit", fontSize: "1.125rem", fontWeight: 700, color: "var(--texto)", marginBottom: "8px" }}>Contestar Avaliação</h3>
+          <p style={{ fontSize: "0.875rem", color: "var(--texto-suave)", marginBottom: "16px" }}>Descreva o motivo da contestação. Nossa equipe analisará em até 5 dias úteis.</p>
           <TextArea placeholder="Explique o motivo da contestação..." value={motivo} onChange={(e) => setMotivo(e.target.value)} style={{ marginBottom: "16px" }} />
           <div style={{ display: "flex", gap: "10px" }}>
             <Btn variante="ghost" style={{ flex: 1 }} onClick={fecharContestacao}>

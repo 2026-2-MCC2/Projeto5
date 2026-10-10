@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import BotaoTema from "./components/BotaoTema";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import CriarConta from "./pages/CriarConta";
@@ -69,6 +70,7 @@ export default function App() {
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        <BotaoTema />
       </BrowserRouter>
     </AuthProvider>
   );

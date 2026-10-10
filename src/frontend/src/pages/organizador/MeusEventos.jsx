@@ -47,13 +47,13 @@ export default function MeusEventos() {
             <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
               <div style={{ flex: 1, minWidth: "200px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "5px" }}>
-                  <h3 style={{ fontFamily: "Outfit", fontSize: "1rem", fontWeight: 700, color: "#111827" }}>{ev.nome}</h3>
+                  <h3 style={{ fontFamily: "Outfit", fontSize: "1rem", fontWeight: 700, color: "var(--texto)" }}>{ev.nome}</h3>
                   <StatusBadge status={ev.status} />
                 </div>
-                <div style={{ display: "flex", gap: "16px", fontSize: "0.8125rem", color: "#9CA3AF", flexWrap: "wrap" }}>
+                <div style={{ display: "flex", gap: "16px", fontSize: "0.8125rem", color: "var(--texto-fraco)", flexWrap: "wrap" }}>
                   <TextoComIcone icone={Calendar}>{dataCurta(ev.data)}</TextoComIcone>
                   <TextoComIcone icone={MapPin}>{ev.local}</TextoComIcone>
-                  <Valor cor="#6B7280" tamanho="0.8125rem" peso={400}>
+                  <Valor cor="var(--texto-suave)" tamanho="0.8125rem" peso={400}>
                     {moeda(ev.orcamento)}
                   </Valor>
                 </div>
@@ -61,7 +61,7 @@ export default function MeusEventos() {
               <div style={{ display: "flex", alignItems: "center", gap: "20px", flexShrink: 0 }}>
                 <div style={{ textAlign: "center" }}>
                   <div style={{ fontFamily: "Outfit", fontSize: "1.25rem", fontWeight: 700, color: "#2563EB" }}>{ev.propostas.length}</div>
-                  <div style={{ fontSize: "0.6875rem", color: "#9CA3AF", marginTop: "1px" }}>propostas</div>
+                  <div style={{ fontSize: "0.6875rem", color: "var(--texto-fraco)", marginTop: "1px" }}>propostas</div>
                 </div>
                 <Badge>{ev.categoria}</Badge>
               </div>

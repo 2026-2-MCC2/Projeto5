@@ -3,7 +3,7 @@ import { Search, Star, Ticket, X } from "lucide-react";
 
 const AZUL = "#2563EB";
 const VERDE = "#059669";
-const BORDA = "#E5E7EB";
+const BORDA = "var(--borda)";
 
 // Todos os ícones do projeto passam por aqui: traço fino e tamanho padronizado.
 // Herdam a cor do texto (currentColor), então acompanham o tema de onde estão.
@@ -41,7 +41,7 @@ export function MarcaLogo({ tamanho = 26 }) {
 }
 
 // Botão só com ícone (fechar, remover). `rotulo` é lido por leitores de tela.
-export function BotaoIcone({ icone, rotulo, onClick, cor = "#9CA3AF", tamanho = 18 }) {
+export function BotaoIcone({ icone, rotulo, onClick, cor = "var(--texto-fraco)", tamanho = 18 }) {
   return (
     <button type="button" className="tt-botao-icone" aria-label={rotulo} title={rotulo} onClick={onClick} style={{ color: cor }}>
       <Icone icone={icone} tamanho={tamanho} />
@@ -50,10 +50,10 @@ export function BotaoIcone({ icone, rotulo, onClick, cor = "#9CA3AF", tamanho = 
 }
 
 const estilosCard = {
-  padrao: { background: "#FFFFFF", border: `1px solid ${BORDA}` },
+  padrao: { background: "var(--superficie)", border: `1px solid ${BORDA}` },
   sucesso: { background: "rgba(5,150,105,0.04)", border: "1px solid rgba(5,150,105,0.2)" },
-  info: { background: "#EFF6FF", border: "1px solid #BFDBFE" },
-  selecionado: { background: "#F5F9FF", border: "1px solid #BFDBFE" },
+  info: { background: "var(--ativo-fundo)", border: "1px solid var(--ativo-borda)" },
+  selecionado: { background: "var(--selecionado-fundo)", border: "1px solid var(--ativo-borda)" },
 };
 
 export function Card({ children, variante = "padrao", style }) {
@@ -62,7 +62,7 @@ export function Card({ children, variante = "padrao", style }) {
 
 export function CardTitulo({ children }) {
   return (
-    <h4 style={{ fontFamily: "Outfit", fontWeight: 700, color: "#111827", marginBottom: "14px", fontSize: "0.9375rem" }}>
+    <h4 style={{ fontFamily: "Outfit", fontWeight: 700, color: "var(--texto)", marginBottom: "14px", fontSize: "0.9375rem" }}>
       {children}
     </h4>
   );
@@ -73,8 +73,8 @@ export function CabecalhoCard({ titulo, sub, children }) {
   return (
     <div style={{ padding: "1.25rem 1.5rem", borderBottom: `1px solid ${BORDA}`, display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px" }}>
       <div>
-        <h3 style={{ fontFamily: "Outfit", fontSize: "1rem", fontWeight: 700, color: "#111827" }}>{titulo}</h3>
-        {sub && <p style={{ fontSize: "0.8125rem", color: "#9CA3AF", marginTop: "4px" }}>{sub}</p>}
+        <h3 style={{ fontFamily: "Outfit", fontSize: "1rem", fontWeight: 700, color: "var(--texto)" }}>{titulo}</h3>
+        {sub && <p style={{ fontSize: "0.8125rem", color: "var(--texto-fraco)", marginTop: "4px" }}>{sub}</p>}
       </div>
       {children}
     </div>
@@ -84,7 +84,7 @@ export function CabecalhoCard({ titulo, sub, children }) {
 // Rótulo pequeno em caixa alta, usado acima de números e totais.
 export function Rotulo({ children }) {
   return (
-    <div style={{ fontSize: "0.6875rem", fontWeight: 600, color: "#9CA3AF", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "8px" }}>
+    <div style={{ fontSize: "0.6875rem", fontWeight: 600, color: "var(--texto-fraco)", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "8px" }}>
       {children}
     </div>
   );
@@ -96,10 +96,10 @@ export function TituloPagina({ titulo, sub, extra, children }) {
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.75rem", flexWrap: "wrap", gap: "1rem" }}>
       <div>
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <h2 style={{ fontFamily: "Outfit", fontSize: "1.5rem", fontWeight: 700, color: "#111827" }}>{titulo}</h2>
+          <h2 style={{ fontFamily: "Outfit", fontSize: "1.5rem", fontWeight: 700, color: "var(--texto)" }}>{titulo}</h2>
           {extra}
         </div>
-        {sub && <p style={{ fontSize: "0.875rem", color: "#9CA3AF", marginTop: "4px" }}>{sub}</p>}
+        {sub && <p style={{ fontSize: "0.875rem", color: "var(--texto-fraco)", marginTop: "4px" }}>{sub}</p>}
       </div>
       {children}
     </div>
@@ -127,7 +127,7 @@ export function Indicador({ rotulo, valor, cor, mono = true, tamanho = "1.5rem",
       ) : (
         <div style={{ fontFamily: "Outfit", fontSize: tamanho, fontWeight: 700, color: cor }}>{valor}</div>
       )}
-      {detalhe && <div style={{ fontSize: "0.75rem", color: "#6B7280", marginTop: "4px" }}>{detalhe}</div>}
+      {detalhe && <div style={{ fontSize: "0.75rem", color: "var(--texto-suave)", marginTop: "4px" }}>{detalhe}</div>}
     </Card>
   );
 }
@@ -138,8 +138,8 @@ export function ListaInfo({ itens }) {
     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
       {itens.map(({ rotulo, valor }) => (
         <div key={rotulo} style={{ display: "flex", justifyContent: "space-between", gap: "12px", fontSize: "0.8125rem" }}>
-          <span style={{ color: "#9CA3AF" }}>{rotulo}</span>
-          <span style={{ color: "#374151", fontWeight: 500, textAlign: "right" }}>{valor}</span>
+          <span style={{ color: "var(--texto-fraco)" }}>{rotulo}</span>
+          <span style={{ color: "var(--texto-2)", fontWeight: 500, textAlign: "right" }}>{valor}</span>
         </div>
       ))}
     </div>
@@ -151,9 +151,9 @@ export function ListaDetalhes({ itens }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "1.5rem" }}>
       {itens.map(({ rotulo, valor }) => (
-        <div key={rotulo} style={{ display: "flex", justifyContent: "space-between", gap: "12px", padding: "9px 12px", background: "#F9FAFB", borderRadius: "7px", fontSize: "0.875rem", border: `1px solid ${BORDA}` }}>
-          <span style={{ color: "#9CA3AF" }}>{rotulo}</span>
-          <span style={{ color: "#374151", fontWeight: 500, textAlign: "right" }}>{valor}</span>
+        <div key={rotulo} style={{ display: "flex", justifyContent: "space-between", gap: "12px", padding: "9px 12px", background: "var(--superficie-2)", borderRadius: "7px", fontSize: "0.875rem", border: `1px solid ${BORDA}` }}>
+          <span style={{ color: "var(--texto-fraco)" }}>{rotulo}</span>
+          <span style={{ color: "var(--texto-2)", fontWeight: 500, textAlign: "right" }}>{valor}</span>
         </div>
       ))}
     </div>
@@ -175,7 +175,7 @@ const estilosBadge = {
   warning: { background: "rgba(217,119,6,0.10)", color: "#D97706" },
   error: { background: "rgba(220,38,38,0.10)", color: "#DC2626" },
   info: { background: "rgba(37,99,235,0.10)", color: AZUL },
-  neutral: { background: "#F3F4F6", color: "#6B7280" },
+  neutral: { background: "var(--superficie-3)", color: "var(--texto-suave)" },
   accent: { background: "rgba(234,88,12,0.10)", color: "#EA580C" },
 };
 
@@ -205,8 +205,8 @@ export function StatusBadge({ status }) {
 
 const estilosBotao = {
   primary: { background: AZUL, color: "#fff", border: "none", fontWeight: 700 },
-  secondary: { background: "#F3F4F6", color: "#374151", border: `1px solid ${BORDA}`, fontWeight: 600 },
-  ghost: { background: "transparent", color: "#6B7280", border: `1px solid ${BORDA}`, fontWeight: 500 },
+  secondary: { background: "var(--superficie-3)", color: "var(--texto-2)", border: `1px solid ${BORDA}`, fontWeight: 600 },
+  ghost: { background: "transparent", color: "var(--texto-suave)", border: `1px solid ${BORDA}`, fontWeight: 500 },
   danger: { background: "rgba(220,38,38,0.08)", color: "#DC2626", border: "1px solid rgba(220,38,38,0.25)", fontWeight: 600 },
   accent: { background: "#EA580C", color: "#fff", border: "none", fontWeight: 700 },
 };
@@ -261,8 +261,8 @@ const estiloCampo = {
   width: "100%",
   padding: "10px 14px",
   borderRadius: "9px",
-  background: "#F9FAFB",
-  color: "#111827",
+  background: "var(--superficie-2)",
+  color: "var(--texto)",
   fontSize: "0.875rem",
   outline: "none",
   transition: "border-color 0.15s ease",
@@ -299,7 +299,7 @@ export function TextArea({ style, ...props }) {
 export function Campo({ rotulo, children }) {
   return (
     <label style={{ display: "block" }}>
-      <span style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "#6B7280", marginBottom: "5px", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+      <span style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--texto-suave)", marginBottom: "5px", letterSpacing: "0.04em", textTransform: "uppercase" }}>
         {rotulo}
       </span>
       {children}
@@ -310,7 +310,7 @@ export function Campo({ rotulo, children }) {
 export function CampoBusca({ valor, onChange, placeholder }) {
   return (
     <div style={{ position: "relative", flex: 1, minWidth: "240px" }}>
-      <Icone icone={Search} style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "#9CA3AF", pointerEvents: "none" }} />
+      <Icone icone={Search} style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "var(--texto-fraco)", pointerEvents: "none" }} />
       <Input type="search" aria-label={placeholder} placeholder={placeholder} value={valor} onChange={(e) => onChange(e.target.value)} style={{ paddingLeft: "38px" }} />
     </div>
   );
@@ -318,9 +318,9 @@ export function CampoBusca({ valor, onChange, placeholder }) {
 
 export function Vazio({ icone, titulo, texto }) {
   return (
-    <div style={{ textAlign: "center", padding: "3rem", color: "#9CA3AF" }}>
+    <div style={{ textAlign: "center", padding: "3rem", color: "var(--texto-fraco)" }}>
       <IconeDestaque icone={icone} variante="neutral" />
-      {titulo && <h3 style={{ fontFamily: "Outfit", fontSize: "1.125rem", color: "#6B7280", marginBottom: "6px" }}>{titulo}</h3>}
+      {titulo && <h3 style={{ fontFamily: "Outfit", fontSize: "1.125rem", color: "var(--texto-suave)", marginBottom: "6px" }}>{titulo}</h3>}
       <p style={{ fontSize: "0.875rem" }}>{texto}</p>
     </div>
   );
@@ -329,7 +329,7 @@ export function Vazio({ icone, titulo, texto }) {
 export function Modal({ children, onClose }) {
   return (
     <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(17,24,39,0.5)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: "1rem" }}>
-      <div onClick={(e) => e.stopPropagation()} style={{ background: "#FFFFFF", border: `1px solid ${BORDA}`, borderRadius: "16px", padding: "2rem", maxWidth: "460px", width: "100%", boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background: "var(--superficie)", border: `1px solid ${BORDA}`, borderRadius: "16px", padding: "2rem", maxWidth: "460px", width: "100%", boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }}>
         {children}
       </div>
     </div>
@@ -353,11 +353,11 @@ export function ModalConfirmacao({ icone, variante, titulo, descricao, rotuloVal
     <Modal onClose={onCancelar}>
       <div style={{ textAlign: "center" }}>
         <IconeDestaque icone={icone} variante={variante} />
-        <h3 style={{ fontFamily: "Outfit", fontSize: "1.25rem", fontWeight: 700, color: "#111827", marginBottom: "8px" }}>{titulo}</h3>
-        <p style={{ color: "#6B7280", fontSize: "0.875rem", marginBottom: "1.5rem" }}>{descricao}</p>
+        <h3 style={{ fontFamily: "Outfit", fontSize: "1.25rem", fontWeight: 700, color: "var(--texto)", marginBottom: "8px" }}>{titulo}</h3>
+        <p style={{ color: "var(--texto-suave)", fontSize: "0.875rem", marginBottom: "1.5rem" }}>{descricao}</p>
         {rotuloValor && (
-          <div style={{ background: "#F9FAFB", borderRadius: "10px", padding: "12px", marginTop: "-0.25rem", marginBottom: "1.5rem", border: `1px solid ${BORDA}`, display: "flex", justifyContent: "space-between", fontSize: "0.875rem" }}>
-            <span style={{ color: "#6B7280" }}>{rotuloValor}</span>
+          <div style={{ background: "var(--superficie-2)", borderRadius: "10px", padding: "12px", marginTop: "-0.25rem", marginBottom: "1.5rem", border: `1px solid ${BORDA}`, display: "flex", justifyContent: "space-between", fontSize: "0.875rem" }}>
+            <span style={{ color: "var(--texto-suave)" }}>{rotuloValor}</span>
             <Valor peso={700}>{valor}</Valor>
           </div>
         )}
@@ -382,7 +382,7 @@ export function Estrelas({ nota }) {
       {[1, 2, 3, 4, 5].map((n) => (
         <Icone key={n} icone={Star} tamanho={14} fill={n <= cheias ? "currentColor" : "none"} />
       ))}
-      <span style={{ fontFamily: "JetBrains Mono", fontSize: "0.8125rem", color: "#9CA3AF", marginLeft: "5px" }}>{nota.toFixed(1)}</span>
+      <span style={{ fontFamily: "JetBrains Mono", fontSize: "0.8125rem", color: "var(--texto-fraco)", marginLeft: "5px" }}>{nota.toFixed(1)}</span>
     </span>
   );
 }
@@ -402,9 +402,9 @@ export function Chip({ rotulo, ativo, onClick, redondo = true, icone }) {
         borderRadius: redondo ? "999px" : "8px",
         fontSize: "0.8125rem",
         fontWeight: 500,
-        background: ativo ? "#EFF6FF" : redondo ? "#F9FAFB" : "transparent",
-        border: `1px solid ${ativo ? "#BFDBFE" : BORDA}`,
-        color: ativo ? "#1D4ED8" : "#6B7280",
+        background: ativo ? "var(--ativo-fundo)" : redondo ? "var(--superficie-2)" : "transparent",
+        border: `1px solid ${ativo ? "var(--ativo-borda)" : BORDA}`,
+        color: ativo ? "var(--ativo-texto)" : "var(--texto-suave)",
         cursor: "pointer",
         transition: "all 0.15s ease",
         whiteSpace: "nowrap",
@@ -418,7 +418,7 @@ export function Chip({ rotulo, ativo, onClick, redondo = true, icone }) {
 
 export function BarraProgresso({ porcentagem, cor = "linear-gradient(90deg, #2563EB, #3B82F6)", altura = "6px" }) {
   return (
-    <div style={{ flex: 1, height: altura, borderRadius: "3px", background: "#F3F4F6", overflow: "hidden" }}>
+    <div style={{ flex: 1, height: altura, borderRadius: "3px", background: "var(--superficie-3)", overflow: "hidden" }}>
       <div style={{ height: "100%", width: `${porcentagem}%`, background: cor, borderRadius: "3px", transition: "width 0.5s ease" }} />
     </div>
   );
@@ -429,7 +429,7 @@ export function BarraRotulada({ rotulo, valor, porcentagem, altura }) {
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8125rem", marginBottom: "5px" }}>
-        <span style={{ color: "#6B7280" }}>{rotulo}</span>
+        <span style={{ color: "var(--texto-suave)" }}>{rotulo}</span>
         <span style={{ fontFamily: "JetBrains Mono", color: AZUL }}>{valor}</span>
       </div>
       <BarraProgresso porcentagem={porcentagem} altura={altura} />
@@ -441,9 +441,9 @@ export function Tabela({ colunas, children, rodape }) {
   return (
     <table style={{ width: "100%", borderCollapse: "collapse" }}>
       <thead>
-        <tr style={{ background: "#F9FAFB" }}>
+        <tr style={{ background: "var(--superficie-2)" }}>
           {colunas.map((c) => (
-            <th key={c} style={{ padding: "12px 16px", textAlign: "left", fontSize: "0.6875rem", fontWeight: 600, color: "#9CA3AF", letterSpacing: "0.05em", textTransform: "uppercase", borderBottom: `1px solid ${BORDA}` }}>
+            <th key={c} style={{ padding: "12px 16px", textAlign: "left", fontSize: "0.6875rem", fontWeight: 600, color: "var(--texto-fraco)", letterSpacing: "0.05em", textTransform: "uppercase", borderBottom: `1px solid ${BORDA}` }}>
               {c}
             </th>
           ))}
@@ -457,7 +457,7 @@ export function Tabela({ colunas, children, rodape }) {
 
 // Linha da tabela com borda embaixo, exceto na última.
 export function Linha({ ultima, style, ...props }) {
-  return <tr {...props} style={{ borderBottom: ultima ? "none" : "1px solid #F3F4F6", ...style }} />;
+  return <tr {...props} style={{ borderBottom: ultima ? "none" : "1px solid var(--superficie-3)", ...style }} />;
 }
 
 export function Celula({ children, colSpan, style }) {
@@ -471,7 +471,7 @@ export function Celula({ children, colSpan, style }) {
 // Faixa cinza no rodapé de um card com tabela (totais, ações).
 export function RodapeCard({ children }) {
   return (
-    <div style={{ padding: "14px 16px", background: "#F9FAFB", borderTop: `1px solid ${BORDA}`, display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+    <div style={{ padding: "14px 16px", background: "var(--superficie-2)", borderTop: `1px solid ${BORDA}`, display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
       {children}
     </div>
   );

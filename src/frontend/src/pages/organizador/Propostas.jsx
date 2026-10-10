@@ -63,14 +63,14 @@ export default function Propostas() {
           <button
             type="button"
             onClick={() => setMostrarOrdem(!mostrarOrdem)}
-            style={{ padding: "7px 13px", borderRadius: "8px", background: "#FFFFFF", border: "1px solid #E5E7EB", color: "#6B7280", fontSize: "0.8125rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}
+            style={{ padding: "7px 13px", borderRadius: "8px", background: "var(--superficie)", border: "1px solid var(--borda)", color: "var(--texto-suave)", fontSize: "0.8125rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}
           >
-            <Icone icone={ArrowUpDown} tamanho={16} /> <strong style={{ color: "#374151" }}>{ordem.split("(")[0].trim()}</strong>
+            <Icone icone={ArrowUpDown} tamanho={16} /> <strong style={{ color: "var(--texto-2)" }}>{ordem.split("(")[0].trim()}</strong>
           </button>
           {mostrarOrdem && (
             <div
               onMouseLeave={() => setMostrarOrdem(false)}
-              style={{ position: "absolute", right: 0, top: "calc(100% + 5px)", background: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: "10px", overflow: "hidden", zIndex: 30, minWidth: "230px", boxShadow: "0 8px 32px rgba(0,0,0,0.1)" }}
+              style={{ position: "absolute", right: 0, top: "calc(100% + 5px)", background: "var(--superficie)", border: "1px solid var(--borda)", borderRadius: "10px", overflow: "hidden", zIndex: 30, minWidth: "230px", boxShadow: "0 8px 32px rgba(0,0,0,0.1)" }}
             >
               {Object.keys(ordenacoes).map((o) => (
                 <button
@@ -80,7 +80,7 @@ export default function Propostas() {
                     setOrdem(o);
                     setMostrarOrdem(false);
                   }}
-                  style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: ordem === o ? "#F9FAFB" : "transparent", border: "none", color: ordem === o ? "#2563EB" : "#6B7280", fontSize: "0.8125rem", cursor: "pointer" }}
+                  style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 14px", background: ordem === o ? "var(--superficie-2)" : "transparent", border: "none", color: ordem === o ? "#2563EB" : "var(--texto-suave)", fontSize: "0.8125rem", cursor: "pointer" }}
                 >
                   {o}
                 </button>
@@ -100,13 +100,13 @@ export default function Propostas() {
                   type="button"
                   aria-label={marcada ? "Desmarcar proposta" : "Selecionar proposta"}
                   onClick={() => alternar(p)}
-                  style={{ width: "20px", height: "20px", borderRadius: "5px", background: marcada ? "#2563EB" : "#FFFFFF", border: `2px solid ${marcada ? "#2563EB" : "#D1D5DB"}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "all 0.15s", fontSize: "0.6875rem", color: "#fff", fontWeight: 700, flexShrink: 0, padding: 0 }}
+                  style={{ width: "20px", height: "20px", borderRadius: "5px", background: marcada ? "#2563EB" : "var(--superficie)", border: `2px solid ${marcada ? "#2563EB" : "var(--borda-2)"}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "all 0.15s", fontSize: "0.6875rem", color: "#fff", fontWeight: 700, flexShrink: 0, padding: 0 }}
                 >
                   {marcada && <Icone icone={Check} tamanho={14} strokeWidth={2.5} />}
                 </button>
                 <div style={{ flex: 1, minWidth: "180px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-                    <span style={{ fontFamily: "Outfit", fontSize: "1rem", fontWeight: 700, color: "#111827" }}>{p.fornecedor}</span>
+                    <span style={{ fontFamily: "Outfit", fontSize: "1rem", fontWeight: 700, color: "var(--texto)" }}>{p.fornecedor}</span>
                     {p.recomendado && <Badge variante="success">
                         <TextoComIcone icone={Star} tamanho={12} style={{ gap: "4px" }}>
                           Recomendado
@@ -115,15 +115,15 @@ export default function Propostas() {
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "0.8125rem", flexWrap: "wrap" }}>
                     <Estrelas nota={p.nota} />
-                    <span style={{ color: "#9CA3AF" }}>({p.avaliacoes} avaliações)</span>
+                    <span style={{ color: "var(--texto-fraco)" }}>({p.avaliacoes} avaliações)</span>
                     <Badge>{p.categoria}</Badge>
                   </div>
                 </div>
                 <div style={{ textAlign: "right", flexShrink: 0 }}>
-                  <Valor cor="#111827" tamanho="1.1875rem" peso={700}>
+                  <Valor cor="var(--texto)" tamanho="1.1875rem" peso={700}>
                     {moeda(p.valor)}
                   </Valor>
-                  <div style={{ fontSize: "0.75rem", color: "#9CA3AF", marginTop: "2px" }}>valor total</div>
+                  <div style={{ fontSize: "0.75rem", color: "var(--texto-fraco)", marginTop: "2px" }}>valor total</div>
                 </div>
                 <Btn variante="secondary" tamanho="sm" onClick={() => setAberta(p)}>
                   Ver proposta completa
@@ -134,14 +134,14 @@ export default function Propostas() {
         })}
       </div>
 
-      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#FFFFFF", borderTop: "1px solid #E5E7EB", padding: "1rem 1.5rem", zIndex: 50, boxShadow: "0 -4px 16px rgba(0,0,0,0.06)" }}>
+      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "var(--superficie)", borderTop: "1px solid var(--borda)", padding: "1rem 4.5rem 1rem 1.5rem", zIndex: 50, boxShadow: "0 -4px 16px rgba(0,0,0,0.06)" }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-            <span style={{ fontFamily: "Outfit", fontWeight: 600, color: "#6B7280" }}>
+            <span style={{ fontFamily: "Outfit", fontWeight: 600, color: "var(--texto-suave)" }}>
               {selecionadas.length} {selecionadas.length === 1 ? "proposta selecionada" : "propostas selecionadas"}
             </span>
             {total > 0 && (
-              <Valor cor="#111827" tamanho="1.0625rem" peso={700}>
+              <Valor cor="var(--texto)" tamanho="1.0625rem" peso={700}>
                 TOTAL: {moeda(total)}
               </Valor>
             )}
@@ -155,21 +155,21 @@ export default function Propostas() {
       {aberta && (
         <Modal onClose={() => setAberta(null)}>
           <CabecalhoModal onFechar={() => setAberta(null)}>
-            <h3 style={{ fontFamily: "Outfit", fontSize: "1.0625rem", fontWeight: 700, color: "#111827" }}>{aberta.fornecedor}</h3>
+            <h3 style={{ fontFamily: "Outfit", fontSize: "1.0625rem", fontWeight: 700, color: "var(--texto)" }}>{aberta.fornecedor}</h3>
             <Estrelas nota={aberta.nota} />
           </CabecalhoModal>
           <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "1.25rem" }}>
             {aberta.itens.map((item) => (
-              <div key={item.descricao} style={{ display: "flex", justifyContent: "space-between", gap: "12px", padding: "10px 12px", background: "#F9FAFB", borderRadius: "8px", fontSize: "0.875rem" }}>
-                <span style={{ color: "#374151" }}>
-                  {item.descricao} <span style={{ color: "#9CA3AF" }}>· {item.quantidade} {item.unidade}</span>
+              <div key={item.descricao} style={{ display: "flex", justifyContent: "space-between", gap: "12px", padding: "10px 12px", background: "var(--superficie-2)", borderRadius: "8px", fontSize: "0.875rem" }}>
+                <span style={{ color: "var(--texto-2)" }}>
+                  {item.descricao} <span style={{ color: "var(--texto-fraco)" }}>· {item.quantidade} {item.unidade}</span>
                 </span>
                 <Valor>{moeda(item.preco)}</Valor>
               </div>
             ))}
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between", padding: "12px", background: "#F0FDF4", border: "1px solid rgba(5,150,105,0.2)", borderRadius: "9px", marginBottom: "1.25rem" }}>
-            <span style={{ fontWeight: 600, color: "#374151" }}>Total</span>
+          <div style={{ display: "flex", justifyContent: "space-between", padding: "12px", background: "var(--sucesso-fundo)", border: "1px solid rgba(5,150,105,0.2)", borderRadius: "9px", marginBottom: "1.25rem" }}>
+            <span style={{ fontWeight: 600, color: "var(--texto-2)" }}>Total</span>
             <Valor tamanho="1.125rem" peso={700}>
               {moeda(aberta.valor)}
             </Valor>

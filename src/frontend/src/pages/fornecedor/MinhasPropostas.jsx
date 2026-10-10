@@ -24,7 +24,7 @@ export default function MinhasPropostas() {
       </TituloPagina>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem", marginBottom: "2rem" }}>
-        <Indicador rotulo="Total enviadas" valor={propostas.length} cor="#6B7280" mono={false} tamanho="1.375rem" />
+        <Indicador rotulo="Total enviadas" valor={propostas.length} cor="var(--texto-suave)" mono={false} tamanho="1.375rem" />
         <Indicador rotulo="Em análise" valor={contar("Em análise")} cor="#D97706" mono={false} tamanho="1.375rem" />
         <Indicador rotulo="Aprovadas" valor={contar("Aprovada")} cor="#059669" mono={false} tamanho="1.375rem" />
         <Indicador rotulo="Volume aprovado" valor={moeda(volumeAprovado)} cor="#2563EB" tamanho="1.375rem" />
@@ -37,18 +37,18 @@ export default function MinhasPropostas() {
               key={p.id}
               ultima={i === propostas.length - 1}
               style={{ transition: "background 0.15s ease" }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "#F9FAFB")}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "var(--superficie-2)")}
               onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
             >
-              <Celula style={{ fontSize: "0.875rem", fontWeight: 600, color: "#111827" }}>{p.evento}</Celula>
-              <Celula style={{ fontSize: "0.8125rem", color: "#6B7280" }}>{dataCurta(p.dataEvento)}</Celula>
+              <Celula style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--texto)" }}>{p.evento}</Celula>
+              <Celula style={{ fontSize: "0.8125rem", color: "var(--texto-suave)" }}>{dataCurta(p.dataEvento)}</Celula>
               <Celula>
                 <Badge>{p.categoria}</Badge>
               </Celula>
               <Celula>
                 <Valor>{moeda(p.valor)}</Valor>
               </Celula>
-              <Celula style={{ fontSize: "0.8125rem", color: "#9CA3AF" }}>{dataCurta(p.enviadaEm)}</Celula>
+              <Celula style={{ fontSize: "0.8125rem", color: "var(--texto-fraco)" }}>{dataCurta(p.enviadaEm)}</Celula>
               <Celula>
                 <StatusBadge status={p.status} />
               </Celula>

@@ -30,7 +30,7 @@ export default function LandingView() {
   }, []);
 
   return (
-    <div style={{ minHeight: '100vh', background: '#F4F6FB', fontFamily: 'Inter, sans-serif', color: '#0A0A0A', overflowX: 'hidden' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--fundo)', fontFamily: 'Inter, sans-serif', color: 'var(--texto)', overflowX: 'hidden' }}>
 
 
 {/* ── Navbar (dark) ── */}
@@ -227,7 +227,7 @@ export default function LandingView() {
 
               {/* Ticket — slightly rotated */}
               <div style={{
-                background: '#FFFFFF',
+                background: 'var(--superficie)',
                 borderRadius: '18px',
                 padding: '1.5rem',
                 width: '100%',
@@ -249,48 +249,48 @@ export default function LandingView() {
                     </svg>
                   </div>
                   <div>
-                    <div style={{ fontFamily: 'Outfit', fontSize: '0.9375rem', fontWeight: 700, color: '#111827' }}>Ingresso emitido!</div>
-                    <div style={{ fontSize: '0.6875rem', color: '#9CA3AF' }}>Compra confirmada com sucesso.</div>
+                    <div style={{ fontFamily: 'Outfit', fontSize: '0.9375rem', fontWeight: 700, color: 'var(--texto)' }}>Ingresso emitido!</div>
+                    <div style={{ fontSize: '0.6875rem', color: 'var(--texto-fraco)' }}>Compra confirmada com sucesso.</div>
                   </div>
                 </div>
 
-                <div style={{ borderTop: '1.5px dashed #E5E7EB', marginBottom: '1rem' }} />
+                <div style={{ borderTop: '1.5px dashed var(--borda)', marginBottom: '1rem' }} />
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '1rem' }}>
                   <div>
-                    <div style={{ fontSize: '0.5625rem', fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '2px' }}>Ticket ID</div>
-                    <div style={{ fontFamily: 'JetBrains Mono', fontSize: '0.8125rem', fontWeight: 700, color: '#111827' }}>TT-2026-0098</div>
+                    <div style={{ fontSize: '0.5625rem', fontWeight: 700, color: 'var(--texto-fraco)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '2px' }}>Ticket ID</div>
+                    <div style={{ fontFamily: 'JetBrains Mono', fontSize: '0.8125rem', fontWeight: 700, color: 'var(--texto)' }}>TT-2026-0098</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: '0.5625rem', fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '2px' }}>Valor</div>
-                    <div style={{ fontFamily: 'JetBrains Mono', fontSize: '0.8125rem', fontWeight: 700, color: '#111827' }}>R$ 89,90</div>
+                    <div style={{ fontSize: '0.5625rem', fontWeight: 700, color: 'var(--texto-fraco)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '2px' }}>Valor</div>
+                    <div style={{ fontFamily: 'JetBrains Mono', fontSize: '0.8125rem', fontWeight: 700, color: 'var(--texto)' }}>R$ 89,90</div>
                   </div>
                 </div>
 
                 <div style={{ marginBottom: '1rem' }}>
-                  <div style={{ fontSize: '0.5625rem', fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '2px' }}>Data e Horário</div>
-                  <div style={{ fontFamily: 'JetBrains Mono', fontSize: '0.8125rem', fontWeight: 600, color: '#111827' }}>12 jul. 2026 · 21:00</div>
+                  <div style={{ fontSize: '0.5625rem', fontWeight: 700, color: 'var(--texto-fraco)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '2px' }}>Data e Horário</div>
+                  <div style={{ fontFamily: 'JetBrains Mono', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--texto)' }}>12 jul. 2026 · 21:00</div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 10px', background: '#F9FAFB', borderRadius: '8px', marginBottom: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 10px', background: 'var(--superficie-2)', borderRadius: '8px', marginBottom: '1rem' }}>
                   <div style={{ width: '26px', height: '18px', borderRadius: '3px', background: 'linear-gradient(135deg, #FF5F00 40%, #EB001B 100%)', flexShrink: 0 }} />
                   <div>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#111827' }}>Cliente TrocaTicket</div>
-                    <div style={{ fontFamily: 'JetBrains Mono', fontSize: '0.625rem', color: '#9CA3AF' }}>•••• 8237</div>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--texto)' }}>Cliente TrocaTicket</div>
+                    <div style={{ fontFamily: 'JetBrains Mono', fontSize: '0.625rem', color: 'var(--texto-fraco)' }}>•••• 8237</div>
                   </div>
                 </div>
 
-                <div style={{ borderTop: '1.5px dashed #E5E7EB', marginBottom: '0.875rem' }} />
+                <div style={{ borderTop: '1.5px dashed var(--borda)', marginBottom: '0.875rem' }} />
 
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
                   <svg width="200" height="36" viewBox="0 0 200 36" fill="none">
                     {Array.from({ length: 50 }, (_, i) => {
                       const x = i * 4;
                       const w = [2,3,1,2,1,3,2,1,2,3,1,2,3,1,2,1,3,2,1,2,3,1,2,2,3,1,2,1,3,2,1,2,3,1,2,3,1,2,1,3,2,1,2,3,1,2,2,3,1,2][i] ?? 2;
-                      return <rect key={i} x={x} y={0} width={w} height={36} fill="#111827" />;
+                      return <rect key={i} x={x} y={0} width={w} height={36} fill="var(--texto)" />;
                     })}
                   </svg>
-                  <div style={{ fontFamily: 'JetBrains Mono', fontSize: '0.5625rem', color: '#9CA3AF', letterSpacing: '0.08em' }}>28937281273650</div>
+                  <div style={{ fontFamily: 'JetBrains Mono', fontSize: '0.5625rem', color: 'var(--texto-fraco)', letterSpacing: '0.08em' }}>28937281273650</div>
                 </div>
               </div>
             </div>
@@ -330,33 +330,33 @@ export default function LandingView() {
       <section id="eventos" style={{ position: 'relative', zIndex: 1, maxWidth: '1200px', margin: '0 auto', padding: '2rem 2rem 5rem' }}>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <p style={{ fontSize: '0.6875rem', fontWeight: 700, color: '#9CA3AF', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>Descoberta de Eventos</p>
-            <h2 style={{ fontFamily: 'Outfit', fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 900, color: '#0A0A0A', letterSpacing: '-0.02em', textTransform: 'uppercase' }}>Eventos em Destaque</h2>
+            <p style={{ fontSize: '0.6875rem', fontWeight: 700, color: 'var(--texto-fraco)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>Descoberta de Eventos</p>
+            <h2 style={{ fontFamily: 'Outfit', fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 900, color: 'var(--texto)', letterSpacing: '-0.02em', textTransform: 'uppercase' }}>Eventos em Destaque</h2>
           </div>
-          <button style={{ padding: '10px 22px', borderRadius: '999px', background: 'transparent', border: '1.5px solid #D1D5DB', color: '#374151', fontSize: '0.8125rem', fontWeight: 600, fontFamily: 'Outfit', letterSpacing: '0.06em', textTransform: 'uppercase', cursor: 'pointer', whiteSpace: 'nowrap', transition: 'border-color 0.15s' }}
-            onMouseEnter={e => (e.currentTarget.style.borderColor = '#9CA3AF')}
-            onMouseLeave={e => (e.currentTarget.style.borderColor = '#D1D5DB')}
+          <button style={{ padding: '10px 22px', borderRadius: '999px', background: 'transparent', border: '1.5px solid var(--borda-2)', color: 'var(--texto-2)', fontSize: '0.8125rem', fontWeight: 600, fontFamily: 'Outfit', letterSpacing: '0.06em', textTransform: 'uppercase', cursor: 'pointer', whiteSpace: 'nowrap', transition: 'border-color 0.15s' }}
+            onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--texto-fraco)')}
+            onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--borda-2)')}
           >Explorar Catálogo</button>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1rem' }}>
           {mockEvents.map(ev => (
-            <div key={ev.id} style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: '14px', overflow: 'hidden', cursor: 'pointer', transition: 'border-color 0.2s, transform 0.2s, box-shadow 0.2s' }}
-              onMouseEnter={e => { const el = e.currentTarget; el.style.borderColor = '#D1D5DB'; el.style.transform = 'translateY(-2px)'; el.style.boxShadow = '0 12px 40px rgba(0,0,0,0.08)'; }}
-              onMouseLeave={e => { const el = e.currentTarget; el.style.borderColor = '#E5E7EB'; el.style.transform = 'none'; el.style.boxShadow = 'none'; }}
+            <div key={ev.id} style={{ background: 'var(--superficie)', border: '1px solid var(--borda)', borderRadius: '14px', overflow: 'hidden', cursor: 'pointer', transition: 'border-color 0.2s, transform 0.2s, box-shadow 0.2s' }}
+              onMouseEnter={e => { const el = e.currentTarget; el.style.borderColor = 'var(--borda-2)'; el.style.transform = 'translateY(-2px)'; el.style.boxShadow = '0 12px 40px rgba(0,0,0,0.08)'; }}
+              onMouseLeave={e => { const el = e.currentTarget; el.style.borderColor = 'var(--borda)'; el.style.transform = 'none'; el.style.boxShadow = 'none'; }}
             >
-              <div style={{ height: '140px', background: 'linear-gradient(135deg, #F3F4F6, #E5E7EB)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9CA3AF' }}>
+              <div style={{ height: '140px', background: 'linear-gradient(135deg, var(--superficie-3), var(--borda))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--texto-fraco)' }}>
                 <Icone icone={ev.img} tamanho={32} />
               </div>
               <div style={{ padding: '1.125rem' }}>
-                <span style={{ fontSize: '0.6875rem', fontWeight: 600, color: '#9CA3AF', letterSpacing: '0.08em', textTransform: 'uppercase' }}>{ev.category}</span>
-                <h3 style={{ fontFamily: 'Outfit', fontSize: '1rem', fontWeight: 700, color: '#0A0A0A', margin: '4px 0 8px', lineHeight: 1.3 }}>{ev.name}</h3>
+                <span style={{ fontSize: '0.6875rem', fontWeight: 600, color: 'var(--texto-fraco)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>{ev.category}</span>
+                <h3 style={{ fontFamily: 'Outfit', fontSize: '1rem', fontWeight: 700, color: 'var(--texto)', margin: '4px 0 8px', lineHeight: 1.3 }}>{ev.name}</h3>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
-                    <TextoComIcone icone={Calendar} tamanho={14} style={{ fontSize: '0.8125rem', color: '#6B7280' }}>{ev.date}</TextoComIcone>
-                    <TextoComIcone icone={MapPin} tamanho={14} style={{ fontSize: '0.8125rem', color: '#6B7280', display: 'flex' }}>{ev.location}</TextoComIcone>
+                    <TextoComIcone icone={Calendar} tamanho={14} style={{ fontSize: '0.8125rem', color: 'var(--texto-suave)' }}>{ev.date}</TextoComIcone>
+                    <TextoComIcone icone={MapPin} tamanho={14} style={{ fontSize: '0.8125rem', color: 'var(--texto-suave)', display: 'flex' }}>{ev.location}</TextoComIcone>
                   </div>
-                  <div style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1rem', color: '#0A0A0A' }}>{ev.price}</div>
+                  <div style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1rem', color: 'var(--texto)' }}>{ev.price}</div>
                 </div>
               </div>
             </div>
@@ -371,7 +371,7 @@ export default function LandingView() {
             <h2 style={{ fontFamily: 'Outfit', fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 900, color: '#fff', lineHeight: 1.15, marginBottom: '1rem' }}>
               Tudo o que você precisa<br/>para viver e gerenciar eventos.
             </h2>
-            <p style={{ fontSize: '1.0625rem', color: '#9CA3AF', maxWidth: '480px', margin: '0 auto', lineHeight: 1.65 }}>
+            <p style={{ fontSize: '1.0625rem', color: 'var(--texto-fraco)', maxWidth: '480px', margin: '0 auto', lineHeight: 1.65 }}>
               Uma experiência simples e segura para organizadores e participantes, do primeiro acesso até a entrada no evento.
             </p>
           </div>
@@ -385,7 +385,7 @@ export default function LandingView() {
               <div key={i} style={{ padding: '1.5rem', background: i === 3 ? '#1A1A1A' : '#141414', border: '1px solid #1F1F1F', borderRadius: '12px' }}>
                 <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#1F1F1F', color: '#D1D5DB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}><Icone icone={f.icon} /></div>
                 <h3 style={{ fontFamily: 'Outfit', fontSize: '0.9375rem', fontWeight: 700, color: '#fff', marginBottom: '6px' }}>{f.title}</h3>
-                <p style={{ fontSize: '0.875rem', color: '#6B7280', lineHeight: 1.6 }}>{f.desc}</p>
+                <p style={{ fontSize: '0.875rem', color: 'var(--texto-suave)', lineHeight: 1.6 }}>{f.desc}</p>
               </div>
             ))}
           </div>
@@ -393,7 +393,7 @@ export default function LandingView() {
       </section>
 
       {/* ── Stats ── */}
-      <section style={{ position: 'relative', zIndex: 1, background: '#fff', borderTop: '1px solid #E5E7EB', borderBottom: '1px solid #E5E7EB', padding: '4.5rem 2rem' }}>
+      <section style={{ position: 'relative', zIndex: 1, background: 'var(--superficie)', borderTop: '1px solid var(--borda)', borderBottom: '1px solid var(--borda)', padding: '4.5rem 2rem' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem', textAlign: 'center' }}>
           {[
             { value: '4.820+', label: 'Fornecedores cadastrados' },
@@ -402,23 +402,23 @@ export default function LandingView() {
             { value: '98%', label: 'Taxa de satisfação' },
           ].map((s, i) => (
             <div key={i}>
-              <div style={{ fontFamily: 'Outfit', fontSize: 'clamp(2rem, 4vw, 2.75rem)', fontWeight: 900, color: '#0A0A0A', lineHeight: 1, marginBottom: '6px' }}>{s.value}</div>
-              <div style={{ fontSize: '0.9375rem', color: '#9CA3AF' }}>{s.label}</div>
+              <div style={{ fontFamily: 'Outfit', fontSize: 'clamp(2rem, 4vw, 2.75rem)', fontWeight: 900, color: 'var(--texto)', lineHeight: 1, marginBottom: '6px' }}>{s.value}</div>
+              <div style={{ fontSize: '0.9375rem', color: 'var(--texto-fraco)' }}>{s.label}</div>
             </div>
           ))}
         </div>
       </section>
 
       {/* ── Footer ── */}
-      <footer style={{ position: 'relative', zIndex: 1, background: '#F9FAFB', borderTop: '1px solid #E5E7EB', padding: '3rem 2rem 2rem' }}>
+      <footer style={{ position: 'relative', zIndex: 1, background: 'var(--superficie-2)', borderTop: '1px solid var(--borda)', padding: '3rem 2rem 2rem' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr repeat(3, auto)', gap: '3rem', marginBottom: '2.5rem', flexWrap: 'wrap' }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                 <MarcaLogo />
-                <span style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '0.875rem', color: '#0A0A0A' }}>TrocaTicket</span>
+                <span style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '0.875rem', color: 'var(--texto)' }}>TrocaTicket</span>
               </div>
-              <p style={{ fontSize: '0.875rem', color: '#9CA3AF', lineHeight: 1.65, maxWidth: '220px' }}>A plataforma de eventos do Brasil. Conectando organizadores, fornecedores e compradores.</p>
+              <p style={{ fontSize: '0.875rem', color: 'var(--texto-fraco)', lineHeight: 1.65, maxWidth: '220px' }}>A plataforma de eventos do Brasil. Conectando organizadores, fornecedores e compradores.</p>
             </div>
             {[
               { title: 'Plataforma', links: ['Para Organizadores', 'Para Fornecedores', 'Painel Admin', 'Preços'] },
@@ -426,23 +426,23 @@ export default function LandingView() {
               { title: 'Empresa', links: ['Sobre nós', 'Carreiras', 'Privacidade', 'Termos'] },
             ].map(col => (
               <div key={col.title}>
-                <h4 style={{ fontFamily: 'Outfit', fontWeight: 700, fontSize: '0.75rem', color: '#374151', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '12px' }}>{col.title}</h4>
+                <h4 style={{ fontFamily: 'Outfit', fontWeight: 700, fontSize: '0.75rem', color: 'var(--texto-2)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '12px' }}>{col.title}</h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {col.links.map(link => (
-                    <button key={link} style={{ background: 'none', border: 'none', textAlign: 'left', fontSize: '0.875rem', color: '#9CA3AF', cursor: 'pointer', padding: 0, fontFamily: 'Inter', transition: 'color 0.15s' }}
-                      onMouseEnter={e => (e.currentTarget.style.color = '#374151')}
-                      onMouseLeave={e => (e.currentTarget.style.color = '#9CA3AF')}
+                    <button key={link} style={{ background: 'none', border: 'none', textAlign: 'left', fontSize: '0.875rem', color: 'var(--texto-fraco)', cursor: 'pointer', padding: 0, fontFamily: 'Inter', transition: 'color 0.15s' }}
+                      onMouseEnter={e => (e.currentTarget.style.color = 'var(--texto-2)')}
+                      onMouseLeave={e => (e.currentTarget.style.color = 'var(--texto-fraco)')}
                     >{link}</button>
                   ))}
                 </div>
               </div>
             ))}
           </div>
-          <div style={{ borderTop: '1px solid #E5E7EB', paddingTop: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-            <p style={{ fontSize: '0.8125rem', color: '#9CA3AF' }}>© 2025 TrocaTicket. Todos os direitos reservados.</p>
+          <div style={{ borderTop: '1px solid var(--borda)', paddingTop: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+            <p style={{ fontSize: '0.8125rem', color: 'var(--texto-fraco)' }}>© 2025 TrocaTicket. Todos os direitos reservados.</p>
             <div style={{ display: 'flex', gap: '12px' }}>
-              <button style={{ fontSize: '0.8125rem', color: '#9CA3AF', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter' }}>Termos</button>
-              <button style={{ fontSize: '0.8125rem', color: '#9CA3AF', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter' }}>Privacidade</button>
+              <button style={{ fontSize: '0.8125rem', color: 'var(--texto-fraco)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter' }}>Termos</button>
+              <button style={{ fontSize: '0.8125rem', color: 'var(--texto-fraco)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter' }}>Privacidade</button>
             </div>
           </div>
         </div>

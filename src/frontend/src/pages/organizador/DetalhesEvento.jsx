@@ -82,28 +82,28 @@ export default function DetalhesEvento() {
               <Tabela colunas={colunas}>
                 {itens.map((item, i) => (
                   <Linha key={item.id} ultima={i === itens.length - 1}>
-                    <Celula style={{ fontSize: "0.875rem", color: "#111827" }}>{item.descricao}</Celula>
+                    <Celula style={{ fontSize: "0.875rem", color: "var(--texto)" }}>{item.descricao}</Celula>
                     <Celula>
-                      <Valor cor="#6B7280" peso={400}>
+                      <Valor cor="var(--texto-suave)" peso={400}>
                         {item.quantidade}
                       </Valor>
                     </Celula>
-                    <Celula style={{ fontSize: "0.875rem", color: "#6B7280" }}>{item.unidade}</Celula>
+                    <Celula style={{ fontSize: "0.875rem", color: "var(--texto-suave)" }}>{item.unidade}</Celula>
                     <Celula>
-                      <Valor cor="#9CA3AF" peso={400}>
+                      <Valor cor="var(--texto-fraco)" peso={400}>
                         {moeda(item.estimado)}
                       </Valor>
                     </Celula>
                     <Celula>
-                      <Valor cor={item.acordado === null ? "#9CA3AF" : "#059669"}>{item.acordado === null ? "—" : moeda(item.acordado)}</Valor>
+                      <Valor cor={item.acordado === null ? "var(--texto-fraco)" : "#059669"}>{item.acordado === null ? "—" : moeda(item.acordado)}</Valor>
                     </Celula>
                   </Linha>
                 ))}
               </Tabela>
               <RodapeCard>
-                <span style={{ fontSize: "0.8125rem", fontWeight: 600, color: "#6B7280" }}>Total</span>
+                <span style={{ fontSize: "0.8125rem", fontWeight: 600, color: "var(--texto-suave)" }}>Total</span>
                 <div style={{ display: "flex", gap: "24px", alignItems: "center" }}>
-                  <Valor cor="#9CA3AF" peso={400} riscado={totalAcordado > 0}>
+                  <Valor cor="var(--texto-fraco)" peso={400} riscado={totalAcordado > 0}>
                     {moeda(totalEstimado)}
                   </Valor>
                   {totalAcordado > 0 && (
@@ -120,10 +120,10 @@ export default function DetalhesEvento() {
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <Card style={{ padding: "1.25rem" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
-              <h4 style={{ fontFamily: "Outfit", fontWeight: 700, color: "#111827", fontSize: "0.9375rem" }}>Propostas Comerciais</h4>
+              <h4 style={{ fontFamily: "Outfit", fontWeight: 700, color: "var(--texto)", fontSize: "0.9375rem" }}>Propostas Comerciais</h4>
               <span style={{ fontFamily: "Outfit", fontSize: "1.5rem", fontWeight: 800, color: "#2563EB" }}>{evento.propostas.length}</span>
             </div>
-            <p style={{ fontSize: "0.8125rem", color: "#9CA3AF", marginBottom: "14px", lineHeight: 1.5 }}>
+            <p style={{ fontSize: "0.8125rem", color: "var(--texto-fraco)", marginBottom: "14px", lineHeight: 1.5 }}>
               {evento.propostas.length > 0
                 ? `${evento.propostas.length} propostas comerciais recebidas de fornecedores qualificados`
                 : "Nenhuma proposta recebida até agora"}

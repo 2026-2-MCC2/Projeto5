@@ -1,10 +1,66 @@
+/* Cores neutras do tema. As cores da marca (azul, verde, laranja...) são as mesmas nos dois temas.
+   O tema escuro é ligado pelo atributo data-tema="escuro" no <html> (ver BotaoTema). */
+:root {
+  color-scheme: light;
+  --fundo: #F5F6FA;
+  --superficie: #FFFFFF;
+  --superficie-2: #F9FAFB;
+  --superficie-3: #F3F4F6;
+  --borda: #E5E7EB;
+  --borda-2: #D1D5DB;
+  --texto: #111827;
+  --texto-2: #374151;
+  --texto-suave: #6B7280;
+  --texto-fraco: #9CA3AF;
+  --ativo-fundo: #EFF6FF;
+  --ativo-borda: #BFDBFE;
+  --ativo-texto: #1D4ED8;
+  --selecionado-fundo: #F5F9FF;
+  --sucesso-fundo: #F0FDF4;
+  --erro-fundo: #FEF2F2;
+  --erro-borda: #FECACA;
+  --erro-texto: #B91C1C;
+  --ok-borda: #BBF7D0;
+  --ok-texto: #15803D;
+  --destaque: #0A0A0A;
+  --destaque-texto: #FFFFFF;
+}
+
+:root[data-tema="escuro"] {
+  color-scheme: dark;
+  --fundo: #0B0F19;
+  --superficie: #111827;
+  --superficie-2: #0E1421;
+  --superficie-3: #1F2937;
+  --borda: #263042;
+  --borda-2: #374151;
+  --texto: #F3F4F6;
+  --texto-2: #D1D5DB;
+  --texto-suave: #A1A9B6;
+  --texto-fraco: #7F8898;
+  --ativo-fundo: rgba(59, 130, 246, 0.16);
+  --ativo-borda: rgba(96, 165, 250, 0.38);
+  --ativo-texto: #93C5FD;
+  --selecionado-fundo: rgba(59, 130, 246, 0.08);
+  --sucesso-fundo: rgba(16, 185, 129, 0.1);
+  --erro-fundo: rgba(220, 38, 38, 0.12);
+  --erro-borda: rgba(248, 113, 113, 0.35);
+  --erro-texto: #FCA5A5;
+  --ok-borda: rgba(52, 211, 153, 0.35);
+  --ok-texto: #6EE7B7;
+  --destaque: #F3F4F6;
+  --destaque-texto: #0A0A0A;
+}
+
 * {
     box-sizing: border-box;
   }
-  
+
   body {
     margin: 0;
     font-family: "Inter", sans-serif;
+    background: var(--fundo);
+    color: var(--texto);
   }
 
   /* Áreas logadas (Layout): títulos e parágrafos sem margem padrão, como no Figma */
@@ -47,7 +103,41 @@
 
   .tt-interativo:focus-visible,
   .tt-botao-icone:focus-visible,
-  .tt-link:focus-visible {
+  .tt-link:focus-visible,
+  .tt-botao-tema:focus-visible {
     outline: 2px solid #93C5FD;
     outline-offset: 2px;
+  }
+
+  /* Botão de tema: círculo pequeno fixo no canto inferior direito */
+  .tt-botao-tema {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 90;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: var(--superficie);
+    color: var(--texto-2);
+    border: 1px solid var(--borda);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .tt-botao-tema:hover {
+    transform: translateY(-2px);
+    color: var(--texto);
+    border-color: var(--borda-2);
+  }
+
+  /* Troca de tema suave nas superfícies principais */
+  body,
+  .area-logada {
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
