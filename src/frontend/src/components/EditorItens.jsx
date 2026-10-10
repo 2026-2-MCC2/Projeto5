@@ -1,4 +1,5 @@
-import { Btn, Input, Select, Tabela, Linha, Celula, RodapeCard, Valor } from "./ui";
+import { Plus, Trash2 } from "lucide-react";
+import { BotaoIcone, Btn, Input, Select, Tabela, Linha, Celula, RodapeCard, Valor } from "./ui";
 import { CATEGORIAS_FORNECEDOR } from "../data/categorias";
 import { novoItem, somaEstimado } from "../services/organizadorService";
 import { moeda } from "../utils/formatar";
@@ -52,22 +53,15 @@ export default function EditorItens({ itens, onChange, comAcordado = false }) {
               </Celula>
             )}
             <Celula style={estiloCelula}>
-              <button
-                type="button"
-                title="Remover item"
-                onClick={() => onChange(itens.filter((x) => x.id !== item.id))}
-                style={{ color: "#DC2626", background: "none", border: "none", cursor: "pointer", fontSize: "0.75rem" }}
-              >
-                ✕
-              </button>
+              <BotaoIcone icone={Trash2} rotulo="Remover item" cor="#DC2626" tamanho={16} onClick={() => onChange(itens.filter((x) => x.id !== item.id))} />
             </Celula>
           </Linha>
         ))}
       </Tabela>
 
       <RodapeCard>
-        <Btn variante="ghost" tamanho="sm" onClick={() => onChange([...itens, novoItem(CATEGORIAS_FORNECEDOR[0])])}>
-          + Adicionar Item
+        <Btn variante="ghost" tamanho="sm" icone={Plus} onClick={() => onChange([...itens, novoItem(CATEGORIAS_FORNECEDOR[0])])}>
+          Adicionar Item
         </Btn>
         <div>
           <span style={{ fontSize: "0.875rem", color: "#6B7280", marginRight: "12px" }}>Total Estimado</span>

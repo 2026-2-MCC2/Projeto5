@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { Card, Badge, Btn, Chip, Estrelas, Modal, TituloPagina, Valor } from "../../components/ui";
+import { ArrowRight, ArrowUpDown, Check, FileDown, Star } from "lucide-react";
+import { Card, Badge, Btn, CabecalhoModal, Chip, Estrelas, Icone, Modal, TextoComIcone, TituloPagina, Valor } from "../../components/ui";
 import { buscarEvento, salvarSelecao } from "../../services/organizadorService";
 import { CATEGORIAS_FORNECEDOR } from "../../data/categorias";
 import { moeda } from "../../utils/formatar";
@@ -47,8 +48,8 @@ export default function Propostas() {
   return (
     <>
       <TituloPagina titulo="Comparação de Propostas" sub={`${evento.propostas.length} propostas recebidas · ${evento.nome}`}>
-        <Btn variante="ghost" tamanho="sm" onClick={() => window.print()}>
-          📄 Exportar PDF
+        <Btn variante="ghost" tamanho="sm" icone={FileDown} onClick={() => window.print()}>
+          Exportar PDF
         </Btn>
       </TituloPagina>
 
@@ -64,7 +65,7 @@ export default function Propostas() {
             onClick={() => setMostrarOrdem(!mostrarOrdem)}
             style={{ padding: "7px 13px", borderRadius: "8px", background: "#FFFFFF", border: "1px solid #E5E7EB", color: "#6B7280", fontSize: "0.8125rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}
           >
-            ↕ <strong style={{ color: "#374151" }}>{ordem.split("(")[0].trim()}</strong>
+            <Icone icone={ArrowUpDown} tamanho={16} /> <strong style={{ color: "#374151" }}>{ordem.split("(")[0].trim()}</strong>
           </button>
           {mostrarOrdem && (
             <div
@@ -101,12 +102,16 @@ export default function Propostas() {
                   onClick={() => alternar(p)}
                   style={{ width: "20px", height: "20px", borderRadius: "5px", background: marcada ? "#2563EB" : "#FFFFFF", border: `2px solid ${marcada ? "#2563EB" : "#D1D5DB"}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "all 0.15s", fontSize: "0.6875rem", color: "#fff", fontWeight: 700, flexShrink: 0, padding: 0 }}
                 >
-                  {marcada && "✓"}
+                  {marcada && <Icone icone={Check} tamanho={14} strokeWidth={2.5} />}
                 </button>
                 <div style={{ flex: 1, minWidth: "180px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
                     <span style={{ fontFamily: "Outfit", fontSize: "1rem", fontWeight: 700, color: "#111827" }}>{p.fornecedor}</span>
-                    {p.recomendado && <Badge variante="success">⭐ Recomendado</Badge>}
+                    {p.recomendado && <Badge variante="success">
+                        <TextoComIcone icone={Star} tamanho={12} style={{ gap: "4px" }}>
+                          Recomendado
+                        </TextoComIcone>
+                      </Badge>}
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "0.8125rem", flexWrap: "wrap" }}>
                     <Estrelas nota={p.nota} />
@@ -141,23 +146,18 @@ export default function Propostas() {
               </Valor>
             )}
           </div>
-          <Btn onClick={verResultado} disabled={selecionadas.length === 0}>
-            Ver Resultado da Composição →
+          <Btn onClick={verResultado} disabled={selecionadas.length === 0} iconeDepois={ArrowRight}>
+            Ver Resultado da Composição
           </Btn>
         </div>
       </div>
 
       {aberta && (
         <Modal onClose={() => setAberta(null)}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.25rem" }}>
-            <div>
-              <h3 style={{ fontFamily: "Outfit", fontSize: "1.0625rem", fontWeight: 700, color: "#111827" }}>{aberta.fornecedor}</h3>
-              <Estrelas nota={aberta.nota} />
-            </div>
-            <button type="button" aria-label="Fechar" onClick={() => setAberta(null)} style={{ background: "none", border: "none", color: "#9CA3AF", cursor: "pointer", fontSize: "1.25rem" }}>
-              ✕
-            </button>
-          </div>
+          <CabecalhoModal onFechar={() => setAberta(null)}>
+            <h3 style={{ fontFamily: "Outfit", fontSize: "1.0625rem", fontWeight: 700, color: "#111827" }}>{aberta.fornecedor}</h3>
+            <Estrelas nota={aberta.nota} />
+          </CabecalhoModal>
           <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "1.25rem" }}>
             {aberta.itens.map((item) => (
               <div key={item.descricao} style={{ display: "flex", justifyContent: "space-between", gap: "12px", padding: "10px 12px", background: "#F9FAFB", borderRadius: "8px", fontSize: "0.875rem" }}>
@@ -181,7 +181,11 @@ export default function Propostas() {
               setAberta(null);
             }}
           >
-            {selecionadas.includes(aberta.id) ? "✓ Selecionada (clique para desmarcar)" : "Selecionar esta proposta"}
+            {selecionadas.includes(aberta.id) ? (
+              <TextoComIcone icone={Check}>Selecionada (clique para desmarcar)</TextoComIcone>
+            ) : (
+              "Selecionar esta proposta"
+            )}
           </Btn>
         </Modal>
       )}

@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { Plus } from "lucide-react";
 import { Card, Badge, Btn, Indicador, StatusBadge, TituloPagina, Tabela, Linha, Celula, Valor } from "../../components/ui";
 import { listarPropostas } from "../../services/fornecedorService";
 import { dataCurta, moeda } from "../../utils/formatar";
@@ -17,7 +18,9 @@ export default function MinhasPropostas() {
   return (
     <>
       <TituloPagina titulo="Minhas Propostas" sub={`${propostas.length} propostas enviadas`}>
-        <Btn onClick={() => navigate("/fornecedor")}>+ Nova Proposta</Btn>
+        <Btn onClick={() => navigate("/fornecedor")} icone={Plus}>
+          Nova Proposta
+        </Btn>
       </TituloPagina>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem", marginBottom: "2rem" }}>

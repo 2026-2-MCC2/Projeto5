@@ -16,6 +16,8 @@ import EnviarProposta from "./pages/fornecedor/EnviarProposta";
 import MinhasPropostas from "./pages/fornecedor/MinhasPropostas";
 import Reputacao from "./pages/fornecedor/Reputacao";
 import Admin from "./pages/Admin";
+import Dashboard from "./pages/admin/Dashboard";
+import Aprovacoes from "./pages/admin/Aprovacoes";
 
 export default function App() {
   return (
@@ -60,7 +62,10 @@ export default function App() {
                 <Admin />
               </ProtectedRoute>
             }
-          />
+          >
+            <Route index element={<Dashboard />} />
+            <Route path="aprovacoes" element={<Aprovacoes />} />
+          </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

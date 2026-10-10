@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, Badge, Btn, Chip, CampoBusca, TituloPagina, Valor, Vazio } from "../../components/ui";
+import { ArrowRight, Calendar, ClipboardList, MapPin, Users } from "lucide-react";
+import { Card, Badge, Btn, Chip, CampoBusca, TextoComIcone, TituloPagina, Valor, Vazio } from "../../components/ui";
 import { listarEventos } from "../../services/fornecedorService";
 import { CATEGORIAS_FORNECEDOR } from "../../data/categorias";
 import { dataCurta, faixaMoeda } from "../../utils/formatar";
@@ -45,9 +46,9 @@ export default function Oportunidades() {
                   <Badge>{ev.categoria}</Badge>
                 </div>
                 <div style={{ display: "flex", gap: "16px", fontSize: "0.8125rem", color: "#9CA3AF", marginBottom: "12px", flexWrap: "wrap" }}>
-                  <span>📅 {dataCurta(ev.data)}</span>
-                  <span>📍 {ev.local}</span>
-                  <span>👥 {ev.convidados.toLocaleString("pt-BR")} convidados</span>
+                  <TextoComIcone icone={Calendar}>{dataCurta(ev.data)}</TextoComIcone>
+                  <TextoComIcone icone={MapPin}>{ev.local}</TextoComIcone>
+                  <TextoComIcone icone={Users}>{ev.convidados.toLocaleString("pt-BR")} convidados</TextoComIcone>
                 </div>
                 <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
                   {ev.necessidades.map((n) => (
@@ -64,15 +65,15 @@ export default function Oportunidades() {
                   </Valor>
                   <div style={{ fontSize: "0.75rem", color: "#9CA3AF", marginTop: "2px" }}>Prazo: {dataCurta(ev.prazo)}</div>
                 </div>
-                <Btn tamanho="sm" onClick={() => navigate(`/fornecedor/eventos/${ev.id}`)}>
-                  Ver Detalhes &amp; Cotar →
+                <Btn tamanho="sm" iconeDepois={ArrowRight} onClick={() => navigate(`/fornecedor/eventos/${ev.id}`)}>
+                  Ver Detalhes &amp; Cotar
                 </Btn>
               </div>
             </div>
           </Card>
         ))}
 
-        {filtrados.length === 0 && <Vazio icone="📋" texto="Nenhum evento encontrado para esta busca" />}
+        {filtrados.length === 0 && <Vazio icone={ClipboardList} texto="Nenhum evento encontrado para esta busca" />}
       </div>
     </>
   );

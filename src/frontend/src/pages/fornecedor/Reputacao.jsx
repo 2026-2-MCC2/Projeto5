@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Card, CardTitulo, Btn, Chip, Estrelas, Modal, TextArea, TituloPagina, BarraProgresso, BarraRotulada } from "../../components/ui";
+import { ChevronDown, ChevronUp, Star } from "lucide-react";
+import { Card, CardTitulo, Icone, TextoComIcone, Btn, Chip, Estrelas, Modal, TextArea, TituloPagina, BarraProgresso, BarraRotulada } from "../../components/ui";
 import { listarAvaliacoes, listarDesempenho } from "../../services/fornecedorService";
 import { mesAno } from "../../utils/formatar";
 
@@ -9,7 +10,7 @@ const ordenacoes = {
   "Melhor avaliadas": (a, b) => b.nota - a.nota,
 };
 
-const estiloLinkTexto = { background: "none", border: "none", padding: 0, fontSize: "0.8125rem", cursor: "pointer" };
+const estiloLinkTexto = { background: "none", border: "none", padding: 0, fontSize: "0.8125rem", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "4px" };
 
 export default function Reputacao() {
   const avaliacoes = listarAvaliacoes();
@@ -53,7 +54,9 @@ export default function Reputacao() {
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               {distribuicao.map((d) => (
                 <div key={d.estrela} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.8125rem" }}>
-                  <span style={{ color: "#D97706", width: "16px", textAlign: "right", flexShrink: 0 }}>{d.estrela}★</span>
+                  <TextoComIcone icone={Star} tamanho={14} style={{ color: "#D97706", width: "30px", justifyContent: "flex-end", flexShrink: 0, gap: "3px", flexDirection: "row-reverse" }}>
+                    {d.estrela}
+                  </TextoComIcone>
                   <BarraProgresso porcentagem={d.porcentagem} cor="#D97706" />
                   <span style={{ color: "#9CA3AF", width: "24px", textAlign: "right", flexShrink: 0 }}>{d.quantidade}</span>
                 </div>
@@ -94,10 +97,11 @@ export default function Reputacao() {
                   </div>
                   <p style={{ fontSize: "0.875rem", color: "#6B7280", lineHeight: 1.6, marginBottom: "10px" }}>{aberta ? a.comentario : a.resumo}</p>
                   <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                    <button type="button" onClick={() => alternar(a.id)} style={{ ...estiloLinkTexto, color: "#9CA3AF" }}>
-                      {aberta ? "▲ Recolher" : "▼ Ver comentário completo"}
+                    <button type="button" className="tt-link" aria-expanded={aberta} onClick={() => alternar(a.id)} style={{ ...estiloLinkTexto, color: "#9CA3AF" }}>
+                      <Icone icone={aberta ? ChevronUp : ChevronDown} tamanho={16} />
+                      {aberta ? "Recolher" : "Ver comentário completo"}
                     </button>
-                    <button type="button" onClick={() => setContestando(a.id)} style={{ ...estiloLinkTexto, color: "#DC2626" }}>
+                    <button type="button" className="tt-link" onClick={() => setContestando(a.id)} style={{ ...estiloLinkTexto, color: "#DC2626" }}>
                       Contestar Avaliação
                     </button>
                   </div>

@@ -1,33 +1,16 @@
 import { useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import { listarPendentes, aprovarUsuario } from "../services/authService";
+import Layout from "../components/Layout";
+import { listarPendentes } from "../services/authService";
 
+// Área do admin: as telas de pages/admin aparecem dentro do Layout.
+// A lista de pendentes fica aqui para o contador do menu atualizar junto com as telas.
 export default function Admin() {
-  const { user, logout } = useAuth();
   const [pendentes, setPendentes] = useState(listarPendentes());
 
-  function aprovar(id) {
-    aprovarUsuario(id);
-    setPendentes(listarPendentes());
-  }
+  const nav = [
+    { rotulo: "Dashboard", para: "/admin", end: true },
+    { rotulo: "Aprovações", para: "/admin/aprovacoes", contador: pendentes.length },
+  ];
 
-  return (
-    <main>
-      <h1>Painel do Admin</h1>
-      <p>
-        Olá, {user.nome} <button onClick={logout}>Sair</button>
-      </p>
-
-      <h2>Contas aguardando aprovação</h2>
-      {pendentes.length === 0 && <p>Nenhuma conta pendente.</p>}
-      <ul>
-        {pendentes.map((u) => (
-          <li key={u.id}>
-            {u.nome} ({u.email}) - {u.perfil}{" "}
-            <button onClick={() => aprovar(u.id)}>Aprovar</button>
-          </li>
-        ))}
-      </ul>
-    </main>
-  );
+  return <Layout nav={nav} contexto={{ pendentes, recarregarPendentes: () => setPendentes(listarPendentes()) }} />;
 }

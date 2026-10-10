@@ -11,3 +11,43 @@
   .area-logada :is(h1, h2, h3, h4, h5, h6, p) {
     margin: 0;
   }
+
+  /* Elementos clicáveis: resposta sutil ao passar o mouse e foco visível no teclado */
+  .tt-interativo:hover:not(:disabled) {
+    filter: brightness(0.96);
+  }
+
+  .tt-interativo:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  .tt-botao-icone {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border: none;
+    border-radius: 6px;
+    background: none;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .tt-botao-icone:hover {
+    background: rgba(107, 114, 128, 0.1);
+  }
+
+  .tt-link {
+    transition: opacity 0.15s ease;
+  }
+
+  .tt-link:hover {
+    opacity: 0.75;
+  }
+
+  .tt-interativo:focus-visible,
+  .tt-botao-icone:focus-visible,
+  .tt-link:focus-visible {
+    outline: 2px solid #93C5FD;
+    outline-offset: 2px;
+  }

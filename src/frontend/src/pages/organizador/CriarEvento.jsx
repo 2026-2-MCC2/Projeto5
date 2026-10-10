@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CabecalhoCard, Btn, Campo, Chip, Input, TituloPagina } from "../../components/ui";
+import { useAuth } from "../../context/AuthContext";
+import { ArrowLeft, ArrowRight, Check, ClipboardList, Rocket, X } from "lucide-react";
+import { Card, CabecalhoCard, Btn, Campo, Chip, Icone, IconeDestaque, Input, TextoComIcone, TituloPagina } from "../../components/ui";
 import EditorItens from "../../components/EditorItens";
 import { CATEGORIAS_EVENTO, CATEGORIAS_FORNECEDOR } from "../../data/categorias";
 import { criarEvento, novoItem } from "../../services/organizadorService";
@@ -15,6 +17,7 @@ function TituloSecao({ children }) {
 
 export default function CriarEvento() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [passo, setPasso] = useState(0);
   const [nome, setNome] = useState("");
   const [data, setData] = useState("");
@@ -45,22 +48,22 @@ export default function CriarEvento() {
   }
 
   function salvar(status) {
-    criarEvento({ nome, data, local, convidados: Number(convidados) || 0, categoria, itens, status });
+    criarEvento({ nome, data, local, convidados: Number(convidados) || 0, categoria, itens, status, organizador: user.nome });
     navigate("/organizador");
   }
 
   return (
     <>
       <TituloPagina titulo="Criar Novo Evento" sub="Preencha as informações para publicar seu evento">
-        <Btn variante="ghost" tamanho="sm" onClick={() => navigate("/organizador")}>
-          ✕ Cancelar
+        <Btn variante="ghost" tamanho="sm" icone={X} onClick={() => navigate("/organizador")}>
+          Cancelar
         </Btn>
       </TituloPagina>
 
       <div style={{ display: "flex", alignItems: "center", marginBottom: "2.5rem", overflowX: "auto", paddingBottom: "4px" }}>
         {passos.map((p, i) => {
           const atual = i === passo;
-          // Marca com ✓ as etapas já visitadas que estão completas.
+          // Marca com um check as etapas já visitadas que estão completas.
           const feita = i < passo && etapaCompleta[i];
           return (
             <div key={p} style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
@@ -85,7 +88,7 @@ export default function CriarEvento() {
                     border: `2px solid ${feita || atual ? "#2563EB" : "#E5E7EB"}`,
                   }}
                 >
-                  {feita ? "✓" : i + 1}
+                  {feita ? <Icone icone={Check} tamanho={14} /> : i + 1}
                 </div>
                 <span style={{ fontSize: "0.8125rem", fontWeight: atual ? 600 : 400, color: atual ? "#1D4ED8" : feita ? "#6B7280" : "#9CA3AF", whiteSpace: "nowrap" }}>{p}</span>
               </button>
@@ -129,7 +132,7 @@ export default function CriarEvento() {
                     onClick={() => setCategoria(c.rotulo)}
                     style={{ padding: "16px 10px", borderRadius: "10px", textAlign: "center", background: ativa ? "#EFF6FF" : "#F9FAFB", border: `2px solid ${ativa ? "#2563EB" : "#E5E7EB"}`, color: ativa ? "#1D4ED8" : "#6B7280", cursor: "pointer", transition: "all 0.15s" }}
                   >
-                    <div style={{ fontSize: "1.375rem", marginBottom: "5px" }}>{c.icone}</div>
+                    <Icone icone={c.icone} tamanho={24} style={{ marginBottom: "6px" }} />
                     <div style={{ fontSize: "0.8125rem", fontWeight: 600 }}>{c.rotulo}</div>
                   </button>
                 );
@@ -142,7 +145,7 @@ export default function CriarEvento() {
             <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
               {CATEGORIAS_FORNECEDOR.map((f) => {
                 const ativo = fornecedores.includes(f);
-                return <Chip key={f} rotulo={`${ativo ? "✓ " : ""}${f}`} ativo={ativo} onClick={() => alternarFornecedor(f)} />;
+                return <Chip key={f} rotulo={f} icone={ativo ? Check : undefined} ativo={ativo} onClick={() => alternarFornecedor(f)} />;
               })}
             </div>
           </Card>
@@ -165,7 +168,7 @@ export default function CriarEvento() {
             <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
               {fornecedores.map((f) => (
                 <div key={f} style={{ padding: "7px 14px", borderRadius: "8px", background: "#EFF6FF", border: "1px solid #BFDBFE", color: "#1D4ED8", fontSize: "0.875rem", fontWeight: 500 }}>
-                  ✓ {f}
+                  <TextoComIcone icone={Check}>{f}</TextoComIcone>
                 </div>
               ))}
             </div>
@@ -175,7 +178,7 @@ export default function CriarEvento() {
 
       {passo === 3 && (
         <Card style={{ padding: "2.5rem", textAlign: "center" }}>
-          <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>{pendencias.length ? "📝" : "🚀"}</div>
+          <IconeDestaque icone={pendencias.length ? ClipboardList : Rocket} variante={pendencias.length ? "warning" : "info"} />
           <h3 style={{ fontFamily: "Outfit", fontSize: "1.5rem", fontWeight: 700, color: "#111827", marginBottom: "8px" }}>
             {pendencias.length ? "Quase lá!" : "Pronto para publicar!"}
           </h3>
@@ -184,8 +187,8 @@ export default function CriarEvento() {
               <p style={{ color: "#6B7280", fontSize: "0.9375rem", marginBottom: "12px" }}>Complete estas etapas para publicar o evento:</p>
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                 {pendencias.map((i) => (
-                  <Btn key={i} variante="danger" onClick={() => irPara(i)}>
-                    {i === 0 ? "Informações Básicas: preencha nome, data e categoria" : "Composição de Custos: cada item precisa de descrição e custo"} →
+                  <Btn key={i} variante="danger" iconeDepois={ArrowRight} onClick={() => irPara(i)}>
+                    {i === 0 ? "Informações Básicas: preencha nome, data e categoria" : "Composição de Custos: cada item precisa de descrição e custo"}
                   </Btn>
                 ))}
               </div>
@@ -199,8 +202,8 @@ export default function CriarEvento() {
             <Btn variante="secondary" onClick={() => salvar("Rascunho")} disabled={!nome || !data}>
               Salvar como Rascunho
             </Btn>
-            <Btn onClick={() => salvar("Em andamento")} disabled={pendencias.length > 0}>
-              🚀 Publicar Evento
+            <Btn onClick={() => salvar("Em andamento")} disabled={pendencias.length > 0} icone={Rocket}>
+              Publicar Evento
             </Btn>
           </div>
         </Card>
@@ -212,13 +215,13 @@ export default function CriarEvento() {
         </Btn>
         <div style={{ display: "flex", gap: "10px" }}>
           {passo > 0 && (
-            <Btn variante="secondary" onClick={() => setPasso(passo - 1)}>
-              ← Voltar
+            <Btn variante="secondary" icone={ArrowLeft} onClick={() => setPasso(passo - 1)}>
+              Voltar
             </Btn>
           )}
           {passo < passos.length - 1 && (
-            <Btn onClick={() => irPara(passo + 1)} disabled={!etapaCompleta[passo]}>
-              Salvar e Continuar →
+            <Btn onClick={() => irPara(passo + 1)} disabled={!etapaCompleta[passo]} iconeDepois={ArrowRight}>
+              Salvar e Continuar
             </Btn>
           )}
         </div>

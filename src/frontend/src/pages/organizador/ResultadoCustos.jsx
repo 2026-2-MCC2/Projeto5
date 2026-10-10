@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { ArrowLeft, FileDown, Flag } from "lucide-react";
 import { Card, CabecalhoCard, Btn, BarraRotulada, Indicador, ModalConfirmacao, TituloPagina, Tabela, Linha, Celula, Valor } from "../../components/ui";
 import { buscarEvento, finalizarEvento, propostasSelecionadas, somaEstimado } from "../../services/organizadorService";
 import { moeda } from "../../utils/formatar";
@@ -44,8 +45,8 @@ export default function ResultadoCustos() {
   return (
     <>
       <TituloPagina titulo="Resultado da Composição de Custos" sub={`${evento.nome} · ${linhas.length} propostas selecionadas`}>
-        <Btn variante="ghost" tamanho="sm" onClick={() => window.print()}>
-          📄 Exportar PDF
+        <Btn variante="ghost" tamanho="sm" icone={FileDown} onClick={() => window.print()}>
+          Exportar PDF
         </Btn>
       </TituloPagina>
 
@@ -117,17 +118,18 @@ export default function ResultadoCustos() {
       </Card>
 
       <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}>
-        <Btn variante="ghost" onClick={() => navigate(`/organizador/eventos/${evento.id}/propostas`)}>
-          ← Voltar à Comparação
+        <Btn variante="ghost" icone={ArrowLeft} onClick={() => navigate(`/organizador/eventos/${evento.id}/propostas`)}>
+          Voltar à Comparação
         </Btn>
-        <Btn variante="accent" onClick={() => setConfirmando(true)}>
-          🏁 Finalizar Evento
+        <Btn variante="accent" icone={Flag} onClick={() => setConfirmando(true)}>
+          Finalizar Evento
         </Btn>
       </div>
 
       {confirmando && (
         <ModalConfirmacao
-          icone="🏁"
+          icone={Flag}
+          variante="accent"
           titulo="Finalizar Evento"
           descricao={
             <>

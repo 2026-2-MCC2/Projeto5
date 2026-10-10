@@ -65,8 +65,8 @@ function atualizarEvento(id, alteracoes) {
 
 export const somaEstimado = (itens) => itens.reduce((soma, i) => soma + i.estimado, 0);
 
-export function criarEvento({ nome, data, local, convidados, categoria, itens, status }) {
-  const novo = evento({ id: Date.now(), nome, data, local, convidados, categoria, itens, status, orcamento: somaEstimado(itens) });
+export function criarEvento({ nome, data, local, convidados, categoria, itens, status, organizador }) {
+  const novo = evento({ id: Date.now(), criadoEm: Date.now(), organizador, nome, data, local, convidados, categoria, itens, status, orcamento: somaEstimado(itens) });
   localStorage.setItem(EVENTOS_KEY, JSON.stringify([novo, ...listarEventos()]));
 }
 

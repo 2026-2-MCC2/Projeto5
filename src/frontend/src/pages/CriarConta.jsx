@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registrar } from "../services/authService";
+import { ArrowRight, CalendarPlus, Eye, EyeOff, Lock, ShieldCheck, Ticket } from "lucide-react";
 import RightPanel from "../components/RightPanel";
+import { Icone, MarcaLogo, TextoComIcone } from "../components/ui";
 // login adm: admin@trocaticket.com - admin123
 const features = [
-  { icon: "🏗", title: "Crie e organize eventos", desc: "Centralize informações, lotes, participantes e vendas." },
-  { icon: "🎫", title: "Venda e gerencie ingressos", desc: "Controle seus ingressos e acompanhe os pedidos em um único ambiente." },
-  { icon: "🔒", title: "Conta segura", desc: "Autenticação e proteção de dados integradas à plataforma." },
+  { icon: CalendarPlus, title: "Crie e organize eventos", desc: "Centralize informações, lotes, participantes e vendas." },
+  { icon: Ticket, title: "Venda e gerencie ingressos", desc: "Controle seus ingressos e acompanhe os pedidos em um único ambiente." },
+  { icon: ShieldCheck, title: "Conta segura", desc: "Autenticação e proteção de dados integradas à plataforma." },
 ];
 
 const labelStyle = {
@@ -114,9 +116,7 @@ export default function CriarConta() {
             onClick={() => navigate("/")}
             style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", cursor: "pointer", padding: 0 }}
           >
-            <div style={{ width: "26px", height: "26px", borderRadius: "6px", background: "linear-gradient(135deg, #F97316, #A855F7, #3B82F6)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.75rem" }}>
-              🎟
-            </div>
+            <MarcaLogo />
             <span style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: "0.9375rem", color: "#0A0A0A" }}>TrocaTicket</span>
           </button>
           <button
@@ -133,7 +133,8 @@ export default function CriarConta() {
         {/* Formulário */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", paddingBottom: "3rem" }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 12px", borderRadius: "999px", background: "#F3F4F6", border: "1px solid #E5E7EB", fontSize: "0.6875rem", fontWeight: 600, color: "#6B7280", letterSpacing: "0.06em", marginBottom: "1.25rem", width: "fit-content" }}>
-            🎟 Criação de conta
+            <Icone icone={Ticket} tamanho={14} />
+            Criação de conta
           </div>
 
           <h1 style={{ fontFamily: "Outfit", fontSize: "clamp(1.5rem, 3vw, 2.125rem)", fontWeight: 800, color: "#0A0A0A", lineHeight: 1.2, margin: "0 0 8px" }}>
@@ -217,8 +218,8 @@ export default function CriarConta() {
                       onFocus={focar}
                       onBlur={desfocar}
                     />
-                    <button type="button" onClick={() => setShowPass(!showPass)} style={eyeBtnStyle}>
-                      {showPass ? "🙈" : "👁"}
+                    <button type="button" onClick={() => setShowPass(!showPass)} aria-label={showPass ? "Ocultar senha" : "Mostrar senha"} className="tt-botao-icone" style={eyeBtnStyle}>
+                      <Icone icone={showPass ? EyeOff : Eye} />
                     </button>
                   </div>
                 </div>
@@ -239,8 +240,8 @@ export default function CriarConta() {
                       onFocus={focar}
                       onBlur={desfocar}
                     />
-                    <button type="button" onClick={() => setShowConf(!showConf)} style={eyeBtnStyle}>
-                      {showConf ? "🙈" : "👁"}
+                    <button type="button" onClick={() => setShowConf(!showConf)} aria-label={showConf ? "Ocultar senha" : "Mostrar senha"} className="tt-botao-icone" style={eyeBtnStyle}>
+                      <Icone icone={showConf ? EyeOff : Eye} />
                     </button>
                   </div>
                 </div>
@@ -287,7 +288,8 @@ export default function CriarConta() {
               disabled={!!sucesso}
               style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", padding: "13px", borderRadius: "10px", background: "#0A0A0A", border: "none", color: "#fff", fontSize: "0.9375rem", fontWeight: 700, fontFamily: "Outfit", cursor: sucesso ? "default" : "pointer", marginBottom: "1.125rem", opacity: sucesso ? 0.6 : 1, transition: "opacity 0.15s" }}
             >
-              Criar conta →
+              Criar conta
+              <Icone icone={ArrowRight} />
             </button>
           </form>
 
@@ -324,7 +326,7 @@ export default function CriarConta() {
 
         {/* Rodapé */}
         <div style={{ height: "48px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <span style={{ fontSize: "0.75rem", color: "#D1D5DB" }}>🔒 Seus dados são tratados de forma segura.</span>
+          <TextoComIcone icone={Lock} tamanho={14} style={{ fontSize: "0.75rem", color: "#D1D5DB" }}>Seus dados são tratados de forma segura.</TextoComIcone>
         </div>
       </div>
 

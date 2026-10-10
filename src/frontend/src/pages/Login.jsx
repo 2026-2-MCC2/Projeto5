@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { ArrowRight, Eye, EyeOff, LayoutDashboard, Lock, ShieldCheck, Ticket } from "lucide-react";
 import RightPanel from "../components/RightPanel";
+import { Icone, MarcaLogo, TextoComIcone } from "../components/ui";
 
 const features = [
-  { icon: "🏗", title: "Gerencie seus eventos", desc: "Organize informações, lotes e vendas em um único lugar." },
-  { icon: "🎫", title: "Ingressos digitais", desc: "Acesse e acompanhe seus ingressos com segurança." },
-  { icon: "🔒", title: "Segurança em cada etapa", desc: "Sua conta e seus dados protegidos durante toda a experiência." },
+  { icon: LayoutDashboard, title: "Gerencie seus eventos", desc: "Organize informações, lotes e vendas em um único lugar." },
+  { icon: Ticket, title: "Ingressos digitais", desc: "Acesse e acompanhe seus ingressos com segurança." },
+  { icon: ShieldCheck, title: "Segurança em cada etapa", desc: "Sua conta e seus dados protegidos durante toda a experiência." },
 ];
 
 const labelStyle = {
@@ -77,9 +79,7 @@ export default function Login() {
             onClick={() => navigate("/")}
             style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", cursor: "pointer", padding: 0 }}
           >
-            <div style={{ width: "26px", height: "26px", borderRadius: "6px", background: "linear-gradient(135deg, #F97316, #A855F7, #3B82F6)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.75rem" }}>
-              🎟
-            </div>
+            <MarcaLogo />
             <span style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: "0.9375rem", color: "#0A0A0A" }}>TrocaTicket</span>
           </button>
           <button
@@ -96,7 +96,8 @@ export default function Login() {
         {/* Formulário */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", paddingBottom: "4rem" }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 12px", borderRadius: "999px", background: "#F3F4F6", border: "1px solid #E5E7EB", fontSize: "0.6875rem", fontWeight: 600, color: "#6B7280", letterSpacing: "0.06em", marginBottom: "1.5rem", width: "fit-content" }}>
-            🔒 Acesso seguro
+            <Icone icone={Lock} tamanho={14} />
+            Acesso seguro
           </div>
 
           <h1 style={{ fontFamily: "Outfit", fontSize: "clamp(1.625rem, 3vw, 2.25rem)", fontWeight: 800, color: "#0A0A0A", lineHeight: 1.2, margin: "0 0 10px" }}>
@@ -162,9 +163,11 @@ export default function Login() {
                   <button
                     type="button"
                     onClick={() => setShowPass(!showPass)}
-                    style={{ background: "none", border: "none", cursor: "pointer", color: "#9CA3AF", padding: "0 2px", fontSize: "0.875rem" }}
+                    aria-label={showPass ? "Ocultar senha" : "Mostrar senha"}
+                    className="tt-botao-icone"
+                    style={{ color: "#9CA3AF", padding: "2px" }}
                   >
-                    {showPass ? "🙈" : "👁"}
+                    <Icone icone={showPass ? EyeOff : Eye} />
                   </button>
                 </div>
               </div>
@@ -184,7 +187,8 @@ export default function Login() {
               onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.88")}
               onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
             >
-              Entrar →
+              Entrar
+              <Icone icone={ArrowRight} />
             </button>
           </form>
 
@@ -225,7 +229,7 @@ export default function Login() {
 
         {/* Rodapé */}
         <div style={{ height: "48px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <span style={{ fontSize: "0.75rem", color: "#D1D5DB" }}>🔒 Seus dados são tratados de forma segura.</span>
+          <TextoComIcone icone={Lock} tamanho={14} style={{ fontSize: "0.75rem", color: "#D1D5DB" }}>Seus dados são tratados de forma segura.</TextoComIcone>
         </div>
       </div>
 

@@ -1,3 +1,6 @@
+import { Check } from "lucide-react";
+import { Icone } from "./ui";
+
 export default function RightPanel({ heading, sub, features, highlight }) {
     return (
       <div
@@ -25,8 +28,8 @@ export default function RightPanel({ heading, sub, features, highlight }) {
         <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem", position: "relative" }}>
           {features.map((f, i) => (
             <div key={i} style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
-              <div style={{ width: "36px", height: "36px", borderRadius: "8px", background: "#1A1A1A", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1rem", flexShrink: 0 }}>
-                {f.icon}
+              <div style={{ width: "36px", height: "36px", borderRadius: "8px", background: "#1A1A1A", color: "#D1D5DB", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <Icone icone={f.icon} />
               </div>
               <div>
                 <div style={{ fontFamily: "Outfit", fontWeight: 700, fontSize: "0.9375rem", color: "#fff", marginBottom: "2px" }}>{f.title}</div>
@@ -36,8 +39,8 @@ export default function RightPanel({ heading, sub, features, highlight }) {
           ))}
   
           <div style={{ marginTop: "0.5rem", padding: "1.25rem", background: "#141414", border: "1px solid #222", borderRadius: "12px", display: "flex", gap: "14px", alignItems: "flex-start" }}>
-            <div style={{ width: "28px", height: "28px", borderRadius: "50%", background: "linear-gradient(135deg, #00D494, #3B82F6)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: "0.75rem" }}>
-              ✓
+            <div style={{ width: "28px", height: "28px", borderRadius: "50%", background: "linear-gradient(135deg, #00D494, #3B82F6)", color: "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <Icone icone={Check} tamanho={16} />
             </div>
             <div>
               <div style={{ fontFamily: "Outfit", fontWeight: 700, fontSize: "0.9375rem", color: "#fff", marginBottom: "4px" }}>{highlight.title}</div>

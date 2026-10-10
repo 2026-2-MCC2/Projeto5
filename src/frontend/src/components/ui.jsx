@@ -1,8 +1,53 @@
-// Componentes visuais reaproveitados nas telas internas (fornecedor, organizador, admin).
+// Componentes visuais reaproveitados nas telas (fornecedor, organizador, admin, login e landing).
+import { Search, Star, Ticket, X } from "lucide-react";
 
 const AZUL = "#2563EB";
 const VERDE = "#059669";
 const BORDA = "#E5E7EB";
+
+// Todos os ícones do projeto passam por aqui: traço fino e tamanho padronizado.
+// Herdam a cor do texto (currentColor), então acompanham o tema de onde estão.
+export function Icone({ icone: Componente, tamanho = 18, ...props }) {
+  return <Componente size={tamanho} strokeWidth={1.75} aria-hidden="true" focusable="false" {...props} />;
+}
+
+// Ícone pequeno antes de um texto (data, local, convidados...).
+export function TextoComIcone({ icone, tamanho = 16, children, style }) {
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", ...style }}>
+      <Icone icone={icone} tamanho={tamanho} style={{ flexShrink: 0 }} />
+      {children}
+    </span>
+  );
+}
+
+// Ícone num círculo suave, usado no topo de modais e em estados vazios.
+export function IconeDestaque({ icone, variante = "info" }) {
+  const { background, color } = estilosBadge[variante];
+  return (
+    <div style={{ width: "52px", height: "52px", borderRadius: "50%", background, color, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
+      <Icone icone={icone} tamanho={24} />
+    </div>
+  );
+}
+
+// Quadradinho colorido do logo TrocaTicket.
+export function MarcaLogo({ tamanho = 26 }) {
+  return (
+    <div style={{ width: tamanho, height: tamanho, borderRadius: tamanho / 4, background: "linear-gradient(135deg, #F97316, #A855F7, #3B82F6)", color: "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+      <Icone icone={Ticket} tamanho={Math.round(tamanho * 0.6)} />
+    </div>
+  );
+}
+
+// Botão só com ícone (fechar, remover). `rotulo` é lido por leitores de tela.
+export function BotaoIcone({ icone, rotulo, onClick, cor = "#9CA3AF", tamanho = 18 }) {
+  return (
+    <button type="button" className="tt-botao-icone" aria-label={rotulo} title={rotulo} onClick={onClick} style={{ color: cor }}>
+      <Icone icone={icone} tamanho={tamanho} />
+    </button>
+  );
+}
 
 const estilosCard = {
   padrao: { background: "#FFFFFF", border: `1px solid ${BORDA}` },
@@ -101,6 +146,30 @@ export function ListaInfo({ itens }) {
   );
 }
 
+// Pares rótulo / valor em caixinhas, usados nos modais de detalhes.
+export function ListaDetalhes({ itens }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "1.5rem" }}>
+      {itens.map(({ rotulo, valor }) => (
+        <div key={rotulo} style={{ display: "flex", justifyContent: "space-between", gap: "12px", padding: "9px 12px", background: "#F9FAFB", borderRadius: "7px", fontSize: "0.875rem", border: `1px solid ${BORDA}` }}>
+          <span style={{ color: "#9CA3AF" }}>{rotulo}</span>
+          <span style={{ color: "#374151", fontWeight: 500, textAlign: "right" }}>{valor}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Bolinha laranja com um número (ex.: aprovações pendentes).
+export function Contador({ valor, grande = false }) {
+  const tamanho = grande ? "26px" : "17px";
+  return (
+    <span style={{ minWidth: tamanho, height: tamanho, borderRadius: "999px", background: "#EA580C", color: "#fff", fontSize: grande ? "0.75rem" : "0.5625rem", fontWeight: 700, display: "inline-flex", alignItems: "center", justifyContent: "center", padding: grande ? "0 6px" : "0 4px" }}>
+      {valor}
+    </span>
+  );
+}
+
 const estilosBadge = {
   success: { background: "rgba(5,150,105,0.10)", color: VERDE },
   warning: { background: "rgba(217,119,6,0.10)", color: "#D97706" },
@@ -148,10 +217,14 @@ const tamanhosBotao = {
   lg: { padding: "12px 22px", fontSize: "0.9375rem", borderRadius: "9px" },
 };
 
-export function Btn({ children, onClick, variante = "primary", tamanho = "md", disabled = false, style }) {
+const tamanhoIconeBotao = { sm: 14, md: 16, lg: 18 };
+
+// `icone` aparece antes do texto e `iconeDepois` depois (ex.: seta de avançar).
+export function Btn({ children, onClick, variante = "primary", tamanho = "md", disabled = false, icone, iconeDepois, style }) {
   return (
     <button
       type="button"
+      className="tt-interativo"
       onClick={onClick}
       disabled={disabled}
       style={{
@@ -169,7 +242,9 @@ export function Btn({ children, onClick, variante = "primary", tamanho = "md", d
         ...style,
       }}
     >
+      {icone && <Icone icone={icone} tamanho={tamanhoIconeBotao[tamanho]} />}
       {children}
+      {iconeDepois && <Icone icone={iconeDepois} tamanho={tamanhoIconeBotao[tamanho]} />}
     </button>
   );
 }
@@ -235,17 +310,18 @@ export function Campo({ rotulo, children }) {
 export function CampoBusca({ valor, onChange, placeholder }) {
   return (
     <div style={{ position: "relative", flex: 1, minWidth: "240px" }}>
-      <span style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "#9CA3AF" }}>🔍</span>
-      <Input placeholder={placeholder} value={valor} onChange={(e) => onChange(e.target.value)} style={{ paddingLeft: "36px" }} />
+      <Icone icone={Search} style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "#9CA3AF", pointerEvents: "none" }} />
+      <Input type="search" aria-label={placeholder} placeholder={placeholder} value={valor} onChange={(e) => onChange(e.target.value)} style={{ paddingLeft: "38px" }} />
     </div>
   );
 }
 
-export function Vazio({ icone, texto }) {
+export function Vazio({ icone, titulo, texto }) {
   return (
     <div style={{ textAlign: "center", padding: "3rem", color: "#9CA3AF" }}>
-      <div style={{ fontSize: "2rem", marginBottom: "12px" }}>{icone}</div>
-      <p>{texto}</p>
+      <IconeDestaque icone={icone} variante="neutral" />
+      {titulo && <h3 style={{ fontFamily: "Outfit", fontSize: "1.125rem", color: "#6B7280", marginBottom: "6px" }}>{titulo}</h3>}
+      <p style={{ fontSize: "0.875rem" }}>{texto}</p>
     </div>
   );
 }
@@ -260,23 +336,36 @@ export function Modal({ children, onClose }) {
   );
 }
 
-// Modal de confirmação com ícone, texto, um valor em destaque e dois botões.
-export function ModalConfirmacao({ icone, titulo, descricao, rotuloValor, valor, rotuloCancelar = "Cancelar", rotuloConfirmar, onCancelar, onConfirmar }) {
+// Topo de modal: conteúdo à esquerda e botão de fechar à direita.
+export function CabecalhoModal({ children, onFechar }) {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", marginBottom: "1.25rem" }}>
+      <div>{children}</div>
+      <BotaoIcone icone={X} rotulo="Fechar" onClick={onFechar} tamanho={20} />
+    </div>
+  );
+}
+
+// Modal de confirmação com ícone, texto, um valor em destaque (opcional) e dois botões.
+// `variante` define a cor do ícone (mesmas variantes do Badge).
+export function ModalConfirmacao({ icone, variante, titulo, descricao, rotuloValor, valor, rotuloCancelar = "Cancelar", rotuloConfirmar, iconeConfirmar, onCancelar, onConfirmar }) {
   return (
     <Modal onClose={onCancelar}>
       <div style={{ textAlign: "center" }}>
-        <div style={{ fontSize: "2.5rem", marginBottom: "12px" }}>{icone}</div>
+        <IconeDestaque icone={icone} variante={variante} />
         <h3 style={{ fontFamily: "Outfit", fontSize: "1.25rem", fontWeight: 700, color: "#111827", marginBottom: "8px" }}>{titulo}</h3>
-        <p style={{ color: "#6B7280", fontSize: "0.875rem", marginBottom: "1.25rem" }}>{descricao}</p>
-        <div style={{ background: "#F9FAFB", borderRadius: "10px", padding: "12px", marginBottom: "1.5rem", border: `1px solid ${BORDA}`, display: "flex", justifyContent: "space-between", fontSize: "0.875rem" }}>
-          <span style={{ color: "#6B7280" }}>{rotuloValor}</span>
-          <Valor peso={700}>{valor}</Valor>
-        </div>
+        <p style={{ color: "#6B7280", fontSize: "0.875rem", marginBottom: "1.5rem" }}>{descricao}</p>
+        {rotuloValor && (
+          <div style={{ background: "#F9FAFB", borderRadius: "10px", padding: "12px", marginTop: "-0.25rem", marginBottom: "1.5rem", border: `1px solid ${BORDA}`, display: "flex", justifyContent: "space-between", fontSize: "0.875rem" }}>
+            <span style={{ color: "#6B7280" }}>{rotuloValor}</span>
+            <Valor peso={700}>{valor}</Valor>
+          </div>
+        )}
         <div style={{ display: "flex", gap: "10px" }}>
           <Btn variante="ghost" style={{ flex: 1 }} onClick={onCancelar}>
             {rotuloCancelar}
           </Btn>
-          <Btn style={{ flex: 1 }} onClick={onConfirmar}>
+          <Btn style={{ flex: 1 }} onClick={onConfirmar} icone={iconeConfirmar}>
             {rotuloConfirmar}
           </Btn>
         </div>
@@ -285,24 +374,30 @@ export function ModalConfirmacao({ icone, titulo, descricao, rotuloValor, valor,
   );
 }
 
+// Nota de 0 a 5: estrelas cheias até a nota e só o contorno no resto.
 export function Estrelas({ nota }) {
   const cheias = Math.round(nota);
   return (
-    <span style={{ fontFamily: "JetBrains Mono", fontSize: "0.8125rem", color: "#D97706", whiteSpace: "nowrap" }}>
-      {"★".repeat(cheias)}
-      {"☆".repeat(5 - cheias)}
-      <span style={{ color: "#9CA3AF", marginLeft: "4px" }}>{nota.toFixed(1)}</span>
+    <span role="img" aria-label={`Nota ${nota.toFixed(1)} de 5`} style={{ display: "inline-flex", alignItems: "center", gap: "1px", color: "#D97706", whiteSpace: "nowrap" }}>
+      {[1, 2, 3, 4, 5].map((n) => (
+        <Icone key={n} icone={Star} tamanho={14} fill={n <= cheias ? "currentColor" : "none"} />
+      ))}
+      <span style={{ fontFamily: "JetBrains Mono", fontSize: "0.8125rem", color: "#9CA3AF", marginLeft: "5px" }}>{nota.toFixed(1)}</span>
     </span>
   );
 }
 
 // Botão de seleção usado em filtros (`redondo`) e abas.
-export function Chip({ rotulo, ativo, onClick, redondo = true }) {
+export function Chip({ rotulo, ativo, onClick, redondo = true, icone }) {
   return (
     <button
       type="button"
+      className="tt-interativo"
       onClick={onClick}
       style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "6px",
         padding: redondo ? "6px 14px" : "7px 14px",
         borderRadius: redondo ? "999px" : "8px",
         fontSize: "0.8125rem",
@@ -315,6 +410,7 @@ export function Chip({ rotulo, ativo, onClick, redondo = true }) {
         whiteSpace: "nowrap",
       }}
     >
+      {icone && <Icone icone={icone} tamanho={14} />}
       {rotulo}
     </button>
   );

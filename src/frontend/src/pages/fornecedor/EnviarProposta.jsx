@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { Check, Send } from "lucide-react";
 import {
   Card,
   CardTitulo,
@@ -134,13 +135,14 @@ export default function EnviarProposta() {
 
       {confirmando && (
         <ModalConfirmacao
-          icone="📤"
+          icone={Send}
           titulo="Confirmar Envio"
           descricao="Sua proposta será enviada ao organizador do evento para análise."
           rotuloValor="Valor total da proposta"
           valor={moeda(total)}
           rotuloCancelar="Revisar"
-          rotuloConfirmar="✓ Enviar Proposta"
+          rotuloConfirmar="Enviar Proposta"
+          iconeConfirmar={Check}
           onCancelar={() => setConfirmando(false)}
           onConfirmar={enviar}
         />

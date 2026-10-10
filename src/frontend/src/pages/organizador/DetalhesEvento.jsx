@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { Card, CardTitulo, CabecalhoCard, Btn, Indicador, ListaInfo, StatusBadge, TituloPagina, Tabela, Linha, Celula, RodapeCard, Valor, Vazio } from "../../components/ui";
+import { ArrowRight, Calendar, Check, MapPin, Pencil, Receipt, Users } from "lucide-react";
+import { Card, CardTitulo, CabecalhoCard, Btn, Indicador, ListaInfo, StatusBadge, TextoComIcone, TituloPagina, Tabela, Linha, Celula, RodapeCard, Valor, Vazio } from "../../components/ui";
 import EditorItens from "../../components/EditorItens";
 import { buscarEvento, salvarItens, somaEstimado } from "../../services/organizadorService";
 import { dataCurta, moeda } from "../../utils/formatar";
@@ -42,7 +43,13 @@ export default function DetalhesEvento() {
       <TituloPagina
         titulo={evento.nome}
         extra={<StatusBadge status={evento.status} />}
-        sub={`📅 ${dataCurta(evento.data)} · 📍 ${evento.local || "—"} · 👥 ${evento.convidados.toLocaleString("pt-BR")} convidados`}
+        sub={
+          <span style={{ display: "inline-flex", gap: "16px", flexWrap: "wrap" }}>
+            <TextoComIcone icone={Calendar}>{dataCurta(evento.data)}</TextoComIcone>
+            <TextoComIcone icone={MapPin}>{evento.local || "—"}</TextoComIcone>
+            <TextoComIcone icone={Users}>{evento.convidados.toLocaleString("pt-BR")} convidados</TextoComIcone>
+          </span>
+        }
       >
         <div style={{ display: "flex", gap: "8px" }}>
           {editando ? (
@@ -50,11 +57,13 @@ export default function DetalhesEvento() {
               <Btn variante="ghost" onClick={() => setItensEditados(null)}>
                 Descartar
               </Btn>
-              <Btn onClick={salvar}>✓ Salvar</Btn>
+              <Btn onClick={salvar} icone={Check}>
+                Salvar
+              </Btn>
             </>
           ) : (
-            <Btn variante="secondary" onClick={() => setItensEditados(evento.itens)}>
-              ✏️ Editar Itens
+            <Btn variante="secondary" icone={Pencil} onClick={() => setItensEditados(evento.itens)}>
+              Editar Itens
             </Btn>
           )}
         </div>
@@ -62,12 +71,12 @@ export default function DetalhesEvento() {
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: "1.5rem", alignItems: "start" }}>
         <Card style={{ overflow: "hidden" }}>
-          <CabecalhoCard titulo={editando ? "✏️ Editar Itens do Evento" : "Itens do Evento"} />
+          <CabecalhoCard titulo={editando ? <TextoComIcone icone={Pencil}>Editar Itens do Evento</TextoComIcone> : "Itens do Evento"} />
 
           {editando ? (
             <EditorItens itens={itensEditados} onChange={setItensEditados} comAcordado />
           ) : itens.length === 0 ? (
-            <Vazio icone="🧾" texto="Nenhum item cadastrado. Clique em Editar Itens para adicionar." />
+            <Vazio icone={Receipt} texto="Nenhum item cadastrado. Clique em Editar Itens para adicionar." />
           ) : (
             <>
               <Tabela colunas={colunas}>
@@ -119,8 +128,8 @@ export default function DetalhesEvento() {
                 ? `${evento.propostas.length} propostas comerciais recebidas de fornecedores qualificados`
                 : "Nenhuma proposta recebida até agora"}
             </p>
-            <Btn style={{ width: "100%" }} disabled={evento.propostas.length === 0} onClick={() => navigate(`/organizador/eventos/${evento.id}/propostas`)}>
-              Ver Propostas →
+            <Btn style={{ width: "100%" }} disabled={evento.propostas.length === 0} onClick={() => navigate(`/organizador/eventos/${evento.id}/propostas`)} iconeDepois={ArrowRight}>
+              Ver Propostas
             </Btn>
           </Card>
 

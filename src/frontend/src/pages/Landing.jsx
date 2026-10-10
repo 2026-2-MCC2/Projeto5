@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Calendar, CalendarPlus, CircleCheck, Laptop, Leaf, Link2, MapPin, Music, ShieldCheck, Ticket, UtensilsCrossed, Zap } from 'lucide-react';
+import { Icone, MarcaLogo, TextoComIcone } from '../components/ui';
 
 /* ─── Mock events ─────────────────────────────────────── */
 const mockEvents = [
-  { id: 1, name: 'Festival Gastronômico SP', date: '15 Mar 2025', location: 'Parque Ibirapuera', category: 'Gastronomia', price: 'R$ 80', img: '🍽️' },
-  { id: 2, name: 'Congresso Tech Brasil', date: '20 Abr 2025', location: 'Expo Center Norte', category: 'Tecnologia', price: 'R$ 290', img: '💻' },
-  { id: 3, name: 'Show Nacional – Turnê Verão', date: '01 Mai 2025', location: 'Arena Anhembi', category: 'Música', price: 'R$ 150', img: '🎵' },
-  { id: 4, name: 'Expo Sustentabilidade', date: '28 Jul 2025', location: 'Ciesp Campinas', category: 'Negócios', price: 'R$ 120', img: '🌱' },
+  { id: 1, name: 'Festival Gastronômico SP', date: '15 Mar 2025', location: 'Parque Ibirapuera', category: 'Gastronomia', price: 'R$ 80', img: UtensilsCrossed },
+  { id: 2, name: 'Congresso Tech Brasil', date: '20 Abr 2025', location: 'Expo Center Norte', category: 'Tecnologia', price: 'R$ 290', img: Laptop },
+  { id: 3, name: 'Show Nacional – Turnê Verão', date: '01 Mai 2025', location: 'Arena Anhembi', category: 'Música', price: 'R$ 150', img: Music },
+  { id: 4, name: 'Expo Sustentabilidade', date: '28 Jul 2025', location: 'Ciesp Campinas', category: 'Negócios', price: 'R$ 120', img: Leaf },
 ];
 
 const navLinks = [
@@ -41,7 +43,7 @@ export default function LandingView() {
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 2rem', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           {/* Logo */}
           <button onClick={() => navigate('/')} style={{ display: 'flex', alignItems: 'center', gap: '9px', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-            <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'linear-gradient(135deg, #F97316, #A855F7, #3B82F6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.875rem' }}>🎟</div>
+            <MarcaLogo tamanho={28} />
             <div>
               <div style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '0.9375rem', color: '#FFFFFF', lineHeight: 1.1 }}>TrocaTicket</div>
               <div style={{ fontSize: '0.5rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.12em', textTransform: 'uppercase', lineHeight: 1 }}>Eventos &amp; Ingressos</div>
@@ -296,7 +298,7 @@ export default function LandingView() {
             {/* Cell 3 — Experiência */}
             <div style={{ background: '#080810', padding: '2.5rem 3rem 3rem 0', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
-                <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(37,99,235,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.875rem', flexShrink: 0 }}>⚡</div>
+                <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(37,99,235,0.15)', color: '#60A5FA', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Icone icone={Zap} tamanho={16} /></div>
                 <span style={{ fontSize: '0.6875rem', fontWeight: 700, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.14em', textTransform: 'uppercase', fontFamily: 'Inter' }}>Experiência</span>
               </div>
               <p style={{ fontSize: '0.9375rem', color: 'rgba(255,255,255,0.65)', lineHeight: 1.7 }}>
@@ -307,7 +309,7 @@ export default function LandingView() {
             {/* Cell 4 — Ecossistema */}
             <div style={{ background: '#0D0D1A', padding: '2.5rem 2.5rem 3rem', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
-                <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(234,88,12,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.875rem', flexShrink: 0 }}>🔗</div>
+                <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(234,88,12,0.15)', color: '#FB923C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Icone icone={Link2} tamanho={16} /></div>
                 <span style={{ fontSize: '0.6875rem', fontWeight: 700, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.14em', textTransform: 'uppercase', fontFamily: 'Inter' }}>Ecossistema</span>
               </div>
               <p style={{ fontSize: '0.9375rem', color: 'rgba(255,255,255,0.65)', lineHeight: 1.7 }}>
@@ -343,16 +345,16 @@ export default function LandingView() {
               onMouseEnter={e => { const el = e.currentTarget; el.style.borderColor = '#D1D5DB'; el.style.transform = 'translateY(-2px)'; el.style.boxShadow = '0 12px 40px rgba(0,0,0,0.08)'; }}
               onMouseLeave={e => { const el = e.currentTarget; el.style.borderColor = '#E5E7EB'; el.style.transform = 'none'; el.style.boxShadow = 'none'; }}
             >
-              <div style={{ height: '140px', background: 'linear-gradient(135deg, #F3F4F6, #E5E7EB)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem' }}>
-                {ev.img}
+              <div style={{ height: '140px', background: 'linear-gradient(135deg, #F3F4F6, #E5E7EB)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9CA3AF' }}>
+                <Icone icone={ev.img} tamanho={32} />
               </div>
               <div style={{ padding: '1.125rem' }}>
                 <span style={{ fontSize: '0.6875rem', fontWeight: 600, color: '#9CA3AF', letterSpacing: '0.08em', textTransform: 'uppercase' }}>{ev.category}</span>
                 <h3 style={{ fontFamily: 'Outfit', fontSize: '1rem', fontWeight: 700, color: '#0A0A0A', margin: '4px 0 8px', lineHeight: 1.3 }}>{ev.name}</h3>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
-                    <div style={{ fontSize: '0.8125rem', color: '#6B7280' }}>📅 {ev.date}</div>
-                    <div style={{ fontSize: '0.8125rem', color: '#6B7280' }}>📍 {ev.location}</div>
+                    <TextoComIcone icone={Calendar} tamanho={14} style={{ fontSize: '0.8125rem', color: '#6B7280' }}>{ev.date}</TextoComIcone>
+                    <TextoComIcone icone={MapPin} tamanho={14} style={{ fontSize: '0.8125rem', color: '#6B7280', display: 'flex' }}>{ev.location}</TextoComIcone>
                   </div>
                   <div style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1rem', color: '#0A0A0A' }}>{ev.price}</div>
                 </div>
@@ -375,13 +377,13 @@ export default function LandingView() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
             {[
-              { icon: '🏗', title: 'Crie e organize eventos', desc: 'Centralize informações, lotes, participantes e vendas.' },
-              { icon: '🎫', title: 'Venda e gerencie ingressos', desc: 'Controle seus ingressos e acompanhe os pedidos em um único ambiente.' },
-              { icon: '🔒', title: 'Conta segura', desc: 'Autenticação e proteção de dados integradas à plataforma.' },
-              { icon: '✅', title: 'Cadastro simples e rápido', desc: 'Após criar sua conta, aguarde a aprovação do administrador para começar a usar a TrocaTicket.' },
+              { icon: CalendarPlus, title: 'Crie e organize eventos', desc: 'Centralize informações, lotes, participantes e vendas.' },
+              { icon: Ticket, title: 'Venda e gerencie ingressos', desc: 'Controle seus ingressos e acompanhe os pedidos em um único ambiente.' },
+              { icon: ShieldCheck, title: 'Conta segura', desc: 'Autenticação e proteção de dados integradas à plataforma.' },
+              { icon: CircleCheck, title: 'Cadastro simples e rápido', desc: 'Após criar sua conta, aguarde a aprovação do administrador para começar a usar a TrocaTicket.' },
             ].map((f, i) => (
               <div key={i} style={{ padding: '1.5rem', background: i === 3 ? '#1A1A1A' : '#141414', border: '1px solid #1F1F1F', borderRadius: '12px' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#1F1F1F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.125rem', marginBottom: '1rem' }}>{f.icon}</div>
+                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#1F1F1F', color: '#D1D5DB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}><Icone icone={f.icon} /></div>
                 <h3 style={{ fontFamily: 'Outfit', fontSize: '0.9375rem', fontWeight: 700, color: '#fff', marginBottom: '6px' }}>{f.title}</h3>
                 <p style={{ fontSize: '0.875rem', color: '#6B7280', lineHeight: 1.6 }}>{f.desc}</p>
               </div>
@@ -413,7 +415,7 @@ export default function LandingView() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr repeat(3, auto)', gap: '3rem', marginBottom: '2.5rem', flexWrap: 'wrap' }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                <div style={{ width: '26px', height: '26px', borderRadius: '6px', background: 'linear-gradient(135deg, #F97316, #A855F7, #3B82F6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem' }}>🎟</div>
+                <MarcaLogo />
                 <span style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '0.875rem', color: '#0A0A0A' }}>TrocaTicket</span>
               </div>
               <p style={{ fontSize: '0.875rem', color: '#9CA3AF', lineHeight: 1.65, maxWidth: '220px' }}>A plataforma de eventos do Brasil. Conectando organizadores, fornecedores e compradores.</p>

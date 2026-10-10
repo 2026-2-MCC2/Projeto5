@@ -28,3 +28,18 @@ export function hojeIso() {
   const hoje = new Date();
   return `${hoje.getFullYear()}-${doisDigitos(hoje.getMonth() + 1)}-${doisDigitos(hoje.getDate())}`;
 }
+
+const UM_DIA = 24 * 60 * 60 * 1000;
+
+// Timestamp -> "hoje", "há 1 dia", "há 5 dias"
+export function tempoDesde(timestamp) {
+  const dias = Math.floor((Date.now() - timestamp) / UM_DIA);
+  if (dias === 0) return "hoje";
+  return dias === 1 ? "há 1 dia" : `há ${dias} dias`;
+}
+
+// O timestamp está dentro dos últimos `dias` dias? Sem `dias`, vale qualquer data.
+export function dentroDosUltimos(timestamp, dias) {
+  if (dias === undefined) return true;
+  return timestamp !== undefined && Date.now() - timestamp <= dias * UM_DIA;
+}

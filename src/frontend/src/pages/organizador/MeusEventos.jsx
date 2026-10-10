@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, Badge, Btn, Chip, CampoBusca, StatusBadge, TituloPagina, Valor, Vazio } from "../../components/ui";
+import { Calendar, MapPin, Plus, Search } from "lucide-react";
+import { Card, Badge, Btn, Chip, CampoBusca, StatusBadge, TextoComIcone, TituloPagina, Valor, Vazio } from "../../components/ui";
 import { listarEventos } from "../../services/organizadorService";
 import { dataCurta, moeda } from "../../utils/formatar";
 
@@ -24,7 +25,9 @@ export default function MeusEventos() {
   return (
     <>
       <TituloPagina titulo="Meus Eventos" sub={`${eventos.length} eventos cadastrados`}>
-        <Btn onClick={() => navigate("/organizador/eventos/novo")}>+ Criar Evento</Btn>
+        <Btn onClick={() => navigate("/organizador/eventos/novo")} icone={Plus}>
+          Criar Evento
+        </Btn>
       </TituloPagina>
 
       <Card style={{ marginBottom: "1.5rem", padding: "1rem 1.25rem" }}>
@@ -48,8 +51,8 @@ export default function MeusEventos() {
                   <StatusBadge status={ev.status} />
                 </div>
                 <div style={{ display: "flex", gap: "16px", fontSize: "0.8125rem", color: "#9CA3AF", flexWrap: "wrap" }}>
-                  <span>📅 {dataCurta(ev.data)}</span>
-                  <span>📍 {ev.local}</span>
+                  <TextoComIcone icone={Calendar}>{dataCurta(ev.data)}</TextoComIcone>
+                  <TextoComIcone icone={MapPin}>{ev.local}</TextoComIcone>
                   <Valor cor="#6B7280" tamanho="0.8125rem" peso={400}>
                     {moeda(ev.orcamento)}
                   </Valor>
@@ -76,7 +79,7 @@ export default function MeusEventos() {
           </Card>
         ))}
 
-        {filtrados.length === 0 && <Vazio icone="🔍" texto="Nenhum evento encontrado" />}
+        {filtrados.length === 0 && <Vazio icone={Search} texto="Nenhum evento encontrado" />}
       </div>
     </>
   );

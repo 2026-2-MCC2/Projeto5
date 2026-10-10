@@ -1,7 +1,8 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-
-const rotuloPerfil = { organizador: "Organizador", fornecedor: "Fornecedor", admin: "Administrador" };
+import { ChevronLeft } from "lucide-react";
+import { Contador, Icone, MarcaLogo } from "./ui";
+import { ROTULO_PERFIL } from "../data/perfis";
 
 const estiloLink = (ativo) => ({
   position: "relative",
@@ -27,8 +28,9 @@ function hoverLink(fundo, cor) {
 }
 
 // Estrutura das áreas logadas: cabeçalho com navegação + a página da rota atual.
-// `nav` é uma lista de { rotulo, para, end }. O primeiro item é a página inicial da área.
-export default function Layout({ nav }) {
+// `nav` é uma lista de { rotulo, para, end, contador }. O primeiro item é a página inicial da área.
+// `contexto` fica disponível para as páginas via useOutletContext().
+export default function Layout({ nav, contexto }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -49,9 +51,7 @@ export default function Layout({ nav }) {
             onMouseEnter={(e) => { e.currentTarget.style.background = "#E5E7EB"; e.currentTarget.style.borderColor = "#D1D5DB"; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = "#F3F4F6"; e.currentTarget.style.borderColor = "#E5E7EB"; }}
           >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M9 11L5 7L9 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <Icone icone={ChevronLeft} tamanho={16} />
             Voltar
           </button>
 
@@ -60,9 +60,7 @@ export default function Layout({ nav }) {
             onClick={() => navigate(nav[0].para)}
             style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", cursor: "pointer", padding: 0, flexShrink: 0, textAlign: "left" }}
           >
-            <div style={{ width: "26px", height: "26px", borderRadius: "6px", background: "linear-gradient(135deg, #F97316, #A855F7, #3B82F6)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.75rem" }}>
-              🎟
-            </div>
+            <MarcaLogo />
             <div>
               <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: "0.9375rem", color: "#111827", lineHeight: 1.1 }}>TrocaTicket</div>
               <div style={{ fontSize: "0.5rem", color: "#9CA3AF", letterSpacing: "0.1em", textTransform: "uppercase", lineHeight: 1 }}>Eventos &amp; Ingressos</div>
@@ -80,13 +78,18 @@ export default function Layout({ nav }) {
                 onMouseLeave={hoverLink("transparent", "#6B7280")}
               >
                 {item.rotulo}
+                {item.contador > 0 && (
+                  <span style={{ position: "absolute", top: "-6px", right: "-4px" }}>
+                    <Contador valor={item.contador} />
+                  </span>
+                )}
               </NavLink>
             ))}
           </nav>
 
           <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
             <span style={{ fontSize: "0.6875rem", fontWeight: 600, padding: "3px 9px", borderRadius: "5px", background: "#F3F4F6", color: "#6B7280", letterSpacing: "0.05em", textTransform: "uppercase" }}>
-              {rotuloPerfil[user.perfil]}
+              {ROTULO_PERFIL[user.perfil]}
             </span>
             <button
               type="button"
@@ -101,7 +104,7 @@ export default function Layout({ nav }) {
         </div>
       </header>
 
-      <main style={{ flex: 1, maxWidth: "1280px", margin: "0 auto", width: "100%", padding: "2rem 1.5rem" }}><Outlet /></main>
+      <main style={{ flex: 1, maxWidth: "1280px", margin: "0 auto", width: "100%", padding: "2rem 1.5rem" }}><Outlet context={contexto} /></main>
     </div>
   );
 }
