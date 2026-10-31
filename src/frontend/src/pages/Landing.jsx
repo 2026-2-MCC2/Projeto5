@@ -3,17 +3,31 @@ import { useNavigate } from 'react-router-dom';
 import { CalendarPlus, CircleCheck, Link2, ShieldCheck, Ticket, Zap } from 'lucide-react';
 import { Icone, MarcaLogo } from '../components/ui';
 
+// `secao` rola até um id da própria página; `rota` navega para outra página
 const navLinks = [
-  { label: 'Sobre', hasDropdown: false },
-  { label: 'Plataforma', hasDropdown: true },
-  { label: 'Eventos', hasDropdown: false },
-  { label: 'Recursos', hasDropdown: true },
+  { label: 'Sobre', secao: 'sobre' },
+  {
+    label: 'Plataforma',
+    itens: [
+      { label: 'Para Organizadores', rota: '/organizador' },
+      { label: 'Para Fornecedores', rota: '/fornecedor' },
+      { label: 'Para Administradores', rota: '/admin' },
+    ],
+  },
+  { label: 'Eventos', rota: '/organizador' },
+  { label: 'Recursos', secao: 'recursos' },
 ];
 
 export default function LandingView() {
   const navigate = useNavigate();
   const [openDropdown, setOpenDropdown] = useState(null);
   const [scrollY, setScrollY] = useState(0);
+
+  const irPara = ({ secao, rota }) => {
+    setOpenDropdown(null);
+    if (secao) document.getElementById(secao)?.scrollIntoView({ behavior: 'smooth' });
+    else if (rota) navigate(rota);
+  };
 
   useEffect(() => {
     const onScroll = () => setScrollY(window.scrollY);
@@ -46,17 +60,11 @@ export default function LandingView() {
           <nav style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
             {navLinks.map((link) => (
               <div key={link.label} style={{ position: 'relative' }}
-                onMouseEnter={() => link.hasDropdown && setOpenDropdown(link.label)}
+                onMouseEnter={() => link.itens && setOpenDropdown(link.label)}
                 onMouseLeave={() => setOpenDropdown(null)}
               >
                 <button
-                  onClick={() => {
-                    if (link.label === 'Sobre') {
-                      document.getElementById('sobre')?.scrollIntoView({ behavior: 'smooth' });
-                    } else if (link.label === 'Eventos') {
-                      document.getElementById('eventos')?.scrollIntoView({ behavior: 'smooth' });
-                    }
-                  }}
+                  onClick={() => (link.itens ? setOpenDropdown(openDropdown === link.label ? null : link.label) : irPara(link))}
                   style={{
                     display: 'flex', alignItems: 'center', gap: '4px',
                     padding: '7px 14px', borderRadius: '7px',
@@ -70,22 +78,19 @@ export default function LandingView() {
                   onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.75)'; e.currentTarget.style.background = 'transparent'; }}
                 >
                   {link.label}
-                  {link.hasDropdown && (
+                  {link.itens && (
                     <svg width="9" height="6" viewBox="0 0 9 6" fill="none">
                       <path d="M1 1L4.5 5L8 1" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   )}
                 </button>
-                {link.hasDropdown && openDropdown === link.label && (
+                {link.itens && openDropdown === link.label && (
                   <div style={{ position: 'absolute', top: 'calc(100% + 6px)', left: '50%', transform: 'translateX(-50%)', background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '6px', minWidth: '200px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', zIndex: 100 }}>
-                    {(link.label === 'Plataforma'
-                      ? ['Para Organizadores', 'Para Fornecedores', 'Para Administradores']
-                      : ['Documentação', 'API', 'Suporte', 'Blog']
-                    ).map(item => (
-                      <button key={item} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '9px 12px', borderRadius: '7px', background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.6)', fontSize: '0.8125rem', cursor: 'pointer', fontFamily: 'Inter', transition: 'background 0.12s, color 0.12s' }}
+                    {link.itens.map(item => (
+                      <button key={item.label} onClick={() => irPara(item)} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '9px 12px', borderRadius: '7px', background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.6)', fontSize: '0.8125rem', cursor: 'pointer', fontFamily: 'Inter', transition: 'background 0.12s, color 0.12s' }}
                         onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; e.currentTarget.style.color = '#fff'; }}
                         onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; }}
-                      >{item}</button>
+                      >{item.label}</button>
                     ))}
                   </div>
                 )}
@@ -319,7 +324,7 @@ export default function LandingView() {
       </section>
 
       {/* ── Features ── */}
-      <section style={{ position: 'relative', zIndex: 1, background: '#0A0A0A', padding: '6rem 2rem' }}>
+      <section id="recursos" style={{ position: 'relative', zIndex: 1, background: '#0A0A0A', padding: '6rem 2rem' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
             <h2 style={{ fontFamily: 'Outfit', fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 900, color: '#fff', lineHeight: 1.15, marginBottom: '1rem' }}>
