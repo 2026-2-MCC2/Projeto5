@@ -16,6 +16,10 @@ const env = {
     password: process.env.DB_PASSWORD || "",
     database: process.env.DB_NAME || "trocaticket",
   },
+  jwt: {
+    segredo: process.env.JWT_SECRET,
+    expiraEm: process.env.JWT_EXPIRA_EM || "8h",
+  },
 };
 
 export default env;

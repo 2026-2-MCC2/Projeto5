@@ -1,0 +1,103 @@
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import pool from "../config/db.js";
+import env from "../config/env.js";
+import HttpError from "../utils/HttpError.js";
+import { exigirObjeto, texto, vazio } from "../utils/validacao.js";
+
+const CUSTO_BCRYPT = 10;
+const PERFIS_CADASTRO = ["organizador", "fornecedor"]; // admin não se cadastra pela API
+const EMAIL_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Usado quando o e-mail não existe, para o login levar o mesmo tempo
+// e não revelar quais e-mails estão cadastrados.
+const HASH_FALSO = bcrypt.hashSync("senha-que-nao-existe", CUSTO_BCRYPT);
+
+// Dados do usuário que podem ir para o front (nunca o senha_hash).
+export const publico = ({ id, nome, email, perfil, status }) => ({ id, nome, email, perfil, status });
+
+export async function registrar(dados) {
+  exigirObjeto(dados);
+
+  const erros = [];
+  const nome = texto(dados, "nome", "nome", { obrigatorio: true, max: 120 }, erros);
+  const email = texto(dados, "email", "e-mail", { obrigatorio: true, max: 160 }, erros)?.toLowerCase();
+  if (email && !EMAIL_VALIDO.test(email)) erros.push("Informe um e-mail válido.");
+
+  const { senha, perfil } = dados;
+  if (vazio(senha)) erros.push('O campo "senha" é obrigatório.');
+  else if (typeof senha !== "string" || senha.length < 6) erros.push("A senha deve ter pelo menos 6 caracteres.");
+  else if (senha.length > 72) erros.push("A senha deve ter no máximo 72 caracteres."); // limite do bcrypt
+
+  if (vazio(perfil)) erros.push('O campo "perfil" é obrigatório.');
+  else if (!PERFIS_CADASTRO.includes(perfil)) erros.push('O perfil deve ser "organizador" ou "fornecedor".');
+
+  if (erros.length) throw HttpError.badRequest(erros.join(" "));
+
+  const [existentes] = await pool.query("SELECT id FROM usuarios WHERE email = ?", [email]);
+  if (existentes.length) throw HttpError.conflict("Este e-mail já está cadastrado.");
+
+  const senhaHash = await bcrypt.hash(senha, CUSTO_BCRYPT);
+  try {
+    const [resultado] = await pool.query(
+      "INSERT INTO usuarios (nome, email, senha_hash, perfil, status) VALUES (?, ?, ?, ?, 'pendente')",
+      [nome, email, senhaHash, perfil],
+    );
+    return { id: resultado.insertId, nome, email, perfil, status: "pendente" };
+  } catch (err) {
+    // dois cadastros com o mesmo e-mail ao mesmo tempo
+    if (err.code === "ER_DUP_ENTRY") throw HttpError.conflict("Este e-mail já está cadastrado.");
+    throw err;
+  }
+}
+
+export async function login(dados) {
+  exigirObjeto(dados);
+  const { email, senha } = dados;
+  if (vazio(email) || vazio(senha) || typeof email !== "string" || typeof senha !== "string") {
+    throw HttpError.badRequest("Informe e-mail e senha.");
+  }
+
+  const [linhas] = await pool.query(
+    "SELECT id, nome, email, senha_hash, perfil, status, motivo_rejeicao FROM usuarios WHERE email = ?",
+    [email.trim().toLowerCase()],
+  );
+  const usuario = linhas[0];
+  const senhaConfere = await bcrypt.compare(senha, usuario?.senha_hash ?? HASH_FALSO);
+  if (!usuario || !senhaConfere) throw HttpError.unauthorized("E-mail ou senha incorretos.");
+
+  // Só conta o status depois da senha certa, para não expor dados de outras contas.
+  if (usuario.status === "pendente") {
+    throw HttpError.forbidden("Seu cadastro ainda está aguardando a aprovação do administrador.");
+  }
+  if (usuario.status === "rejeitado") {
+    throw HttpError.forbidden(`Seu cadastro foi rejeitado pelo administrador. Motivo: ${usuario.motivo_rejeicao}`);
+  }
+
+  const token = jwt.sign({ perfil: usuario.perfil }, env.jwt.segredo, {
+    subject: String(usuario.id),
+    expiresIn: env.jwt.expiraEm,
+  });
+  return { token, usuario: publico(usuario) };
+}
+
+// Valida o token e busca o usuário no banco a cada requisição: assim, se o admin
+// rejeitar alguém, o token dele para de funcionar na hora (sem esperar expirar).
+export async function usuarioDoToken(token) {
+  let payload;
+  try {
+    payload = jwt.verify(token, env.jwt.segredo);
+  } catch (err) {
+    throw HttpError.unauthorized(
+      err.name === "TokenExpiredError" ? "Sua sessão expirou. Faça login novamente." : "Token inválido.",
+    );
+  }
+
+  const [linhas] = await pool.query("SELECT id, nome, email, perfil, status FROM usuarios WHERE id = ?", [
+    Number(payload.sub),
+  ]);
+  const usuario = linhas[0];
+  if (!usuario) throw HttpError.unauthorized("Usuário do token não existe mais.");
+  if (usuario.status !== "aprovado") throw HttpError.forbidden("Seu acesso não está mais liberado. Fale com o administrador.");
+  return usuario;
+}

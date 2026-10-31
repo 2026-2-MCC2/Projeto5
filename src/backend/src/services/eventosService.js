@@ -1,5 +1,6 @@
 import pool from "../config/db.js";
 import HttpError from "../utils/HttpError.js";
+import { exigirObjeto, inteiroPositivo, texto, validarId, vazio } from "../utils/validacao.js";
 
 export const STATUS_EVENTO = ["rascunho", "aguardando_data", "em_andamento", "concluido", "cancelado"];
 
@@ -7,9 +8,6 @@ const COLUNAS = `id, organizador_id, nome, descricao, data_inicio, data_fim, loc
   publico_minimo, publico_maximo, margem_lucro, status, criado_em`;
 
 // ── Validação ──────────────────────────────────────────────────────────────
-
-const vazio = (valor) => valor === undefined || valor === null || (typeof valor === "string" && valor.trim() === "");
-const inteiroPositivo = (valor) => Number.isInteger(valor) && valor > 0;
 
 // Aceita "2026-12-12", "2026-12-12 11:00", "2026-12-12T11:00:00" etc.
 // Devolve no formato DATETIME do MySQL, ou null se a data for inválida.
@@ -27,26 +25,10 @@ function paraDatetime(valor) {
   return `${ano}-${mes}-${dia} ${hora}:${min}:${seg}`;
 }
 
-function texto(dados, campo, rotulo, { obrigatorio, max }, erros) {
-  const valor = dados[campo];
-  if (vazio(valor)) {
-    if (obrigatorio) erros.push(`O campo "${rotulo}" é obrigatório.`);
-    return null;
-  }
-  if (typeof valor !== "string") {
-    erros.push(`O campo "${rotulo}" deve ser um texto.`);
-    return null;
-  }
-  if (max && valor.trim().length > max) erros.push(`O campo "${rotulo}" deve ter no máximo ${max} caracteres.`);
-  return valor.trim();
-}
-
 // Valida o corpo de POST/PUT e devolve os dados já normalizados.
 // Junta todos os problemas numa mensagem só para o front mostrar de uma vez.
 function validarEvento(dados) {
-  if (!dados || typeof dados !== "object" || Array.isArray(dados)) {
-    throw HttpError.badRequest("Envie os dados do evento em JSON.");
-  }
+  exigirObjeto(dados, "Envie os dados do evento em JSON.");
 
   const erros = [];
   const evento = {
@@ -102,19 +84,13 @@ function validarEvento(dados) {
   return evento;
 }
 
-function validarId(id, rotulo = "id") {
-  const numero = Number(id);
-  if (!inteiroPositivo(numero)) throw HttpError.badRequest(`O ${rotulo} deve ser um número inteiro maior que zero.`);
-  return numero;
-}
-
-// Só organizadores aprovados pelo admin podem ter eventos.
-async function garantirOrganizadorAprovado(organizadorId) {
-  const [linhas] = await pool.query("SELECT perfil, status FROM usuarios WHERE id = ?", [organizadorId]);
-  const usuario = linhas[0];
-  if (!usuario) throw HttpError.badRequest("Organizador não encontrado.");
-  if (usuario.perfil !== "organizador") throw HttpError.badRequest("O usuário informado não é um organizador.");
-  if (usuario.status !== "aprovado") throw HttpError.badRequest("O organizador ainda não foi aprovado pelo administrador.");
+// Só o organizador dono pode mexer no evento.
+async function garantirDono(organizadorId, eventoId) {
+  const [linhas] = await pool.query("SELECT organizador_id FROM eventos WHERE id = ?", [eventoId]);
+  if (!linhas[0]) throw HttpError.notFound("Evento não encontrado.");
+  if (linhas[0].organizador_id !== organizadorId) {
+    throw HttpError.forbidden("Você só pode alterar os seus próprios eventos.");
+  }
 }
 
 // ── CRUD ───────────────────────────────────────────────────────────────────
@@ -144,31 +120,27 @@ export async function buscarPorId(id) {
   return linhas[0];
 }
 
-export async function criar(dados) {
+// O dono é sempre quem está logado (vem do token); organizador_id no corpo é ignorado.
+export async function criar(organizadorId, dados) {
   const evento = validarEvento(dados);
-
-  // Enquanto não há login no back-end, o organizador vem no corpo da requisição.
-  if (vazio(dados.organizador_id)) throw HttpError.badRequest('O campo "organizador_id" é obrigatório.');
-  const organizadorId = validarId(dados.organizador_id, "organizador_id");
-  await garantirOrganizadorAprovado(organizadorId);
-
   const [resultado] = await pool.query("INSERT INTO eventos SET ?", [{ ...evento, organizador_id: organizadorId }]);
   return buscarPorId(resultado.insertId);
 }
 
 // PUT substitui o evento inteiro: os campos obrigatórios precisam vir de novo.
 // O organizador dono do evento não muda.
-export async function atualizar(id, dados) {
+export async function atualizar(organizadorId, id, dados) {
   const eventoId = validarId(id);
   const evento = validarEvento(dados);
+  await garantirDono(organizadorId, eventoId);
 
-  const [resultado] = await pool.query("UPDATE eventos SET ? WHERE id = ?", [evento, eventoId]);
-  if (resultado.affectedRows === 0) throw HttpError.notFound("Evento não encontrado.");
+  await pool.query("UPDATE eventos SET ? WHERE id = ?", [evento, eventoId]);
   return buscarPorId(eventoId);
 }
 
 // Itens de custo e propostas do evento são apagados junto (ON DELETE CASCADE).
-export async function remover(id) {
-  const [resultado] = await pool.query("DELETE FROM eventos WHERE id = ?", [validarId(id)]);
-  if (resultado.affectedRows === 0) throw HttpError.notFound("Evento não encontrado.");
+export async function remover(organizadorId, id) {
+  const eventoId = validarId(id);
+  await garantirDono(organizadorId, eventoId);
+  await pool.query("DELETE FROM eventos WHERE id = ?", [eventoId]);
 }
