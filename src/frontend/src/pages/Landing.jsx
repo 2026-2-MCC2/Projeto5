@@ -1,15 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, CalendarPlus, CircleCheck, Laptop, Leaf, Link2, MapPin, Music, ShieldCheck, Ticket, UtensilsCrossed, Zap } from 'lucide-react';
-import { Icone, MarcaLogo, TextoComIcone } from '../components/ui';
-
-/* ─── Mock events ─────────────────────────────────────── */
-const mockEvents = [
-  { id: 1, name: 'Festival Gastronômico SP', date: '15 Mar 2025', location: 'Parque Ibirapuera', category: 'Gastronomia', price: 'R$ 80', img: UtensilsCrossed },
-  { id: 2, name: 'Congresso Tech Brasil', date: '20 Abr 2025', location: 'Expo Center Norte', category: 'Tecnologia', price: 'R$ 290', img: Laptop },
-  { id: 3, name: 'Show Nacional – Turnê Verão', date: '01 Mai 2025', location: 'Arena Anhembi', category: 'Música', price: 'R$ 150', img: Music },
-  { id: 4, name: 'Expo Sustentabilidade', date: '28 Jul 2025', location: 'Ciesp Campinas', category: 'Negócios', price: 'R$ 120', img: Leaf },
-];
+import { CalendarPlus, CircleCheck, Link2, ShieldCheck, Ticket, Zap } from 'lucide-react';
+import { Icone, MarcaLogo } from '../components/ui';
 
 const navLinks = [
   { label: 'Sobre', hasDropdown: false },
@@ -326,44 +318,6 @@ export default function LandingView() {
         </div>
       </section>
 
-      {/* ── Events discovery ── */}
-      <section id="eventos" style={{ position: 'relative', zIndex: 1, maxWidth: '1200px', margin: '0 auto', padding: '2rem 2rem 5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <div>
-            <p style={{ fontSize: '0.6875rem', fontWeight: 700, color: 'var(--texto-fraco)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>Descoberta de Eventos</p>
-            <h2 style={{ fontFamily: 'Outfit', fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 900, color: 'var(--texto)', letterSpacing: '-0.02em', textTransform: 'uppercase' }}>Eventos em Destaque</h2>
-          </div>
-          <button style={{ padding: '10px 22px', borderRadius: '999px', background: 'transparent', border: '1.5px solid var(--borda-2)', color: 'var(--texto-2)', fontSize: '0.8125rem', fontWeight: 600, fontFamily: 'Outfit', letterSpacing: '0.06em', textTransform: 'uppercase', cursor: 'pointer', whiteSpace: 'nowrap', transition: 'border-color 0.15s' }}
-            onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--texto-fraco)')}
-            onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--borda-2)')}
-          >Explorar Catálogo</button>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1rem' }}>
-          {mockEvents.map(ev => (
-            <div key={ev.id} style={{ background: 'var(--superficie)', border: '1px solid var(--borda)', borderRadius: '14px', overflow: 'hidden', cursor: 'pointer', transition: 'border-color 0.2s, transform 0.2s, box-shadow 0.2s' }}
-              onMouseEnter={e => { const el = e.currentTarget; el.style.borderColor = 'var(--borda-2)'; el.style.transform = 'translateY(-2px)'; el.style.boxShadow = '0 12px 40px rgba(0,0,0,0.08)'; }}
-              onMouseLeave={e => { const el = e.currentTarget; el.style.borderColor = 'var(--borda)'; el.style.transform = 'none'; el.style.boxShadow = 'none'; }}
-            >
-              <div style={{ height: '140px', background: 'linear-gradient(135deg, var(--superficie-3), var(--borda))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--texto-fraco)' }}>
-                <Icone icone={ev.img} tamanho={32} />
-              </div>
-              <div style={{ padding: '1.125rem' }}>
-                <span style={{ fontSize: '0.6875rem', fontWeight: 600, color: 'var(--texto-fraco)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>{ev.category}</span>
-                <h3 style={{ fontFamily: 'Outfit', fontSize: '1rem', fontWeight: 700, color: 'var(--texto)', margin: '4px 0 8px', lineHeight: 1.3 }}>{ev.name}</h3>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <TextoComIcone icone={Calendar} tamanho={14} style={{ fontSize: '0.8125rem', color: 'var(--texto-suave)' }}>{ev.date}</TextoComIcone>
-                    <TextoComIcone icone={MapPin} tamanho={14} style={{ fontSize: '0.8125rem', color: 'var(--texto-suave)', display: 'flex' }}>{ev.location}</TextoComIcone>
-                  </div>
-                  <div style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1rem', color: 'var(--texto)' }}>{ev.price}</div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* ── Features ── */}
       <section style={{ position: 'relative', zIndex: 1, background: '#0A0A0A', padding: '6rem 2rem' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
@@ -389,23 +343,6 @@ export default function LandingView() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* ── Stats ── */}
-      <section style={{ position: 'relative', zIndex: 1, background: 'var(--superficie)', borderTop: '1px solid var(--borda)', borderBottom: '1px solid var(--borda)', padding: '4.5rem 2rem' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem', textAlign: 'center' }}>
-          {[
-            { value: '4.820+', label: 'Fornecedores cadastrados' },
-            { value: '1.847', label: 'Eventos realizados' },
-            { value: 'R$ 340M+', label: 'Movimentados na plataforma' },
-            { value: '98%', label: 'Taxa de satisfação' },
-          ].map((s, i) => (
-            <div key={i}>
-              <div style={{ fontFamily: 'Outfit', fontSize: 'clamp(2rem, 4vw, 2.75rem)', fontWeight: 900, color: 'var(--texto)', lineHeight: 1, marginBottom: '6px' }}>{s.value}</div>
-              <div style={{ fontSize: '0.9375rem', color: 'var(--texto-fraco)' }}>{s.label}</div>
-            </div>
-          ))}
         </div>
       </section>
 
