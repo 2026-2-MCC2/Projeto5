@@ -1,15 +1,22 @@
 import { Check } from "lucide-react";
 import { Icone, Picote } from "./ui";
+import fotoShow from "../assets/troca_ticket.jpg";
 import "./RightPanel.css";
 
 const ANO = new Date().getFullYear();
 
 // Painel de apresentação ao lado dos formulários de Login e Criar conta.
+// No topo, a arte do TrocaTicket (show com o nome em pontos de luz), que se dissolve na cor do painel;
+// o texto fica por cima da parte de baixo da foto.
 // `features`: lista de { icon, title, desc }; `highlight`: { title, desc }, mostrado como um canhoto de ingresso.
 // Em telas estreitas (até 959px) o painel não aparece, para o formulário ocupar a tela.
 export default function RightPanel({ heading, sub, features, highlight }) {
   return (
     <aside className="tt-painel">
+      <div className="tt-painel__foto">
+        <img src={fotoShow} alt="Show ao ar livre à noite, com o nome TrocaTicket escrito em pontos de luz sobre o palco" />
+      </div>
+
       <div className="tt-painel__conteudo">
         <h2 className="tt-painel__titulo">{heading}</h2>
         <p className="tt-painel__sub">{sub}</p>

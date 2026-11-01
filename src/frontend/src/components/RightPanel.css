@@ -9,16 +9,44 @@
   --painel-borda: color-mix(in srgb, var(--destaque-texto) 14%, var(--destaque));
   --painel-cartao: color-mix(in srgb, var(--destaque-texto) 6%, var(--destaque));
 
-  position: relative;
+  /* Fixo na altura da tela: quando o formulário é mais alto que a tela (Criar conta),
+     só ele rola e a foto continua visível ao lado. */
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  min-height: 100vh;
-  padding: var(--esp-16) clamp(var(--esp-10), 6vw, var(--esp-24)) var(--esp-24);
+  justify-content: flex-end;
+  height: 100vh;
+  overflow: hidden;
+  /* O padding de cima (em % da largura da página) garante que o texto nunca cubra o letreiro da foto */
+  padding: 13% clamp(var(--esp-10), 6vw, var(--esp-24)) var(--esp-24);
   background: var(--painel-fundo);
   color: var(--painel-texto);
 }
+
+/* Foto no topo, na largura toda (sem cortar o letreiro), dissolvendo na cor do painel */
+.tt-painel__foto {
+  position: absolute;
+  inset: 0 0 auto 0;
+}
+
+.tt-painel__foto img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1808 / 870;
+  object-fit: cover;
+}
+
+.tt-painel__foto::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 30%, color-mix(in srgb, var(--painel-fundo) 70%, transparent) 62%, var(--painel-fundo) 99%);
+}
+
 
 :root[data-tema="escuro"] .tt-painel {
   --painel-fundo: var(--superficie);
@@ -31,12 +59,14 @@
 }
 
 .tt-painel__conteudo {
+  position: relative;
+  z-index: 1;
   max-width: 460px;
 }
 
 .tt-painel__titulo {
-  margin: 0 0 var(--esp-4);
-  font-size: clamp(var(--tam-3xl), 2.6vw, var(--tam-5xl));
+  margin: 0 0 var(--esp-3);
+  font-size: clamp(var(--tam-2xl), 2.4vw, var(--tam-4xl));
   font-weight: var(--peso-extra);
   line-height: 1.08;
   letter-spacing: -0.03em;
@@ -44,7 +74,7 @@
 }
 
 .tt-painel__sub {
-  margin: 0 0 var(--esp-10);
+  margin: 0 0 var(--esp-6);
   font-size: var(--tam-md);
   line-height: var(--linha-normal);
   color: var(--painel-suave);
@@ -53,7 +83,7 @@
 .tt-painel__lista {
   display: flex;
   flex-direction: column;
-  margin: 0 0 var(--esp-8);
+  margin: 0 0 var(--esp-6);
   padding: 0;
   list-style: none;
 }
@@ -62,7 +92,7 @@
   display: flex;
   align-items: flex-start;
   gap: var(--esp-4);
-  padding: var(--esp-4) 0;
+  padding: var(--esp-3) 0;
   border-top: 1px solid var(--painel-borda);
 }
 
@@ -79,7 +109,7 @@
 .tt-painel__lista strong {
   display: block;
   margin-bottom: 2px;
-  font-size: var(--tam-md);
+  font-size: var(--tam-base);
   font-weight: var(--peso-semi);
 }
 
@@ -169,6 +199,17 @@
 .tt-painel__rodape button:focus-visible {
   outline: 2px solid var(--anel-foco);
   outline-offset: 2px;
+}
+
+/* Telas baixas (notebooks de 768px): a lista mostra só os títulos, para o texto não subir até o letreiro da foto */
+@media (max-height: 820px) {
+  .tt-painel__lista span {
+    display: none;
+  }
+
+  .tt-painel__lista li {
+    padding: 10px 0;
+  }
 }
 
 @media (max-width: 959px) {
