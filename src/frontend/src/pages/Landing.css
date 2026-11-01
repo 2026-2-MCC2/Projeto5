@@ -749,6 +749,24 @@
     justify-content: flex-start;
   }
 
+  /* Tablet: a foto vira uma faixa na largura toda com a proporção da arte (1808 × 870),
+     então o letreiro aparece inteiro e o título começa abaixo dele, sem se sobrepor.
+     No celular (640px) a faixa usa uma altura fixa, definida mais abaixo. */
+  .tt-hero {
+    min-height: 0;
+    padding-top: calc(100vw * 870 / 1808 - var(--esp-10));
+  }
+
+  .tt-hero__foto,
+  .tt-hero__veu {
+    height: calc(100vw * 870 / 1808);
+    bottom: auto;
+  }
+
+  .tt-hero__veu {
+    background: linear-gradient(to bottom, rgba(11, 15, 25, 0.25) 0%, rgba(11, 15, 25, 0.1) 40%, rgba(11, 15, 25, 0.85) 80%, #0B0F19 100%);
+  }
+
   .tt-passos {
     grid-template-columns: 1fr;
     gap: var(--esp-12);
