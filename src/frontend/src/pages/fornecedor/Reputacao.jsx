@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Star } from "lucide-react";
-import { Card, CardTitulo, Icone, TextoComIcone, Btn, Chip, Estrelas, Modal, TextArea, TituloPagina, BarraProgresso, BarraRotulada } from "../../components/ui";
+import { ChevronDown, ChevronUp, Flag, MessageSquareText } from "lucide-react";
+import { Card, Btn, Chip, Estrelas, Modal, TextArea, TituloPagina, Vazio } from "../../components/ui";
+import { CartaoGrafico, GraficoBarras } from "../../components/painel";
+import "../../components/organizador.css";
 import { listarAvaliacoes, listarDesempenho } from "../../services/fornecedorService";
 import { mesAno } from "../../utils/formatar";
 
@@ -10,8 +12,6 @@ const ordenacoes = {
   "Melhor avaliadas": (a, b) => b.nota - a.nota,
 };
 
-const estiloLinkTexto = { background: "none", border: "none", padding: 0, fontSize: "0.8125rem", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "4px" };
-
 export default function Reputacao() {
   const avaliacoes = listarAvaliacoes();
   const [ordem, setOrdem] = useState("Todos");
@@ -20,11 +20,13 @@ export default function Reputacao() {
   const [motivo, setMotivo] = useState("");
 
   const ordenadas = [...avaliacoes].sort(ordenacoes[ordem]);
-  const media = avaliacoes.reduce((soma, a) => soma + a.nota, 0) / avaliacoes.length;
+  const media = avaliacoes.length ? avaliacoes.reduce((soma, a) => soma + a.nota, 0) / avaliacoes.length : 0;
   const distribuicao = [5, 4, 3, 2, 1].map((estrela) => {
     const quantidade = avaliacoes.filter((a) => a.nota === estrela).length;
-    return { estrela, quantidade, porcentagem: (quantidade / avaliacoes.length) * 100 };
+    return { rotulo: estrela === 1 ? "1 estrela" : `${estrela} estrelas`, valor: quantidade };
   });
+  const umaCasa = (n) => n.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const desempenho = listarDesempenho().map((m) => ({ rotulo: m.criterio, valor: m.nota, formatado: umaCasa(m.nota) }));
 
   function alternar(id) {
     setAbertas(abertas.includes(id) ? abertas.filter((x) => x !== id) : [...abertas, id]);
@@ -39,86 +41,83 @@ export default function Reputacao() {
     <>
       <TituloPagina titulo="Minha Reputação & Avaliações" sub="Histórico completo de avaliações dos organizadores" />
 
-      <div style={{ display: "grid", gridTemplateColumns: "300px 1fr", gap: "1.5rem", alignItems: "start" }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <Card style={{ padding: "1.5rem", textAlign: "center" }}>
-            <div style={{ fontFamily: "Outfit", fontSize: "4rem", fontWeight: 900, color: "#2563EB", lineHeight: 1 }}>{media.toFixed(1)}</div>
-            <div style={{ marginTop: "8px", marginBottom: "12px" }}>
+      {avaliacoes.length === 0 ? (
+        <Card>
+          <Vazio icone={MessageSquareText} titulo="Você ainda não recebeu avaliações" texto="Depois de cada evento, o organizador pode avaliar o seu serviço. As notas aparecem aqui." />
+        </Card>
+      ) : (
+        <div className="tt-coluna-esquerda">
+          <div className="tt-detalhes__lateral">
+            <Card style={{ padding: "var(--esp-6)" }}>
+              <span className="tt-rotulo">Nota média</span>
+              <div className="tt-nota-media">
+                <strong>{umaCasa(media)}</strong>
+                <span>de 5</span>
+              </div>
               <Estrelas nota={media} />
-            </div>
-            <div style={{ fontSize: "0.8125rem", color: "var(--texto-fraco)" }}>Baseado em {avaliacoes.length} avaliações</div>
-          </Card>
+              <p style={{ marginTop: "var(--esp-3)", fontSize: "var(--tam-sm)", color: "var(--texto-suave)" }}>
+                Baseada em {avaliacoes.length} {avaliacoes.length === 1 ? "avaliação" : "avaliações"} de organizadores
+              </p>
+            </Card>
 
-          <Card style={{ padding: "1.25rem" }}>
-            <CardTitulo>Distribuição</CardTitulo>
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              {distribuicao.map((d) => (
-                <div key={d.estrela} style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.8125rem" }}>
-                  <TextoComIcone icone={Star} tamanho={14} style={{ color: "#D97706", width: "30px", justifyContent: "flex-end", flexShrink: 0, gap: "3px", flexDirection: "row-reverse" }}>
-                    {d.estrela}
-                  </TextoComIcone>
-                  <BarraProgresso porcentagem={d.porcentagem} cor="#D97706" />
-                  <span style={{ color: "var(--texto-fraco)", width: "24px", textAlign: "right", flexShrink: 0 }}>{d.quantidade}</span>
-                </div>
-              ))}
-            </div>
-          </Card>
+            <CartaoGrafico titulo="Distribuição das notas" sub="Quantidade de avaliações por nota">
+              <GraficoBarras titulo="Distribuição das notas" dados={distribuicao} rotuloValor="Avaliações" />
+            </CartaoGrafico>
 
-          <Card style={{ padding: "1.25rem" }}>
-            <CardTitulo>Desempenho</CardTitulo>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {listarDesempenho().map((m) => (
-                <BarraRotulada key={m.criterio} rotulo={m.criterio} valor={m.nota} porcentagem={(m.nota / 5) * 100} altura="5px" />
-              ))}
-            </div>
-          </Card>
-        </div>
-
-        <div>
-          <div style={{ display: "flex", gap: "6px", marginBottom: "1.25rem" }}>
-            {Object.keys(ordenacoes).map((o) => (
-              <Chip key={o} rotulo={o} ativo={ordem === o} onClick={() => setOrdem(o)} redondo={false} />
-            ))}
+            <CartaoGrafico titulo="Desempenho por critério" sub="Média de 0 a 5">
+              <GraficoBarras titulo="Desempenho por critério" dados={desempenho} rotuloValor="Nota" maximo={5} />
+            </CartaoGrafico>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            {ordenadas.map((a) => {
-              const aberta = abertas.includes(a.id);
-              return (
-                <Card key={a.id} style={{ padding: "1.25rem 1.5rem" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "10px", flexWrap: "wrap", gap: "8px" }}>
-                    <div>
-                      <div style={{ fontFamily: "Outfit", fontWeight: 700, color: "var(--texto)", marginBottom: "4px" }}>{a.evento}</div>
-                      <div style={{ fontSize: "0.8125rem", color: "var(--texto-fraco)" }}>
-                        por {a.organizador} · {mesAno(a.data)}
+          <div>
+            <div className="tt-filtros">
+              <div className="tt-filtros__abas" role="group" aria-label="Ordenar avaliações">
+                {Object.keys(ordenacoes).map((o) => (
+                  <Chip key={o} rotulo={o} ativo={ordem === o} onClick={() => setOrdem(o)} redondo={false} />
+                ))}
+              </div>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "var(--esp-3)" }}>
+              {ordenadas.map((a) => {
+                const aberta = abertas.includes(a.id);
+                return (
+                  <Card key={a.id} style={{ padding: "var(--esp-5) var(--esp-6)" }}>
+                    <article>
+                      <header style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "var(--esp-3)", flexWrap: "wrap", marginBottom: "var(--esp-3)" }}>
+                        <div>
+                          <h3 style={{ fontSize: "var(--tam-md)", fontWeight: 600, color: "var(--texto)", marginBottom: 2 }}>{a.evento}</h3>
+                          <p style={{ fontSize: "var(--tam-sm)", color: "var(--texto-suave)" }}>
+                            Avaliado por {a.organizador} em {mesAno(a.data)}
+                          </p>
+                        </div>
+                        <Estrelas nota={a.nota} />
+                      </header>
+                      <p style={{ fontSize: "var(--tam-base)", color: "var(--texto-2)", lineHeight: 1.6, marginBottom: "var(--esp-4)" }}>{aberta ? a.comentario : a.resumo}</p>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--esp-2)" }}>
+                        <Btn variante="ghost" tamanho="sm" icone={aberta ? ChevronUp : ChevronDown} onClick={() => alternar(a.id)}>
+                          {aberta ? "Recolher" : "Ver comentário completo"}
+                        </Btn>
+                        <Btn variante="ghost" tamanho="sm" icone={Flag} onClick={() => setContestando(a.id)}>
+                          Contestar avaliação
+                        </Btn>
                       </div>
-                    </div>
-                    <Estrelas nota={a.nota} />
-                  </div>
-                  <p style={{ fontSize: "0.875rem", color: "var(--texto-suave)", lineHeight: 1.6, marginBottom: "10px" }}>{aberta ? a.comentario : a.resumo}</p>
-                  <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                    <button type="button" className="tt-link" aria-expanded={aberta} onClick={() => alternar(a.id)} style={{ ...estiloLinkTexto, color: "var(--texto-fraco)" }}>
-                      <Icone icone={aberta ? ChevronUp : ChevronDown} tamanho={16} />
-                      {aberta ? "Recolher" : "Ver comentário completo"}
-                    </button>
-                    <button type="button" className="tt-link" onClick={() => setContestando(a.id)} style={{ ...estiloLinkTexto, color: "#DC2626" }}>
-                      Contestar Avaliação
-                    </button>
-                  </div>
-                </Card>
-              );
-            })}
+                    </article>
+                  </Card>
+                );
+              })}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {contestando !== null && (
         <Modal onClose={fecharContestacao}>
-          <h3 style={{ fontFamily: "Outfit", fontSize: "1.125rem", fontWeight: 700, color: "var(--texto)", marginBottom: "8px" }}>Contestar Avaliação</h3>
-          <p style={{ fontSize: "0.875rem", color: "var(--texto-suave)", marginBottom: "16px" }}>Descreva o motivo da contestação. Nossa equipe analisará em até 5 dias úteis.</p>
-          <TextArea placeholder="Explique o motivo da contestação..." value={motivo} onChange={(e) => setMotivo(e.target.value)} style={{ marginBottom: "16px" }} />
-          <div style={{ display: "flex", gap: "10px" }}>
-            <Btn variante="ghost" style={{ flex: 1 }} onClick={fecharContestacao}>
+          <h3 style={{ fontSize: "var(--tam-lg)", fontWeight: 700, color: "var(--texto)", marginBottom: "var(--esp-2)" }}>Contestar avaliação</h3>
+          <p style={{ fontSize: "var(--tam-base)", color: "var(--texto-suave)", marginBottom: "var(--esp-4)" }}>Descreva o motivo da contestação. Nossa equipe analisará em até 5 dias úteis.</p>
+          <TextArea placeholder="Explique o motivo da contestação..." value={motivo} onChange={(e) => setMotivo(e.target.value)} style={{ marginBottom: "var(--esp-4)" }} />
+          <div style={{ display: "flex", gap: "var(--esp-3)" }}>
+            <Btn variante="secondary" style={{ flex: 1 }} onClick={fecharContestacao}>
               Cancelar
             </Btn>
             <Btn style={{ flex: 1 }} onClick={fecharContestacao}>

@@ -5,7 +5,7 @@ import { novoItem, somaEstimado } from "../services/organizadorService";
 import { moeda } from "../utils/formatar";
 
 const estiloCampoTabela = { padding: "6px 9px", borderRadius: "6px", fontSize: "0.8125rem" };
-const estiloNumero = { ...estiloCampoTabela, fontFamily: "JetBrains Mono" };
+const estiloNumero = estiloCampoTabela;
 const estiloCelula = { padding: "10px 6px" };
 
 // Tabela editável dos itens de custo de um evento.

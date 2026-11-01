@@ -1,0 +1,194 @@
+/* Tela 404 (NaoEncontrado.jsx): um ingresso inválido, com "404" pontilhado, carimbo e picote. */
+
+/* Página inteira (rota que não existe) */
+.tt-404-tela {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--fundo);
+  color: var(--texto);
+}
+
+.tt-404-tela__topo {
+  display: flex;
+  align-items: center;
+  min-height: 72px;
+  padding: 0 clamp(var(--esp-4), 5vw, var(--esp-16));
+}
+
+.tt-404-tela__marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: var(--esp-1);
+  margin-left: calc(-1 * var(--esp-1));
+  border: none;
+  border-radius: var(--raio-md);
+  background: none;
+  color: var(--texto);
+  font-size: var(--tam-md);
+  font-weight: var(--peso-extra);
+  letter-spacing: -0.01em;
+  cursor: pointer;
+}
+
+.tt-404-tela__marca:focus-visible {
+  outline: 2px solid var(--anel-foco);
+  outline-offset: 2px;
+}
+
+/* Conteúdo centralizado */
+.tt-404 {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding: var(--esp-8) var(--esp-4) var(--esp-16);
+}
+
+.tt-404--layout {
+  padding: var(--esp-8) 0;
+}
+
+.tt-404__ingresso {
+  width: 100%;
+  max-width: 520px;
+  overflow: hidden;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-xl);
+  background: var(--superficie);
+  box-shadow: var(--sombra-2);
+}
+
+.tt-404__ingresso .tt-picote {
+  --tt-picote-fundo: var(--fundo);
+}
+
+/* Parte de cima do canhoto: o número e o carimbo */
+.tt-404__topo {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: var(--esp-10) var(--esp-6) var(--esp-8);
+  background: var(--superficie-2);
+}
+
+.tt-404__numero {
+  font-size: clamp(6rem, 22vw, 9.5rem);
+  font-weight: var(--peso-extra);
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+  background: radial-gradient(circle, var(--texto) 38%, transparent 38%) 0 0 / 7px 7px;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  user-select: none;
+}
+
+.tt-404--layout .tt-404__numero {
+  font-size: clamp(5rem, 14vw, 7.5rem);
+}
+
+/* Carimbo por cima do número: é o único movimento da tela */
+.tt-404__carimbo {
+  position: absolute;
+  right: clamp(var(--esp-4), 8%, var(--esp-12));
+  bottom: var(--esp-6);
+  padding: 4px var(--esp-3);
+  border: 2px solid var(--vermelho-texto);
+  border-radius: var(--raio-sm);
+  background: var(--superficie);
+  color: var(--vermelho-texto);
+  font-size: var(--tam-sm);
+  font-weight: var(--peso-negrito);
+  transform: rotate(-8deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tt-404__carimbo {
+    animation: tt-carimbo-404 520ms var(--curva) 250ms both;
+  }
+}
+
+@keyframes tt-carimbo-404 {
+  from { opacity: 0; transform: rotate(-14deg) scale(1.6); }
+  to { opacity: 1; transform: rotate(-8deg) scale(1); }
+}
+
+/* Parte de baixo: mensagem, endereço e ações */
+.tt-404__corpo {
+  padding: var(--esp-8) var(--esp-8) var(--esp-8);
+  text-align: center;
+}
+
+.tt-404__corpo h1 {
+  margin: 0 0 var(--esp-2);
+  font-size: clamp(var(--tam-xl), 1.1rem + 1vw, var(--tam-3xl));
+  font-weight: var(--peso-extra);
+  line-height: var(--linha-justa);
+  letter-spacing: -0.02em;
+  color: var(--texto);
+}
+
+.tt-404__corpo p {
+  max-width: 42ch;
+  margin: 0 auto var(--esp-6);
+  font-size: var(--tam-md);
+  line-height: var(--linha-normal);
+  color: var(--texto-suave);
+}
+
+.tt-404__endereco {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--esp-4);
+  margin: 0 0 var(--esp-6);
+  padding: var(--esp-3) var(--esp-4);
+  border: 1px dashed var(--borda-2);
+  border-radius: var(--raio-md);
+  text-align: left;
+}
+
+.tt-404__endereco dt {
+  flex-shrink: 0;
+  font-size: var(--tam-sm);
+  color: var(--texto-suave);
+}
+
+.tt-404__endereco dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: var(--tam-sm);
+  font-weight: var(--peso-semi);
+  color: var(--texto);
+  text-align: right;
+}
+
+.tt-404__acoes {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--esp-3);
+}
+
+@media (max-width: 480px) {
+  .tt-404__corpo {
+    padding: var(--esp-6) var(--esp-5);
+  }
+
+  .tt-404__endereco {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .tt-404__endereco dd {
+    text-align: left;
+  }
+
+  .tt-404__acoes .tt-btn {
+    flex: 1 1 100%;
+  }
+}

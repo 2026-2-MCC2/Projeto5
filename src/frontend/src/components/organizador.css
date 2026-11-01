@@ -1,0 +1,901 @@
+/* Telas do organizador: cartão de evento, ticket estimado, etapas e comparação de propostas.
+   Cores de status vêm das classes .tt-badge--* e dos tokens -suave / -texto. */
+
+/* ── Selo de status (cabeçalho) ── */
+.tt-selo-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--raio-pilula);
+  font-size: var(--tam-sm);
+  font-weight: var(--peso-semi);
+  white-space: nowrap;
+}
+
+/* ── Cartão de evento ── */
+.tt-grade-eventos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
+  gap: var(--esp-5);
+}
+
+.tt-cartao-evento {
+  --cor-status: var(--texto-suave);
+  --fundo-status: var(--superficie-3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-xl);
+  background: var(--superficie);
+  transition: border-color var(--duracao) var(--curva), box-shadow var(--duracao) var(--curva);
+}
+
+.tt-cartao-evento:not(.tt-cartao-evento--esqueleto):hover {
+  border-color: var(--borda-2);
+  box-shadow: var(--sombra-2);
+}
+
+.tt-cartao-evento--info { --cor-status: var(--azul-texto); --fundo-status: var(--azul-suave); }
+.tt-cartao-evento--success { --cor-status: var(--verde-texto); --fundo-status: var(--verde-suave); }
+.tt-cartao-evento--warning { --cor-status: var(--ambar-texto); --fundo-status: var(--ambar-suave); }
+.tt-cartao-evento--error { --cor-status: var(--vermelho-texto); --fundo-status: var(--vermelho-suave); }
+
+/* Faixa do status: a primeira coisa que se lê no cartão */
+.tt-cartao-evento__faixa {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  padding: var(--esp-3) var(--esp-5);
+  background: var(--fundo-status);
+  color: var(--cor-status);
+  border-bottom: 1px solid color-mix(in srgb, var(--cor-status) 18%, transparent);
+}
+
+.tt-cartao-evento__faixa svg {
+  flex-shrink: 0;
+}
+
+.tt-cartao-evento__faixa strong {
+  display: block;
+  font-size: var(--tam-base);
+  font-weight: var(--peso-negrito);
+  line-height: 1.25;
+}
+
+.tt-cartao-evento__faixa span {
+  display: block;
+  font-size: var(--tam-xs);
+  opacity: 0.85;
+}
+
+.tt-cartao-evento__corpo {
+  flex: 1;
+  padding: var(--esp-5) var(--esp-5) var(--esp-4);
+}
+
+.tt-cartao-evento__titulo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--esp-3);
+  margin-bottom: var(--esp-3);
+}
+
+.tt-cartao-evento__titulo h3 {
+  font-size: var(--tam-lg);
+  font-weight: var(--peso-negrito);
+  line-height: var(--linha-justa);
+  letter-spacing: -0.015em;
+  color: var(--texto);
+}
+
+.tt-cartao-evento__titulo h3 button {
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tt-cartao-evento__titulo h3 button:hover {
+  color: var(--azul-texto);
+}
+
+.tt-cartao-evento__titulo h3 button:focus-visible {
+  outline: 2px solid var(--anel-foco);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.tt-cartao-evento__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: var(--tam-sm);
+  color: var(--texto-suave);
+}
+
+.tt-cartao-evento__meta svg {
+  color: var(--texto-fraco);
+}
+
+/* O picote do cartão fica sobre a superfície; os recortes mostram o fundo da página */
+.tt-cartao-evento .tt-picote {
+  --tt-picote-fundo: var(--fundo);
+}
+
+.tt-cartao-evento__rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--esp-3);
+  padding: var(--esp-4) var(--esp-5);
+}
+
+.tt-cartao-evento__rodape dl {
+  display: flex;
+  gap: var(--esp-6);
+  margin: 0;
+}
+
+.tt-cartao-evento__rodape dt {
+  font-size: var(--tam-xs);
+  color: var(--texto-suave);
+}
+
+.tt-cartao-evento__rodape dd {
+  margin: 0;
+  font-size: var(--tam-md);
+  font-weight: var(--peso-negrito);
+  color: var(--texto);
+}
+
+.tt-cartao-evento__destaque {
+  color: var(--azul-texto) !important;
+}
+
+.tt-cartao-evento__acoes {
+  display: flex;
+  gap: var(--esp-2);
+}
+
+/* Necessidades de um evento (oportunidades do fornecedor) */
+.tt-necessidades {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: var(--esp-4);
+}
+
+.tt-necessidades__item {
+  padding: 2px var(--esp-2);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  background: var(--superficie-2);
+  font-size: var(--tam-xs);
+  color: var(--texto-2);
+}
+
+.tt-necessidades__item--ativo {
+  border-color: var(--ativo-borda);
+  background: var(--ativo-fundo);
+  color: var(--ativo-texto);
+  font-weight: var(--peso-semi);
+}
+
+/* ── Barra de filtros da lista ── */
+.tt-filtros {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--esp-3);
+  margin-bottom: var(--esp-6);
+}
+
+.tt-filtros__abas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-1);
+  padding: var(--esp-1);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-md);
+  background: var(--superficie);
+}
+
+/* ── Ticket estimado ── */
+.tt-ticket-estimado {
+  overflow: hidden;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-xl);
+  background: var(--superficie);
+}
+
+.tt-ticket-estimado .tt-picote {
+  --tt-picote-fundo: var(--fundo);
+}
+
+.tt-ticket-estimado__topo {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--esp-4);
+  padding: var(--esp-5) var(--esp-6);
+}
+
+.tt-ticket-estimado__icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: var(--raio-md);
+  background: var(--azul);
+  color: #FFFFFF;
+}
+
+.tt-ticket-estimado__topo h3 {
+  margin-bottom: 2px;
+  font-size: var(--tam-lg);
+  font-weight: var(--peso-negrito);
+  color: var(--texto);
+}
+
+.tt-ticket-estimado__topo p {
+  font-size: var(--tam-sm);
+  color: var(--texto-suave);
+}
+
+.tt-ticket-estimado__topo strong {
+  color: var(--texto);
+  font-weight: var(--peso-semi);
+}
+
+.tt-ticket-estimado__cenarios {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.tt-ticket-estimado__cenario {
+  display: flex;
+  flex-direction: column;
+  padding: var(--esp-6);
+}
+
+.tt-ticket-estimado__cenario + .tt-ticket-estimado__cenario {
+  border-left: 1px solid var(--borda);
+}
+
+.tt-ticket-estimado__rotulo {
+  font-size: var(--tam-sm);
+  font-weight: var(--peso-semi);
+  color: var(--texto-2);
+}
+
+.tt-ticket-estimado__publico {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 2px 0 var(--esp-4);
+  font-size: var(--tam-sm);
+  color: var(--texto-suave);
+}
+
+.tt-ticket-estimado__preco {
+  font-size: clamp(var(--tam-2xl), 1.3rem + 1vw, var(--tam-4xl));
+  font-weight: var(--peso-extra);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--texto);
+}
+
+/* O cenário de público máximo (ingresso mais barato) leva a cor da marca */
+.tt-ticket-estimado__cenario:last-child .tt-ticket-estimado__preco {
+  color: var(--azul-texto);
+}
+
+.tt-ticket-estimado__por {
+  margin-bottom: var(--esp-4);
+  font-size: var(--tam-sm);
+  color: var(--texto-suave);
+}
+
+.tt-ticket-estimado__cenario dl {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: auto 0 0;
+  padding-top: var(--esp-3);
+  border-top: 1px solid var(--borda);
+}
+
+.tt-ticket-estimado__cenario dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--esp-3);
+  font-size: var(--tam-sm);
+}
+
+.tt-ticket-estimado__cenario dt { color: var(--texto-suave); }
+.tt-ticket-estimado__cenario dd { margin: 0; font-weight: var(--peso-semi); color: var(--texto); }
+
+.tt-ticket-estimado__rodape {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: var(--esp-2);
+  padding: var(--esp-4) var(--esp-6);
+  background: var(--verde-suave);
+  border-top: 1px solid var(--verde-borda);
+  font-size: var(--tam-sm);
+  color: var(--verde-texto);
+}
+
+.tt-ticket-estimado__rodape svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.tt-ticket-estimado__nota {
+  flex-basis: 100%;
+  padding-left: 24px;
+  color: var(--texto-suave);
+}
+
+.tt-ticket-estimado__vazio {
+  padding: var(--esp-6);
+  font-size: var(--tam-base);
+  color: var(--texto-suave);
+}
+
+/* ── Etapas do formulário ── */
+.tt-etapas {
+  display: flex;
+  gap: var(--esp-2);
+  margin: 0 0 var(--esp-8);
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.tt-etapas__item {
+  flex: 1;
+  min-width: 150px;
+}
+
+.tt-etapas__item button {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  width: 100%;
+  padding: var(--esp-3);
+  border: none;
+  border-top: 3px solid var(--borda);
+  background: none;
+  color: var(--texto-suave);
+  font-size: var(--tam-sm);
+  font-weight: var(--peso-medio);
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transicao-cor);
+}
+
+.tt-etapas__item button:hover {
+  color: var(--texto);
+}
+
+.tt-etapas__item button:focus-visible {
+  outline: 2px solid var(--anel-foco);
+  outline-offset: 2px;
+}
+
+.tt-etapas__numero {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  border: 1.5px solid var(--borda-2);
+  border-radius: 50%;
+  background: var(--superficie);
+  font-size: var(--tam-xs);
+  font-weight: var(--peso-negrito);
+}
+
+.tt-etapas__item--atual button {
+  border-top-color: var(--azul);
+  color: var(--texto);
+  font-weight: var(--peso-semi);
+}
+
+.tt-etapas__item--atual .tt-etapas__numero {
+  border-color: var(--azul);
+  background: var(--azul);
+  color: #FFFFFF;
+}
+
+.tt-etapas__item--feita button {
+  border-top-color: var(--verde);
+}
+
+.tt-etapas__item--feita .tt-etapas__numero {
+  border-color: var(--verde);
+  background: var(--verde);
+  color: #FFFFFF;
+}
+
+/* ── Seções de formulário ── */
+.tt-secao-form {
+  display: grid;
+  grid-template-columns: minmax(180px, 260px) minmax(0, 1fr);
+  gap: var(--esp-8);
+  padding: var(--esp-8) 0;
+  border-top: 1px solid var(--borda);
+}
+
+.tt-secao-form:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.tt-secao-form__cabeca h3 {
+  margin-bottom: 4px;
+  font-size: var(--tam-md);
+  font-weight: var(--peso-semi);
+  color: var(--texto);
+}
+
+.tt-secao-form__cabeca p {
+  font-size: var(--tam-sm);
+  line-height: var(--linha-normal);
+  color: var(--texto-suave);
+}
+
+.tt-secao-form__campos {
+  display: grid;
+  gap: var(--esp-4);
+}
+
+.tt-campos-linha {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: var(--esp-4);
+}
+
+.tt-dica-campo {
+  display: block;
+  margin-top: 6px;
+  font-size: var(--tam-xs);
+  color: var(--texto-suave);
+}
+
+/* Cartões de categoria do evento */
+.tt-categorias {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: var(--esp-3);
+}
+
+.tt-categoria {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--esp-2);
+  padding: var(--esp-4);
+  border: 1.5px solid var(--borda-2);
+  border-radius: var(--raio-lg);
+  background: var(--superficie);
+  color: var(--texto-2);
+  font-size: var(--tam-sm);
+  font-weight: var(--peso-semi);
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transicao-cor);
+}
+
+.tt-categoria svg {
+  color: var(--texto-suave);
+}
+
+.tt-categoria:hover:not([aria-pressed="true"]) {
+  border-color: var(--texto-fraco);
+}
+
+.tt-categoria[aria-pressed="true"] {
+  border-color: var(--azul);
+  background: var(--ativo-fundo);
+  color: var(--ativo-texto);
+}
+
+.tt-categoria[aria-pressed="true"] svg {
+  color: var(--azul-texto);
+}
+
+.tt-categoria:focus-visible {
+  outline: 2px solid var(--anel-foco);
+  outline-offset: 2px;
+}
+
+/* Rodapé de navegação entre etapas */
+.tt-navegacao-etapas {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--esp-3);
+  margin-top: var(--esp-6);
+  padding-top: var(--esp-6);
+  border-top: 1px solid var(--borda);
+}
+
+.tt-navegacao-etapas__direita {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--esp-3);
+  margin-left: auto;
+}
+
+.tt-pendencia {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--tam-sm);
+  color: var(--ambar-texto);
+}
+
+/* ── Comparação de propostas ── */
+.tt-grupo-propostas {
+  overflow: hidden;
+  margin-bottom: var(--esp-6);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-xl);
+  background: var(--superficie);
+}
+
+.tt-grupo-propostas__cabeca {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--esp-3);
+  padding: var(--esp-4) var(--esp-5);
+  background: var(--superficie-2);
+  border-bottom: 1px solid var(--borda);
+}
+
+.tt-grupo-propostas__cabeca h3 {
+  font-size: var(--tam-md);
+  font-weight: var(--peso-semi);
+  color: var(--texto);
+}
+
+.tt-grupo-propostas__cabeca span {
+  font-size: var(--tam-sm);
+  color: var(--texto-suave);
+}
+
+.tt-proposta {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(150px, 220px) auto;
+  align-items: center;
+  gap: var(--esp-4);
+  padding: var(--esp-4) var(--esp-5);
+  transition: background-color var(--duracao) var(--curva);
+}
+
+.tt-proposta + .tt-proposta {
+  border-top: 1px solid var(--borda);
+}
+
+.tt-proposta--marcada {
+  background: var(--selecionado-fundo);
+  box-shadow: inset 3px 0 0 var(--azul);
+}
+
+.tt-proposta__marcar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 2px solid var(--borda-2);
+  border-radius: 50%;
+  background: var(--superficie);
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: var(--transicao-cor);
+}
+
+.tt-proposta__marcar[aria-pressed="true"] {
+  border-color: var(--azul);
+  background: var(--azul);
+}
+
+.tt-proposta__marcar:focus-visible {
+  outline: 2px solid var(--anel-foco);
+  outline-offset: 2px;
+}
+
+.tt-proposta__nome {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--esp-2);
+  margin-bottom: 4px;
+}
+
+.tt-proposta__nome strong {
+  font-size: var(--tam-md);
+  font-weight: var(--peso-semi);
+  color: var(--texto);
+}
+
+.tt-proposta__avaliacao {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--esp-2);
+  font-size: var(--tam-sm);
+  color: var(--texto-suave);
+}
+
+/* Valor + barra proporcional ao maior preço do grupo */
+.tt-proposta__preco {
+  text-align: right;
+}
+
+.tt-proposta__valor {
+  display: block;
+  font-size: var(--tam-lg);
+  font-weight: var(--peso-negrito);
+  color: var(--texto);
+}
+
+.tt-proposta--melhor .tt-proposta__valor {
+  color: var(--verde-texto);
+}
+
+.tt-proposta__diferenca {
+  display: block;
+  font-size: var(--tam-xs);
+  color: var(--texto-suave);
+}
+
+.tt-proposta--melhor .tt-proposta__diferenca {
+  color: var(--verde-texto);
+  font-weight: var(--peso-semi);
+}
+
+.tt-proposta__barra {
+  height: 4px;
+  margin-top: 6px;
+  border-radius: var(--raio-pilula);
+  background: var(--superficie-3);
+  overflow: hidden;
+}
+
+.tt-proposta__barra span {
+  display: block;
+  height: 100%;
+  margin-left: auto;
+  border-radius: inherit;
+  background: var(--borda-2);
+}
+
+.tt-proposta--melhor .tt-proposta__barra span {
+  background: var(--verde);
+}
+
+/* Barra fixa da seleção: começa depois do menu lateral */
+.tt-barra-selecao {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: var(--largura-lateral, 0);
+  z-index: 50;
+  padding: var(--esp-3) var(--esp-8);
+  background: color-mix(in srgb, var(--superficie) 94%, transparent);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--borda);
+  box-shadow: 0 -8px 24px rgba(17, 24, 39, 0.06);
+}
+
+.tt-barra-selecao__linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--esp-3);
+  max-width: 1136px;
+  margin: 0 auto;
+}
+
+.tt-barra-selecao__resumo span {
+  display: block;
+  font-size: var(--tam-sm);
+  color: var(--texto-suave);
+}
+
+.tt-barra-selecao__resumo strong {
+  font-size: var(--tam-xl);
+  font-weight: var(--peso-extra);
+  letter-spacing: -0.02em;
+  color: var(--texto);
+}
+
+.tt-espaco-barra {
+  height: 96px;
+}
+
+/* ── Layout de detalhes ── */
+.tt-detalhes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: var(--esp-6);
+  align-items: start;
+}
+
+.tt-detalhes__principal,
+.tt-detalhes__lateral {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-6);
+  min-width: 0;
+}
+
+.tt-indicadores {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--esp-4);
+  margin-bottom: var(--esp-6);
+}
+
+/* Layout com a coluna estreita à esquerda (reputação do fornecedor) */
+.tt-coluna-esquerda {
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  gap: var(--esp-6);
+  align-items: start;
+}
+
+/* Número de destaque da página (nota média): o único número grande da tela */
+.tt-nota-media {
+  display: flex;
+  align-items: baseline;
+  gap: var(--esp-2);
+  margin: var(--esp-1) 0 var(--esp-2);
+}
+
+.tt-nota-media strong {
+  font-size: var(--tam-6xl);
+  font-weight: var(--peso-extra);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--texto);
+}
+
+.tt-nota-media span {
+  font-size: var(--tam-lg);
+  color: var(--texto-suave);
+}
+
+/* Coluna lateral que acompanha a rolagem (resumo da proposta) */
+.tt-lateral-fixa {
+  position: sticky;
+  top: calc(56px + var(--esp-6));
+}
+
+/* Progresso "3 de 4 itens com preço" no cabeçalho do formulário */
+.tt-progresso-itens {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 160px;
+  font-size: var(--tam-sm);
+  color: var(--texto-suave);
+}
+
+.tt-progresso-itens strong {
+  color: var(--texto);
+}
+
+.tt-progresso-itens__barra {
+  height: 6px;
+  border-radius: var(--raio-pilula);
+  background: var(--azul-suave);
+  overflow: hidden;
+}
+
+.tt-progresso-itens__barra span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--azul);
+  transition: width var(--duracao-lenta) var(--curva);
+}
+
+/* ── Responsivo ── */
+@media (max-width: 1023px) {
+  .tt-detalhes {
+    grid-template-columns: 1fr;
+  }
+
+  .tt-lateral-fixa {
+    position: static;
+  }
+
+  .tt-coluna-esquerda {
+    grid-template-columns: 1fr;
+  }
+
+  .tt-barra-selecao {
+    left: 0;
+    padding: var(--esp-3) var(--esp-4);
+  }
+}
+
+@media (max-width: 760px) {
+  .tt-secao-form {
+    grid-template-columns: 1fr;
+    gap: var(--esp-4);
+    padding: var(--esp-6) 0;
+  }
+
+  .tt-proposta {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .tt-proposta__preco {
+    grid-column: 2;
+    text-align: left;
+  }
+
+  .tt-proposta__barra span {
+    margin-left: 0;
+  }
+
+  .tt-proposta > .tt-btn {
+    grid-column: 2;
+    justify-self: start;
+  }
+}
+
+@media (max-width: 560px) {
+  .tt-ticket-estimado__cenarios {
+    grid-template-columns: 1fr;
+  }
+
+  .tt-ticket-estimado__cenario + .tt-ticket-estimado__cenario {
+    border-left: none;
+    border-top: 1px solid var(--borda);
+  }
+
+  .tt-etapas__rotulo {
+    display: none;
+  }
+
+  .tt-etapas__item {
+    min-width: 0;
+  }
+
+  .tt-etapas__item button {
+    justify-content: center;
+  }
+
+  .tt-cartao-evento__acoes {
+    width: 100%;
+  }
+
+  .tt-cartao-evento__acoes .tt-btn {
+    flex: 1;
+  }
+}

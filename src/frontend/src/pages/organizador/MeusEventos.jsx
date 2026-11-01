@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Calendar, MapPin, Plus, RefreshCw, Search } from "lucide-react";
+import { CalendarPlus, Plus, SearchX } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
-import { Aviso, Card, Badge, Btn, Carregando, Chip, CampoBusca, StatusBadge, TextoComIcone, TituloPagina, Valor, Vazio } from "../../components/ui";
+import { Aviso, Btn, Chip, CampoBusca, ErroCarregar, TituloPagina, Vazio } from "../../components/ui";
+import { CartaoEvento, EsqueletoCartaoEvento } from "../../components/organizador";
 import { listarEventos } from "../../services/organizadorService";
-import { ROTULO_STATUS_EVENTO } from "../../data/statusEvento";
-import { dataCurta, moeda } from "../../utils/formatar";
 
 const abas = [
   { rotulo: "Todos", filtro: () => true },
@@ -46,68 +45,78 @@ export default function MeusEventos() {
     (e) => aba.filtro(e) && (!termo || e.nome.toLowerCase().includes(termo) || e.local.toLowerCase().includes(termo))
   );
 
+  const criar = () => navigate("/organizador/eventos/novo");
+
+  function limparFiltros() {
+    setBusca("");
+    setAba(abas[0]);
+  }
+
   return (
     <>
-      <TituloPagina titulo="Meus Eventos" sub={carregando ? "Carregando..." : `${eventos.length} eventos cadastrados`}>
-        <Btn onClick={() => navigate("/organizador/eventos/novo")} icone={Plus}>
+      <TituloPagina
+        titulo="Meus Eventos"
+        sub={carregando ? "Carregando seus eventos..." : erro ? undefined : `${eventos.length} ${eventos.length === 1 ? "evento cadastrado" : "eventos cadastrados"}`}
+      >
+        <Btn onClick={criar} icone={Plus}>
           Criar Evento
         </Btn>
       </TituloPagina>
 
       {sucesso && (
-        <Aviso variante="sucesso" onFechar={() => setSucesso("")} style={{ marginBottom: "1.25rem" }}>
+        <Aviso variante="sucesso" onFechar={() => setSucesso("")} style={{ marginBottom: "var(--esp-5)" }}>
           {sucesso}
         </Aviso>
       )}
 
-      <Card style={{ marginBottom: "1.5rem", padding: "1rem 1.25rem" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
+      {!erro && (carregando || eventos.length > 0) && (
+        <div className="tt-filtros">
           <CampoBusca placeholder="Buscar por nome ou local..." valor={busca} onChange={setBusca} />
-          <div style={{ display: "flex", gap: "4px" }}>
+          <div className="tt-filtros__abas" role="group" aria-label="Filtrar por status">
             {abas.map((a) => (
               <Chip key={a.rotulo} rotulo={`${a.rotulo} (${eventos.filter(a.filtro).length})`} ativo={aba === a} onClick={() => setAba(a)} redondo={false} />
             ))}
           </div>
         </div>
-      </Card>
+      )}
 
       {carregando ? (
-        <Carregando texto="Carregando seus eventos..." />
+        <div className="tt-grade-eventos" role="status" aria-label="Carregando eventos">
+          {Array.from({ length: 6 }, (_, i) => (
+            <EsqueletoCartaoEvento key={i} />
+          ))}
+        </div>
       ) : erro ? (
-        <Aviso variante="erro">
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
-            <span>{erro}</span>
-            <Btn variante="danger" tamanho="sm" icone={RefreshCw} onClick={() => { setCarregando(true); setErro(""); setTentativa((n) => n + 1); }}>
-              Tentar de novo
-            </Btn>
-          </div>
-        </Aviso>
+        <ErroCarregar
+          titulo="Não foi possível carregar seus eventos"
+          mensagem={erro}
+          onTentar={() => {
+            setCarregando(true);
+            setErro("");
+            setTentativa((n) => n + 1);
+          }}
+        />
+      ) : eventos.length === 0 ? (
+        <Vazio icone={CalendarPlus} titulo="Você ainda não tem eventos" texto="Crie seu primeiro evento, liste o que precisa contratar e comece a receber propostas de fornecedores.">
+          <Btn tamanho="lg" icone={Plus} onClick={criar}>
+            Criar primeiro evento
+          </Btn>
+        </Vazio>
+      ) : filtrados.length === 0 ? (
+        <Vazio icone={SearchX} titulo="Nenhum evento encontrado" texto="Nenhum evento combina com a busca e o filtro escolhidos.">
+          <Btn variante="secondary" onClick={limparFiltros}>
+            Limpar busca e filtros
+          </Btn>
+        </Vazio>
       ) : (
-        <div style={{ display: "grid", gap: "10px" }}>
+        <div className="tt-grade-eventos">
           {filtrados.map((ev) => (
-            <Card key={ev.id} style={{ padding: "1.125rem 1.5rem" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
-                <div style={{ flex: 1, minWidth: "200px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "5px" }}>
-                    <h3 style={{ fontFamily: "Outfit", fontSize: "1rem", fontWeight: 700, color: "var(--texto)" }}>{ev.nome}</h3>
-                    <StatusBadge status={ROTULO_STATUS_EVENTO[ev.status]} />
-                  </div>
-                  <div style={{ display: "flex", gap: "16px", fontSize: "0.8125rem", color: "var(--texto-fraco)", flexWrap: "wrap" }}>
-                    <TextoComIcone icone={Calendar}>{dataCurta(ev.data_inicio)}</TextoComIcone>
-                    <TextoComIcone icone={MapPin}>{ev.local}</TextoComIcone>
-                    <Valor cor="var(--texto-suave)" tamanho="0.8125rem" peso={400}>
-                      {moeda(ev.orcamento)}
-                    </Valor>
-                  </div>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "20px", flexShrink: 0 }}>
-                  <div style={{ textAlign: "center" }}>
-                    <div style={{ fontFamily: "Outfit", fontSize: "1.25rem", fontWeight: 700, color: "#2563EB" }}>{ev.total_propostas}</div>
-                    <div style={{ fontSize: "0.6875rem", color: "var(--texto-fraco)", marginTop: "1px" }}>propostas</div>
-                  </div>
-                  {ev.categoria && <Badge>{ev.categoria}</Badge>}
-                </div>
-                <div style={{ display: "flex", gap: "6px", flexShrink: 0 }}>
+            <CartaoEvento
+              key={ev.id}
+              evento={ev}
+              onAbrir={() => navigate(`/organizador/eventos/${ev.id}`)}
+              acoes={
+                <>
                   <Btn variante="secondary" tamanho="sm" onClick={() => navigate(`/organizador/eventos/${ev.id}`)}>
                     Detalhes
                   </Btn>
@@ -116,14 +125,10 @@ export default function MeusEventos() {
                       Propostas
                     </Btn>
                   )}
-                </div>
-              </div>
-            </Card>
+                </>
+              }
+            />
           ))}
-
-          {filtrados.length === 0 && (
-            <Vazio icone={Search} texto={eventos.length === 0 ? "Você ainda não criou nenhum evento." : "Nenhum evento encontrado"} />
-          )}
         </div>
       )}
     </>

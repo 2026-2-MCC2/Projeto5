@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Calendar, ClipboardList, MapPin, Users } from "lucide-react";
-import { Card, Badge, Btn, Chip, CampoBusca, TextoComIcone, TituloPagina, Valor, Vazio } from "../../components/ui";
+import { ArrowRight, SearchX } from "lucide-react";
+import { Btn, Chip, CampoBusca, TituloPagina, Vazio } from "../../components/ui";
+import { CartaoOportunidade } from "../../components/fornecedor";
 import { listarEventos } from "../../services/fornecedorService";
 import { CATEGORIAS_FORNECEDOR } from "../../data/categorias";
-import { dataCurta, faixaMoeda } from "../../utils/formatar";
 
 const TODAS = "Todas as Ofertas";
 const filtros = [TODAS, ...CATEGORIAS_FORNECEDOR];
@@ -22,59 +22,48 @@ export default function Oportunidades() {
     return casaBusca && casaFiltro;
   });
 
+  function limparFiltros() {
+    setBusca("");
+    setFiltro(TODAS);
+  }
+
   return (
     <>
       <TituloPagina titulo="Eventos Disponíveis para Cotação" sub={`${eventos.length} oportunidades abertas para sua categoria`} />
 
-      <Card style={{ marginBottom: "1.25rem", padding: "1rem 1.25rem" }}>
+      <div className="tt-filtros">
         <CampoBusca placeholder="Buscar por nome, categoria..." valor={busca} onChange={setBusca} />
-      </Card>
-
-      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "1.5rem" }}>
+      </div>
+      <div style={{ display: "flex", gap: "var(--esp-2)", flexWrap: "wrap", margin: "calc(-1 * var(--esp-3)) 0 var(--esp-6)" }} role="group" aria-label="Filtrar pelo que o evento procura">
         {filtros.map((f) => (
           <Chip key={f} rotulo={f} ativo={filtro === f} onClick={() => setFiltro(f)} />
         ))}
       </div>
 
-      <div style={{ display: "grid", gap: "12px" }}>
-        {filtrados.map((ev) => (
-          <Card key={ev.id} style={{ padding: "1.5rem" }}>
-            <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap" }}>
-              <div style={{ flex: 1, minWidth: "200px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-                  <h3 style={{ fontFamily: "Outfit", fontSize: "1.0625rem", fontWeight: 700, color: "var(--texto)" }}>{ev.nome}</h3>
-                  <Badge>{ev.categoria}</Badge>
-                </div>
-                <div style={{ display: "flex", gap: "16px", fontSize: "0.8125rem", color: "var(--texto-fraco)", marginBottom: "12px", flexWrap: "wrap" }}>
-                  <TextoComIcone icone={Calendar}>{dataCurta(ev.data)}</TextoComIcone>
-                  <TextoComIcone icone={MapPin}>{ev.local}</TextoComIcone>
-                  <TextoComIcone icone={Users}>{ev.convidados.toLocaleString("pt-BR")} convidados</TextoComIcone>
-                </div>
-                <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-                  {ev.necessidades.map((n) => (
-                    <span key={n} style={{ fontSize: "0.6875rem", padding: "3px 8px", borderRadius: "4px", background: "var(--superficie-3)", border: "1px solid var(--borda)", color: "var(--texto-suave)" }}>
-                      {n}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", justifyContent: "space-between", flexShrink: 0, gap: "12px" }}>
-                <div style={{ textAlign: "right" }}>
-                  <Valor tamanho="0.9375rem" peso={700}>
-                    {faixaMoeda(ev.orcamento)}
-                  </Valor>
-                  <div style={{ fontSize: "0.75rem", color: "var(--texto-fraco)", marginTop: "2px" }}>Prazo: {dataCurta(ev.prazo)}</div>
-                </div>
+      {eventos.length === 0 ? (
+        <Vazio icone={SearchX} titulo="Nenhuma oportunidade aberta agora" texto="Quando um organizador publicar um evento que precise do seu serviço, ele aparece aqui." />
+      ) : filtrados.length === 0 ? (
+        <Vazio icone={SearchX} titulo="Nenhum evento encontrado" texto="Nenhum evento combina com a busca e o filtro escolhidos.">
+          <Btn variante="secondary" onClick={limparFiltros}>
+            Limpar busca e filtros
+          </Btn>
+        </Vazio>
+      ) : (
+        <div className="tt-grade-eventos">
+          {filtrados.map((ev) => (
+            <CartaoOportunidade
+              key={ev.id}
+              evento={ev}
+              destaque={filtro !== TODAS ? filtro : undefined}
+              acao={
                 <Btn tamanho="sm" iconeDepois={ArrowRight} onClick={() => navigate(`/fornecedor/eventos/${ev.id}`)}>
-                  Ver Detalhes &amp; Cotar
+                  Ver detalhes e cotar
                 </Btn>
-              </div>
-            </div>
-          </Card>
-        ))}
-
-        {filtrados.length === 0 && <Vazio icone={ClipboardList} texto="Nenhum evento encontrado para esta busca" />}
-      </div>
+              }
+            />
+          ))}
+        </div>
+      )}
     </>
   );
 }

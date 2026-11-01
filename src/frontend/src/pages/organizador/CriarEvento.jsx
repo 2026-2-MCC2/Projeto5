@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Check, ClipboardList, Rocket, X } from "lucide-react";
-import { Aviso, Card, CabecalhoCard, Btn, Chip, Icone, IconeDestaque, TextoComIcone, TituloPagina } from "../../components/ui";
+import { ArrowLeft, ArrowRight, Check, CircleAlert, Rocket, Users, X } from "lucide-react";
+import { Aviso, Card, CabecalhoCard, Btn, Chip, Icone, TituloPagina, Vazio } from "../../components/ui";
 import EditorItens from "../../components/EditorItens";
 import FormularioEvento, { TituloSecao } from "../../components/FormularioEvento";
+import { CartaoEvento, Etapas, TicketCenarios } from "../../components/organizador";
 import { eventoDoFormulario, formularioVazio, problemasDoFormulario } from "../../utils/formularioEvento";
 import { CATEGORIAS_FORNECEDOR } from "../../data/categorias";
-import { criarEvento, novoItem } from "../../services/organizadorService";
+import { criarEvento, novoItem, somaEstimado } from "../../services/organizadorService";
 
-const passos = ["Informações Básicas", "Composição de Custos", "Fornecedores", "Publicar"];
+const passos = ["Informações básicas", "Composição de custos", "Fornecedores", "Publicar"];
 
 export default function CriarEvento() {
   const navigate = useNavigate();
@@ -59,59 +60,48 @@ export default function CriarEvento() {
   // Mensagem do botão desativado de "Salvar como Rascunho".
   const dicaRascunho = podeSalvar ? undefined : problemas[0];
 
+  // O que falta em cada etapa, mostrado ao lado do botão de continuar.
+  const pendenciaDaEtapa = [
+    problemas[0] ?? "Escolha a categoria do evento.",
+    "Cada item precisa de descrição e custo estimado.",
+  ];
+
+  const totalEstimado = somaEstimado(itens);
+  const etapasFeitas = [0, 1, 2].filter((i) => i < passo && etapaCompleta[i]);
+
+  // Prévia do cartão como ele vai aparecer em "Meus Eventos" depois de publicado.
+  const previa = {
+    nome: formulario.nome,
+    status: "em_andamento",
+    data_inicio: formulario.data_inicio,
+    local: formulario.local,
+    categoria: formulario.categoria,
+    publico_minimo: formulario.publico_minimo,
+    publico_maximo: formulario.publico_maximo,
+    orcamento: totalEstimado,
+    total_propostas: 0,
+  };
+
   return (
     <>
-      <TituloPagina titulo="Criar Novo Evento" sub="Preencha as informações para publicar seu evento">
+      <TituloPagina titulo="Criar Novo Evento" sub="Preencha as informações e publique para receber propostas">
         <Btn variante="ghost" tamanho="sm" icone={X} onClick={() => navigate("/organizador")}>
           Cancelar
         </Btn>
       </TituloPagina>
 
-      <div style={{ display: "flex", alignItems: "center", marginBottom: "2.5rem", overflowX: "auto", paddingBottom: "4px" }}>
-        {passos.map((p, i) => {
-          const atual = i === passo;
-          // Marca com um check as etapas já visitadas que estão completas.
-          const feita = i < passo && etapaCompleta[i];
-          return (
-            <div key={p} style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
-              <button
-                type="button"
-                onClick={() => irPara(i)}
-                style={{ display: "flex", alignItems: "center", gap: "8px", padding: "7px 12px", borderRadius: "8px", background: atual ? "var(--ativo-fundo)" : "transparent", border: "none", cursor: "pointer" }}
-              >
-                <div
-                  style={{
-                    width: "24px",
-                    height: "24px",
-                    borderRadius: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "0.6875rem",
-                    fontWeight: 700,
-                    flexShrink: 0,
-                    background: feita ? "#2563EB" : atual ? "var(--ativo-borda)" : "var(--superficie-3)",
-                    color: feita ? "#fff" : atual ? "var(--ativo-texto)" : "var(--texto-fraco)",
-                    border: `2px solid ${feita || atual ? "#2563EB" : "var(--borda)"}`,
-                  }}
-                >
-                  {feita ? <Icone icone={Check} tamanho={14} /> : i + 1}
-                </div>
-                <span style={{ fontSize: "0.8125rem", fontWeight: atual ? 600 : 400, color: atual ? "var(--ativo-texto)" : feita ? "var(--texto-suave)" : "var(--texto-fraco)", whiteSpace: "nowrap" }}>{p}</span>
-              </button>
-              {i < passos.length - 1 && <div style={{ width: "20px", height: "2px", background: feita ? "#2563EB" : "var(--borda)", flexShrink: 0 }} />}
-            </div>
-          );
-        })}
-      </div>
+      <Etapas etapas={passos} atual={passo} feitas={etapasFeitas} onIr={irPara} />
 
       {passo === 0 && (
-        <div style={{ display: "grid", gap: "1.25rem" }}>
+        <div style={{ display: "grid", gap: "var(--esp-6)" }}>
           <FormularioEvento valores={formulario} onChange={setFormulario} />
 
-          <Card style={{ padding: "1.5rem" }}>
-            <TituloSecao>Fornecedores que Pretende Orçar</TituloSecao>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+          <Card style={{ padding: "var(--esp-8)" }}>
+            <TituloSecao>Fornecedores que pretende orçar</TituloSecao>
+            <p style={{ fontSize: "var(--tam-sm)", color: "var(--texto-suave)", margin: "calc(-1 * var(--esp-3)) 0 var(--esp-4)" }}>
+              Opcional. Cada tipo escolhido vira um item sugerido na composição de custos.
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--esp-2)" }}>
               {CATEGORIAS_FORNECEDOR.map((f) => {
                 const ativo = fornecedores.includes(f);
                 return <Chip key={f} rotulo={f} icone={ativo ? Check : undefined} ativo={ativo} onClick={() => alternarFornecedor(f)} />;
@@ -123,22 +113,24 @@ export default function CriarEvento() {
 
       {passo === 1 && (
         <Card style={{ overflow: "hidden" }}>
-          <CabecalhoCard titulo="Composição de Custos" sub="Liste os itens do evento e quanto você estima gastar em cada um" />
+          <CabecalhoCard titulo="Composição de custos" sub="Liste os itens do evento e quanto você estima gastar em cada um" />
           <EditorItens itens={itens} onChange={setItens} />
         </Card>
       )}
 
       {passo === 2 && (
-        <Card style={{ padding: "1.5rem" }}>
-          <TituloSecao>Fornecedores Selecionados</TituloSecao>
+        <Card style={{ padding: "var(--esp-8)" }}>
+          <TituloSecao>Fornecedores selecionados</TituloSecao>
           {fornecedores.length === 0 ? (
-            <p style={{ color: "var(--texto-fraco)", fontSize: "0.875rem" }}>Nenhum fornecedor selecionado. Volte à primeira etapa para escolher.</p>
+            <Vazio icone={Users} titulo="Nenhum tipo de fornecedor escolhido" texto="Esta etapa é opcional. Se quiser, volte à primeira etapa e escolha os tipos de fornecedor.">
+              <Btn variante="secondary" icone={ArrowLeft} onClick={() => irPara(0)}>
+                Escolher fornecedores
+              </Btn>
+            </Vazio>
           ) : (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--esp-2)" }}>
               {fornecedores.map((f) => (
-                <div key={f} style={{ padding: "7px 14px", borderRadius: "8px", background: "var(--ativo-fundo)", border: "1px solid var(--ativo-borda)", color: "var(--ativo-texto)", fontSize: "0.875rem", fontWeight: 500 }}>
-                  <TextoComIcone icone={Check}>{f}</TextoComIcone>
-                </div>
+                <Chip key={f} rotulo={f} icone={Check} ativo onClick={() => alternarFornecedor(f)} />
               ))}
             </div>
           )}
@@ -146,56 +138,84 @@ export default function CriarEvento() {
       )}
 
       {passo === 3 && (
-        <Card style={{ padding: "2.5rem", textAlign: "center" }}>
-          <IconeDestaque icone={pendencias.length ? ClipboardList : Rocket} variante={pendencias.length ? "warning" : "info"} />
-          <h3 style={{ fontFamily: "Outfit", fontSize: "1.5rem", fontWeight: 700, color: "var(--texto)", marginBottom: "8px" }}>
-            {pendencias.length ? "Quase lá!" : "Pronto para publicar!"}
-          </h3>
-          {pendencias.length ? (
-            <div style={{ maxWidth: "420px", margin: "0 auto 2rem" }}>
-              <p style={{ color: "var(--texto-suave)", fontSize: "0.9375rem", marginBottom: "12px" }}>Complete estas etapas para publicar o evento:</p>
-              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                {pendencias.map((i) => (
-                  <Btn key={i} variante="danger" iconeDepois={ArrowRight} onClick={() => irPara(i)}>
-                    {i === 0 ? `Informações Básicas: ${problemas[0] ?? "escolha a categoria do evento"}` : "Composição de Custos: cada item precisa de descrição e custo"}
-                  </Btn>
-                ))}
+        <div className="tt-detalhes">
+          <div className="tt-detalhes__principal">
+            <Card style={{ padding: "var(--esp-8)" }}>
+              <TituloSecao>{pendencias.length ? "Quase lá" : "Pronto para publicar"}</TituloSecao>
+              {pendencias.length ? (
+                <>
+                  <p style={{ color: "var(--texto-suave)", marginBottom: "var(--esp-4)" }}>Complete estas etapas para publicar o evento:</p>
+                  <div style={{ display: "grid", gap: "var(--esp-2)" }}>
+                    {pendencias.map((i) => (
+                      <button key={i} type="button" className="tt-btn tt-btn--danger tt-btn--md" style={{ justifyContent: "space-between", whiteSpace: "normal", textAlign: "left", padding: "var(--esp-3) var(--esp-4)" }} onClick={() => irPara(i)}>
+                        <span>
+                          <strong>{passos[i]}:</strong> {pendenciaDaEtapa[i]}
+                        </span>
+                        <Icone icone={ArrowRight} tamanho={16} />
+                      </button>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <p style={{ color: "var(--texto-suave)" }}>Seu evento será visível para os fornecedores selecionados, que poderão enviar propostas comerciais.</p>
+              )}
+
+              {erro && (
+                <Aviso variante="erro" onFechar={() => setErro("")} style={{ marginTop: "var(--esp-5)" }}>
+                  {erro}
+                </Aviso>
+              )}
+
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--esp-3)", marginTop: "var(--esp-6)" }}>
+                <Btn variante="secondary" onClick={() => salvar("rascunho")} disabled={!podeSalvar || salvando !== null} carregando={salvando === "rascunho"}>
+                  {salvando === "rascunho" ? "Salvando..." : "Salvar como Rascunho"}
+                </Btn>
+                <Btn tamanho="lg" onClick={() => salvar("em_andamento")} disabled={pendencias.length > 0 || salvando !== null} carregando={salvando === "em_andamento"} icone={Rocket}>
+                  {salvando === "em_andamento" ? "Publicando..." : "Publicar Evento"}
+                </Btn>
               </div>
-            </div>
-          ) : (
-            <p style={{ color: "var(--texto-suave)", fontSize: "0.9375rem", maxWidth: "400px", margin: "0 auto 2rem" }}>
-              Seu evento será visível para os fornecedores selecionados, que poderão enviar propostas comerciais.
-            </p>
-          )}
-          {erro && (
-            <Aviso variante="erro" onFechar={() => setErro("")} style={{ maxWidth: "460px", margin: "0 auto 1.25rem", textAlign: "left" }}>
-              {erro}
-            </Aviso>
-          )}
-          <div style={{ display: "flex", justifyContent: "center", gap: "12px" }}>
-            <Btn variante="secondary" onClick={() => salvar("rascunho")} disabled={!podeSalvar || salvando !== null} carregando={salvando === "rascunho"}>
-              {salvando === "rascunho" ? "Salvando..." : "Salvar como Rascunho"}
-            </Btn>
-            <Btn onClick={() => salvar("em_andamento")} disabled={pendencias.length > 0 || salvando !== null} carregando={salvando === "em_andamento"} icone={Rocket}>
-              {salvando === "em_andamento" ? "Publicando..." : "Publicar Evento"}
-            </Btn>
+            </Card>
+
+            {podeSalvar && (
+              <TicketCenarios
+                custo={totalEstimado}
+                rotuloCusto="Custo estimado"
+                publicoMinimo={Number(formulario.publico_minimo)}
+                publicoMaximo={Number(formulario.publico_maximo)}
+                margem={formulario.margem === "" ? 0 : Number(formulario.margem) / 100}
+                nota="Prévia com os custos estimados. Depois de fechar as propostas, o ticket é recalculado com os valores acordados."
+              />
+            )}
           </div>
-        </Card>
+
+          <div className="tt-detalhes__lateral">
+            <span className="tt-rotulo" style={{ marginBottom: "calc(-1 * var(--esp-3))" }}>
+              Prévia em Meus Eventos
+            </span>
+            <CartaoEvento evento={previa} />
+          </div>
+        </div>
       )}
 
       {erro && passo !== 3 && (
-        <Aviso variante="erro" onFechar={() => setErro("")} style={{ marginTop: "1.5rem" }}>
+        <Aviso variante="erro" onFechar={() => setErro("")} style={{ marginTop: "var(--esp-6)" }}>
           {erro}
         </Aviso>
       )}
 
-      <div style={{ display: "flex", justifyContent: "space-between", marginTop: "2rem", flexWrap: "wrap", gap: "12px" }}>
+      <div className="tt-navegacao-etapas">
         <span title={dicaRascunho}>
           <Btn variante="ghost" onClick={() => salvar("rascunho")} disabled={!podeSalvar || salvando !== null} carregando={salvando === "rascunho"}>
             {salvando === "rascunho" ? "Salvando..." : "Salvar como Rascunho"}
           </Btn>
         </span>
-        <div style={{ display: "flex", gap: "10px" }}>
+        <div className="tt-navegacao-etapas__direita">
+          {passo < 2 && !etapaCompleta[passo] && (
+            <span className="tt-pendencia">
+              <Icone icone={CircleAlert} tamanho={16} />
+              {pendenciaDaEtapa[passo]}
+            </span>
+          )}
           {passo > 0 && (
             <Btn variante="secondary" icone={ArrowLeft} onClick={() => setPasso(passo - 1)}>
               Voltar

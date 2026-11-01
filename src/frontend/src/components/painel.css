@@ -1,0 +1,408 @@
+/* Painel gerencial: indicadores (stat tiles) e gráficos simples em HTML/CSS.
+   Marcas: barras de até 20px, ponta arredondada de 4px e base reta; grade em linha fina sólida. */
+
+/* Só para leitores de tela */
+.tt-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ── Indicadores ── */
+.tt-grade-kpi {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--esp-4);
+  margin-bottom: var(--esp-6);
+}
+
+.tt-kpi {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--esp-5);
+}
+
+.tt-kpi__topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--esp-3);
+  margin-bottom: var(--esp-2);
+}
+
+.tt-kpi__rotulo {
+  font-size: var(--tam-sm);
+  font-weight: var(--peso-medio);
+  color: var(--texto-suave);
+}
+
+.tt-kpi__icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: var(--raio-md);
+  background: var(--superficie-3);
+  color: var(--texto-suave);
+}
+
+.tt-kpi--destaque .tt-kpi__icone {
+  background: var(--azul-suave);
+  color: var(--azul-texto);
+}
+
+/* Número grande com algarismos proporcionais (os tabulares ficam só em colunas) */
+.tt-kpi__valor {
+  font-size: clamp(var(--tam-2xl), 1.2rem + 1vw, var(--tam-3xl));
+  font-weight: var(--peso-extra);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  color: var(--texto);
+}
+
+.tt-kpi__medidor {
+  height: 6px;
+  margin-top: var(--esp-3);
+  border-radius: var(--raio-pilula);
+  background: var(--azul-suave);
+  overflow: hidden;
+}
+
+.tt-kpi__medidor span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--azul);
+}
+
+.tt-kpi__detalhe {
+  margin-top: var(--esp-2);
+  font-size: var(--tam-xs);
+  color: var(--texto-suave);
+}
+
+.tt-kpi__acao {
+  margin-top: auto;
+  padding-top: var(--esp-3);
+}
+
+/* ── Moldura do gráfico ── */
+.tt-grafico {
+  padding: var(--esp-5) var(--esp-6) var(--esp-6);
+}
+
+.tt-grafico__cabeca {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--esp-3);
+  margin-bottom: var(--esp-5);
+}
+
+.tt-grafico__cabeca h3 {
+  font-size: var(--tam-md);
+  font-weight: var(--peso-semi);
+  color: var(--texto);
+}
+
+.tt-grafico__cabeca p {
+  margin-top: 2px;
+  font-size: var(--tam-sm);
+  color: var(--texto-suave);
+}
+
+.tt-graficos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr));
+  gap: var(--esp-4);
+  margin-bottom: var(--esp-6);
+}
+
+/* ── Barras horizontais ── */
+.tt-barras {
+  --cor-barra: var(--azul);
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tt-barras__linha {
+  display: grid;
+  grid-template-columns: minmax(136px, 40%) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--esp-3);
+  border-radius: var(--raio-sm);
+  outline: none;
+}
+
+.tt-barras__linha--info { --cor-barra: var(--azul); }
+.tt-barras__linha--warning { --cor-barra: var(--ambar); }
+.tt-barras__linha--success { --cor-barra: var(--verde); }
+.tt-barras__linha--error { --cor-barra: var(--vermelho); }
+.tt-barras__linha--neutral { --cor-barra: var(--texto-fraco); }
+
+.tt-barras__rotulo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--tam-sm);
+  color: var(--texto-2);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.tt-barras__icone {
+  flex-shrink: 0;
+  color: var(--cor-barra);
+}
+
+.tt-barras__trilho {
+  position: relative;
+  height: 20px;
+  border-radius: 0 4px 4px 0;
+}
+
+.tt-barras__barra {
+  display: block;
+  height: 100%;
+  border-radius: 0 4px 4px 0;
+  background: var(--cor-barra);
+  transition: opacity var(--duracao) var(--curva), width var(--duracao-lenta) var(--curva);
+}
+
+.tt-barras__valor {
+  min-width: 3ch;
+  font-size: var(--tam-sm);
+  font-weight: var(--peso-semi);
+  color: var(--texto);
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Ao passar o mouse numa barra, as outras recuam */
+.tt-barras:has(.tt-barras__linha:hover, .tt-barras__linha:focus-visible) .tt-barras__linha:not(:hover):not(:focus-visible) .tt-barras__barra {
+  opacity: 0.35;
+}
+
+.tt-barras__linha:focus-visible {
+  box-shadow: 0 0 0 2px var(--anel-foco);
+}
+
+/* ── Dica (tooltip) comum ── */
+.tt-barras__dica,
+.tt-colunas__dica {
+  position: absolute;
+  z-index: 5;
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--esp-2) var(--esp-3);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-md);
+  background: var(--superficie);
+  box-shadow: var(--sombra-2);
+  font-size: var(--tam-sm);
+  color: var(--texto-2);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.tt-barras__dica strong,
+.tt-colunas__dica strong {
+  font-weight: var(--peso-semi);
+  color: var(--texto);
+}
+
+.tt-barras__dica {
+  left: 0;
+  bottom: calc(100% + 6px);
+}
+
+.tt-barras__linha:hover .tt-barras__dica,
+.tt-barras__linha:focus-visible .tt-barras__dica,
+.tt-colunas__coluna:hover .tt-colunas__dica,
+.tt-colunas__coluna:focus-visible .tt-colunas__dica {
+  display: flex;
+}
+
+/* ── Colunas verticais ── */
+.tt-colunas {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--esp-2);
+  height: 240px;
+}
+
+.tt-colunas__eixo {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  /* alinha com a área das barras (que deixa 28px embaixo para os rótulos) */
+  padding-bottom: 28px;
+  margin-top: -7px;
+  margin-bottom: -7px;
+  font-size: var(--tam-xs);
+  color: var(--texto-suave);
+  text-align: right;
+}
+
+.tt-colunas__area {
+  position: relative;
+  min-width: 0;
+}
+
+.tt-colunas__grade {
+  position: absolute;
+  inset: 0 0 28px 0;
+  pointer-events: none;
+}
+
+.tt-colunas__grade span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--borda);
+}
+
+.tt-colunas__barras {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  height: 100%;
+}
+
+.tt-colunas__coluna {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  border-radius: var(--raio-sm);
+  outline: none;
+}
+
+.tt-colunas__coluna:focus-visible {
+  box-shadow: 0 0 0 2px var(--anel-foco);
+}
+
+.tt-colunas__trilho {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  flex: 1;
+}
+
+.tt-colunas__barra {
+  position: relative;
+  width: min(24px, 70%);
+  min-height: 2px;
+  border-radius: 4px 4px 0 0;
+  background: var(--azul);
+  transition: opacity var(--duracao) var(--curva);
+}
+
+.tt-colunas__barras:has(.tt-colunas__coluna:hover, .tt-colunas__coluna:focus-visible) .tt-colunas__coluna:not(:hover):not(:focus-visible) .tt-colunas__barra {
+  opacity: 0.35;
+}
+
+.tt-colunas__valor {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: var(--tam-xs);
+  font-weight: var(--peso-semi);
+  color: var(--texto);
+}
+
+/* A dica fica no alto da área do gráfico, acima da coluna, para não cobrir a barra */
+.tt-colunas__dica {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tt-colunas__rotulo {
+  height: 28px;
+  padding-top: var(--esp-2);
+  overflow: hidden;
+  max-width: 100%;
+  font-size: var(--tam-xs);
+  color: var(--texto-suave);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ── Paginação ── */
+.tt-paginacao {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--esp-1);
+  padding: var(--esp-4);
+  border-top: 1px solid var(--borda);
+}
+
+.tt-paginacao button {
+  min-width: 36px;
+  min-height: 36px;
+  padding: 0 var(--esp-3);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-md);
+  background: var(--superficie);
+  color: var(--texto-2);
+  font-size: var(--tam-sm);
+  cursor: pointer;
+  transition: var(--transicao-cor);
+}
+
+.tt-paginacao button:hover:not([aria-current="page"]):not(:disabled) {
+  background: var(--superficie-3);
+}
+
+.tt-paginacao button[aria-current="page"] {
+  border-color: var(--ativo-borda);
+  background: var(--ativo-fundo);
+  color: var(--ativo-texto);
+  font-weight: var(--peso-semi);
+}
+
+.tt-paginacao button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.tt-paginacao button:focus-visible {
+  outline: 2px solid var(--anel-foco);
+  outline-offset: 2px;
+}
+
+@media (max-width: 560px) {
+  .tt-barras__linha {
+    grid-template-columns: minmax(0, 1fr) auto;
+    row-gap: 4px;
+  }
+
+  .tt-barras__rotulo {
+    grid-column: 1 / -1;
+  }
+
+  .tt-grafico {
+    padding: var(--esp-4);
+  }
+}

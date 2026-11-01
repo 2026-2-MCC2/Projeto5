@@ -1,0 +1,62 @@
+/* Cartão de cadastro pendente (Aprovacoes.jsx) */
+.tt-cadastro {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--esp-4);
+}
+
+.tt-cadastro__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  font-size: var(--tam-sm);
+  font-weight: var(--peso-negrito);
+}
+
+.tt-cadastro__dados {
+  flex: 1;
+  min-width: 220px;
+}
+
+.tt-cadastro__nome {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--esp-2);
+  margin-bottom: 4px;
+}
+
+.tt-cadastro__nome h3 {
+  font-size: var(--tam-md);
+  font-weight: var(--peso-semi);
+  color: var(--texto);
+}
+
+.tt-cadastro__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-1) var(--esp-4);
+  font-size: var(--tam-sm);
+  color: var(--texto-suave);
+}
+
+.tt-cadastro__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-2);
+}
+
+@media (max-width: 560px) {
+  .tt-cadastro__acoes {
+    width: 100%;
+  }
+
+  .tt-cadastro__acoes .tt-btn {
+    flex: 1;
+  }
+}

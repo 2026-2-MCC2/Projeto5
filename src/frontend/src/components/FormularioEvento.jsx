@@ -1,80 +1,92 @@
 import { Campo, Card, Icone, Input, Select, TextArea } from "./ui";
 import { CATEGORIAS_EVENTO } from "../data/categorias";
 import { ROTULO_STATUS_EVENTO } from "../data/statusEvento";
+import "./organizador.css";
 
-const estiloCampoBranco = { background: "var(--superficie)", padding: "10px 13px", borderRadius: "8px" };
 const OPCOES_STATUS = Object.entries(ROTULO_STATUS_EVENTO).map(([valor, rotulo]) => ({ valor, rotulo }));
 
 export function TituloSecao({ children }) {
-  return <h3 style={{ fontFamily: "Outfit", fontSize: "1.0625rem", fontWeight: 700, color: "var(--texto)", marginBottom: "1.25rem" }}>{children}</h3>;
+  return <h3 style={{ fontSize: "var(--tam-lg)", fontWeight: 700, color: "var(--texto)", marginBottom: "var(--esp-5)" }}>{children}</h3>;
 }
 
-// Cards "Informações Básicas" e "Categoria do Evento", usados ao criar e ao editar um evento.
+// Uma seção do formulário: título e explicação à esquerda, campos à direita (empilha no celular).
+function Secao({ titulo, texto, children }) {
+  return (
+    <section className="tt-secao-form">
+      <div className="tt-secao-form__cabeca">
+        <h3>{titulo}</h3>
+        <p>{texto}</p>
+      </div>
+      <div className="tt-secao-form__campos">{children}</div>
+    </section>
+  );
+}
+
+// Informações do evento, usadas ao criar e ao editar.
 // `comStatus` mostra o seletor de status (só na edição; ao criar, o status vem do botão escolhido).
 export default function FormularioEvento({ valores, onChange, comStatus = false }) {
-  const campo = (nome) => ({ value: valores[nome], onChange: (e) => onChange({ ...valores, [nome]: e.target.value }), style: estiloCampoBranco });
+  const campo = (nome) => ({ value: valores[nome], onChange: (e) => onChange({ ...valores, [nome]: e.target.value }) });
 
   return (
-    <>
-      <Card style={{ padding: "1.5rem" }}>
-        <TituloSecao>Informações Básicas</TituloSecao>
-        <div style={{ display: "grid", gap: "14px" }}>
-          <Campo rotulo="Nome do Evento *">
-            <Input placeholder="Ex: Festival Gastronômico SP 2025" maxLength={150} {...campo("nome")} />
-          </Campo>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "14px" }}>
-            <Campo rotulo="Início *">
-              <Input type="datetime-local" {...campo("data_inicio")} />
-            </Campo>
-            <Campo rotulo="Término *">
-              <Input type="datetime-local" min={valores.data_inicio || undefined} {...campo("data_fim")} />
-            </Campo>
-          </div>
-          <Campo rotulo="Local do Evento *">
-            <Input placeholder="Ex: Parque Ibirapuera, São Paulo" maxLength={200} {...campo("local")} />
-          </Campo>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "14px" }}>
-            <Campo rotulo="Público Mínimo *">
-              <Input type="number" min="1" step="1" placeholder="Ex: 300" {...campo("publico_minimo")} />
-            </Campo>
-            <Campo rotulo="Público Máximo *">
-              <Input type="number" min={valores.publico_minimo || 1} step="1" placeholder="Ex: 500" {...campo("publico_maximo")} />
-            </Campo>
-            <Campo rotulo="Margem de Lucro (%)">
-              <Input type="number" min="0" max="99" step="1" placeholder="Ex: 25" {...campo("margem")} />
-            </Campo>
-          </div>
-          {comStatus && (
-            <Campo rotulo="Status">
-              <Select opcoes={OPCOES_STATUS} {...campo("status")} />
-            </Campo>
-          )}
-          <Campo rotulo="Descrição">
-            <TextArea rows={3} placeholder="Conte um pouco sobre o evento (opcional)" {...campo("descricao")} />
-          </Campo>
-        </div>
-      </Card>
+    <Card style={{ padding: "var(--esp-8)" }}>
+      <Secao titulo="Sobre o evento" texto="Como o evento vai aparecer para os fornecedores.">
+        <Campo rotulo="Nome do evento *">
+          <Input placeholder="Ex: Festival Gastronômico SP 2026" maxLength={150} {...campo("nome")} />
+        </Campo>
 
-      <Card style={{ padding: "1.5rem" }}>
-        <TituloSecao>Categoria do Evento *</TituloSecao>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "10px" }}>
-          {CATEGORIAS_EVENTO.map((c) => {
-            const ativa = valores.categoria === c.rotulo;
-            return (
-              <button
-                key={c.rotulo}
-                type="button"
-                aria-pressed={ativa}
-                onClick={() => onChange({ ...valores, categoria: c.rotulo })}
-                style={{ padding: "16px 10px", borderRadius: "10px", textAlign: "center", background: ativa ? "var(--ativo-fundo)" : "var(--superficie-2)", border: `2px solid ${ativa ? "#2563EB" : "var(--borda)"}`, color: ativa ? "var(--ativo-texto)" : "var(--texto-suave)", cursor: "pointer", transition: "all 0.15s" }}
-              >
-                <Icone icone={c.icone} tamanho={24} style={{ marginBottom: "6px" }} />
-                <div style={{ fontSize: "0.8125rem", fontWeight: 600 }}>{c.rotulo}</div>
+        <div>
+          <span className="tt-rotulo-campo" id="rotulo-categoria">
+            Categoria * <span style={{ fontWeight: 400, color: "var(--texto-suave)" }}>(obrigatória para publicar)</span>
+          </span>
+          <div className="tt-categorias" role="group" aria-labelledby="rotulo-categoria">
+            {CATEGORIAS_EVENTO.map((c) => (
+              <button key={c.rotulo} type="button" className="tt-categoria" aria-pressed={valores.categoria === c.rotulo} onClick={() => onChange({ ...valores, categoria: c.rotulo })}>
+                <Icone icone={c.icone} tamanho={22} />
+                {c.rotulo}
               </button>
-            );
-          })}
+            ))}
+          </div>
         </div>
-      </Card>
-    </>
+
+        {comStatus && (
+          <Campo rotulo="Status">
+            <Select opcoes={OPCOES_STATUS} {...campo("status")} />
+          </Campo>
+        )}
+
+        <Campo rotulo="Descrição">
+          <TextArea rows={3} placeholder="Conte um pouco sobre o evento (opcional)" {...campo("descricao")} />
+        </Campo>
+      </Secao>
+
+      <Secao titulo="Quando e onde" texto="Data, horário e local de realização.">
+        <div className="tt-campos-linha">
+          <Campo rotulo="Início *">
+            <Input type="datetime-local" {...campo("data_inicio")} />
+          </Campo>
+          <Campo rotulo="Término *">
+            <Input type="datetime-local" min={valores.data_inicio || undefined} {...campo("data_fim")} />
+          </Campo>
+        </div>
+        <Campo rotulo="Local do evento *">
+          <Input placeholder="Ex: Parque Ibirapuera, São Paulo" maxLength={200} {...campo("local")} />
+        </Campo>
+      </Secao>
+
+      <Secao titulo="Público e margem" texto="Usados para estimar o preço do ingresso nos cenários de público mínimo e máximo.">
+        <div className="tt-campos-linha">
+          <Campo rotulo="Público mínimo *">
+            <Input type="number" min="1" step="1" placeholder="Ex: 300" {...campo("publico_minimo")} />
+          </Campo>
+          <Campo rotulo="Público máximo *">
+            <Input type="number" min={valores.publico_minimo || 1} step="1" placeholder="Ex: 500" {...campo("publico_maximo")} />
+          </Campo>
+          <Campo rotulo="Margem de lucro (%)">
+            <Input type="number" min="0" max="99" step="1" placeholder="Ex: 25" {...campo("margem")} />
+            <span className="tt-dica-campo">Parte do preço do ingresso que fica como lucro (0 a 99%).</span>
+          </Campo>
+        </div>
+      </Secao>
+    </Card>
   );
 }

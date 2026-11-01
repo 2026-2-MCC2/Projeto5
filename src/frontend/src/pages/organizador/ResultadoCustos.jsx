@@ -1,19 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import NaoEncontrado from "../NaoEncontrado";
 import { ArrowLeft, FileDown, Flag } from "lucide-react";
-import { Card, CabecalhoCard, Btn, BarraRotulada, Indicador, ModalConfirmacao, TituloPagina, Tabela, Linha, Celula, Valor } from "../../components/ui";
-// Ainda sem API de propostas: usa os dados de exemplo do localStorage.
+import { Card, CabecalhoCard, Btn, BarraRotulada, ErroCarregar, Indicador, ModalConfirmacao, TituloPagina, Tabela, Linha, Celula, Valor } from "../../components/ui";
+import { EsqueletoTicket, TicketCenarios } from "../../components/organizador";
+// Ainda sem API de propostas: a composição usa os dados de exemplo do localStorage.
 import { buscarEvento, finalizarEvento, propostasSelecionadas, somaEstimado } from "../../services/mock/organizadorMock";
+// Público e margem (para o ticket) vêm do cadastro do evento na API, só para leitura.
+import { buscarEvento as buscarEventoCadastro } from "../../services/organizadorService";
 import { moeda } from "../../utils/formatar";
 
 const colunas = ["Categoria", "Fornecedor Selecionado", "Estimado", "Acordado", "Economia"];
 
 // Economia positiva = gastou menos que o estimado.
 function ValorEconomia({ valor, peso = 400 }) {
-  if (valor === 0) return <Valor cor="var(--texto-fraco)" peso={peso}>—</Valor>;
+  if (valor === 0) return <Valor cor="var(--texto-suave)" peso={peso}>—</Valor>;
   return (
-    <Valor cor={valor > 0 ? "#2563EB" : "#DC2626"} peso={peso}>
+    <Valor cor={valor > 0 ? "var(--verde-texto)" : "var(--vermelho-texto)"} peso={peso}>
       {valor > 0 ? "- " : "+ "}
       {moeda(Math.abs(valor))}
     </Valor>
@@ -25,6 +28,30 @@ export default function ResultadoCustos() {
   const navigate = useNavigate();
   const [confirmando, setConfirmando] = useState(false);
   const evento = buscarEvento(Number(id));
+
+  // Cadastro do evento (público mínimo/máximo e margem) para calcular o ticket.
+  const [cadastro, setCadastro] = useState(null);
+  const [carregandoCadastro, setCarregandoCadastro] = useState(true);
+  const [erroCadastro, setErroCadastro] = useState(null); // { mensagem, podeTentar }
+  const [tentativa, setTentativa] = useState(0);
+
+  useEffect(() => {
+    let ativo = true;
+    buscarEventoCadastro(id)
+      .then((ev) => ativo && setCadastro(ev))
+      .catch((err) => {
+        if (!ativo) return;
+        const naoExiste = err.status === 404 || err.status === 400;
+        setErroCadastro({
+          mensagem: naoExiste ? "Este evento não tem público e margem cadastrados, então não dá para estimar o ingresso." : err.message,
+          podeTentar: !naoExiste,
+        });
+      })
+      .finally(() => ativo && setCarregandoCadastro(false));
+    return () => {
+      ativo = false;
+    };
+  }, [id, tentativa]);
 
   if (!evento) return <NaoEncontrado dentroDoLayout titulo="Evento não encontrado" texto="Este evento não existe ou foi excluído." voltarPara="/organizador" rotuloVoltar="Ver meus eventos" />;
 
@@ -46,40 +73,69 @@ export default function ResultadoCustos() {
 
   return (
     <>
-      <TituloPagina titulo="Resultado da Composição de Custos" sub={`${evento.nome} · ${linhas.length} propostas selecionadas`}>
+      <TituloPagina titulo="Resultado da Composição de Custos" sub={`${linhas.length} ${linhas.length === 1 ? "proposta selecionada" : "propostas selecionadas"} para ${evento.nome}`}>
         <Btn variante="ghost" tamanho="sm" icone={FileDown} onClick={() => window.print()}>
           Exportar PDF
         </Btn>
       </TituloPagina>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem", marginBottom: "2rem" }}>
-        <Indicador rotulo="Orçamento Estimado" valor={moeda(totalEstimado)} cor="var(--texto-fraco)" riscado />
-        <Indicador variante="sucesso" rotulo="Total Acordado" valor={moeda(totalAcordado)} cor="#059669" />
+      <div style={{ marginBottom: "var(--esp-6)" }}>
+        {carregandoCadastro ? (
+          <EsqueletoTicket />
+        ) : erroCadastro ? (
+          <ErroCarregar
+            titulo="Não foi possível calcular o ticket"
+            mensagem={erroCadastro.mensagem}
+            onTentar={
+              erroCadastro.podeTentar
+                ? () => {
+                    setCarregandoCadastro(true);
+                    setErroCadastro(null);
+                    setTentativa((n) => n + 1);
+                  }
+                : undefined
+            }
+          />
+        ) : (
+          <TicketCenarios
+            custo={totalAcordado}
+            rotuloCusto="Total acordado"
+            publicoMinimo={cadastro.publico_minimo}
+            publicoMaximo={cadastro.publico_maximo}
+            margem={cadastro.margem_lucro}
+            nota={cadastro.nome !== evento.nome ? `Público e margem vêm do cadastro do evento "${cadastro.nome}".` : undefined}
+          />
+        )}
+      </div>
+
+      <div className="tt-indicadores">
+        <Indicador rotulo="Orçamento estimado" valor={moeda(totalEstimado)} cor="var(--texto-suave)" riscado />
+        <Indicador variante="sucesso" rotulo="Total acordado" valor={moeda(totalAcordado)} cor="var(--verde-texto)" />
         <Indicador
           variante="info"
-          rotulo="Economia Total"
+          rotulo="Economia total"
           valor={moeda(totalEconomia)}
-          cor="#2563EB"
+          cor="var(--azul-texto)"
           detalhe={totalEstimado > 0 && `${((totalEconomia / totalEstimado) * 100).toFixed(1)}% de economia`}
         />
       </div>
 
-      <Card style={{ overflow: "hidden", marginBottom: "2rem" }}>
-        <CabecalhoCard titulo="Detalhamento por Categoria" />
+      <Card style={{ overflow: "hidden", marginBottom: "var(--esp-6)" }}>
+        <CabecalhoCard titulo="Detalhamento por categoria" />
         <Tabela
           colunas={colunas}
           rodape={
             <tr style={{ background: "var(--superficie-2)", borderTop: "2px solid var(--borda)" }}>
-              <Celula colSpan={2} style={{ fontFamily: "Outfit", fontWeight: 700, color: "var(--texto-2)" }}>
-                TOTAL
+              <Celula colSpan={2} style={{ fontWeight: 700, color: "var(--texto)" }}>
+                Total
               </Celula>
               <Celula>
-                <Valor cor="var(--texto-fraco)" riscado>
+                <Valor cor="var(--texto-suave)" riscado>
                   {moeda(totalEstimado)}
                 </Valor>
               </Celula>
               <Celula>
-                <Valor tamanho="1rem" peso={700}>
+                <Valor tamanho="var(--tam-md)" peso={700}>
                   {moeda(totalAcordado)}
                 </Valor>
               </Celula>
@@ -91,10 +147,10 @@ export default function ResultadoCustos() {
         >
           {linhas.map((l, i) => (
             <Linha key={l.categoria} ultima={i === linhas.length - 1}>
-              <Celula style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--texto)" }}>{l.categoria}</Celula>
-              <Celula style={{ fontSize: "0.875rem", color: "var(--texto-suave)" }}>{l.fornecedor}</Celula>
+              <Celula style={{ fontWeight: 600, color: "var(--texto)" }}>{l.categoria}</Celula>
+              <Celula style={{ color: "var(--texto-2)" }}>{l.fornecedor}</Celula>
               <Celula>
-                <Valor cor="var(--texto-fraco)" peso={400} riscado>
+                <Valor cor="var(--texto-suave)" peso={400} riscado>
                   {moeda(l.estimado)}
                 </Valor>
               </Celula>
@@ -109,9 +165,9 @@ export default function ResultadoCustos() {
         </Tabela>
       </Card>
 
-      <Card style={{ padding: "1.5rem", marginBottom: "2rem" }}>
-        <h3 style={{ fontFamily: "Outfit", fontSize: "1rem", fontWeight: 700, color: "var(--texto)", marginBottom: "1rem" }}>Distribuição do Orçamento</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+      <Card style={{ padding: "var(--esp-6)", marginBottom: "var(--esp-8)" }}>
+        <h3 style={{ fontSize: "var(--tam-md)", fontWeight: 700, color: "var(--texto)", marginBottom: "var(--esp-4)" }}>Distribuição do orçamento</h3>
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--esp-3)" }}>
           {linhas.map((l) => {
             const porcentagem = (l.acordado / totalAcordado) * 100;
             return <BarraRotulada key={l.categoria} rotulo={l.categoria} valor={`${porcentagem.toFixed(0)}%`} porcentagem={porcentagem} />;
@@ -119,11 +175,11 @@ export default function ResultadoCustos() {
         </div>
       </Card>
 
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}>
-        <Btn variante="ghost" icone={ArrowLeft} onClick={() => navigate(`/organizador/eventos/${evento.id}/propostas`)}>
+      <div style={{ display: "flex", justifyContent: "flex-end", flexWrap: "wrap", gap: "var(--esp-3)" }}>
+        <Btn variante="secondary" icone={ArrowLeft} onClick={() => navigate(`/organizador/eventos/${evento.id}/propostas`)}>
           Voltar à Comparação
         </Btn>
-        <Btn variante="accent" icone={Flag} onClick={() => setConfirmando(true)}>
+        <Btn variante="accent" tamanho="lg" icone={Flag} onClick={() => setConfirmando(true)}>
           Finalizar Evento
         </Btn>
       </div>
@@ -135,7 +191,7 @@ export default function ResultadoCustos() {
           titulo="Finalizar Evento"
           descricao={
             <>
-              O evento será marcado como <strong style={{ color: "#EA580C" }}>Aguardando Data</strong> e os fornecedores serão notificados. Esta ação não pode ser desfeita.
+              O evento será marcado como <strong style={{ color: "var(--laranja-texto)" }}>Aguardando Data</strong> e os fornecedores serão notificados. Esta ação não pode ser desfeita.
             </>
           }
           rotuloValor="Total acordado"

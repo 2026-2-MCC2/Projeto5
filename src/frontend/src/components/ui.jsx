@@ -1,7 +1,7 @@
 // Componentes visuais reaproveitados nas telas (fornecedor, organizador, admin, login e landing).
 // Os estilos ficam em ui.css e usam os tokens de index.css. `style` continua funcionando em todos
 // para ajustes pontuais das telas.
-import { CircleAlert, CircleCheck, LoaderCircle, Search, Star, Ticket, X } from "lucide-react";
+import { CircleAlert, CircleCheck, LoaderCircle, RefreshCw, Search, Star, Ticket, X } from "lucide-react";
 import "./ui.css";
 
 // Junta classes ignorando as vazias: classes("a", cond && "b") -> "a b"
@@ -253,12 +253,14 @@ export function CampoBusca({ valor, onChange, placeholder }) {
   );
 }
 
-export function Vazio({ icone, titulo, texto }) {
+// Estado vazio. `children` (opcional) aparece embaixo do texto, para uma ação (ex.: botão de criar).
+export function Vazio({ icone, titulo, texto, children }) {
   return (
     <div className="tt-vazio">
       <IconeDestaque icone={icone} variante="neutral" />
       {titulo && <h3>{titulo}</h3>}
       <p>{texto}</p>
+      {children && <div className="tt-vazio__acoes">{children}</div>}
     </div>
   );
 }
@@ -273,6 +275,27 @@ export function Aviso({ variante = "erro", children, onFechar, style }) {
       <Icone icone={iconeAviso[variante]} tamanho={16} style={{ flexShrink: 0, marginTop: "3px" }} />
       <div style={{ flex: 1 }}>{children}</div>
       {onFechar && <BotaoIcone icone={X} rotulo="Fechar mensagem" onClick={onFechar} cor="currentColor" tamanho={14} />}
+    </div>
+  );
+}
+
+// Bloco cinza pulsando no lugar do conteúdo enquanto ele carrega (skeleton).
+export function Esqueleto({ largura = "100%", altura = "14px", raio, style }) {
+  return <span className="tt-esqueleto" aria-hidden="true" style={{ width: largura, height: altura, borderRadius: raio, ...style }} />;
+}
+
+// Falha ao carregar uma tela ou bloco: explica o que houve e oferece tentar de novo.
+export function ErroCarregar({ titulo = "Não foi possível carregar", mensagem, onTentar }) {
+  return (
+    <div role="alert" className="tt-erro-carregar">
+      <IconeDestaque icone={CircleAlert} variante="error" />
+      <h3>{titulo}</h3>
+      {mensagem && <p>{mensagem}</p>}
+      {onTentar && (
+        <Btn variante="secondary" icone={RefreshCw} onClick={onTentar}>
+          Tentar de novo
+        </Btn>
+      )}
     </div>
   );
 }
@@ -345,12 +368,13 @@ export function ModalConfirmacao({ icone, variante, titulo, descricao, rotuloVal
 // Nota de 0 a 5: estrelas cheias até a nota e só o contorno no resto.
 export function Estrelas({ nota }) {
   const cheias = Math.round(nota);
+  const texto = nota.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 }); // 4.6 -> "4,6"
   return (
-    <span role="img" aria-label={`Nota ${nota.toFixed(1)} de 5`} className="tt-estrelas">
+    <span role="img" aria-label={`Nota ${texto} de 5`} className="tt-estrelas">
       {[1, 2, 3, 4, 5].map((n) => (
         <Icone key={n} icone={Star} tamanho={14} fill={n <= cheias ? "currentColor" : "none"} />
       ))}
-      <span className="tt-estrelas__nota">{nota.toFixed(1)}</span>
+      <span className="tt-estrelas__nota">{texto}</span>
     </span>
   );
 }

@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { CircleCheck, RefreshCw } from "lucide-react";
-import { Aviso, Card, Badge, Btn, CabecalhoModal, Carregando, Chip, Contador, ListaDetalhes, Modal, ModalConfirmacao, TextArea, TituloPagina, Vazio } from "../../components/ui";
+import { Briefcase, CalendarDays, CircleCheck, Clock, Mail } from "lucide-react";
+import { Aviso, Card, Badge, Btn, CabecalhoModal, Chip, Contador, Esqueleto, ErroCarregar, ListaDetalhes, Modal, ModalConfirmacao, TextArea, TextoComIcone, TituloPagina, Vazio } from "../../components/ui";
+import "../../components/organizador.css";
+import "./Aprovacoes.css";
 import { aprovarUsuario, rejeitarUsuario } from "../../services/authService";
 import { ROTULO_PERFIL } from "../../data/perfis";
 import { tempoDesde } from "../../utils/formatar";
@@ -13,8 +15,16 @@ const abas = [
 ];
 
 const variantePerfil = { fornecedor: "info", organizador: "success" };
+const iconePerfil = { fornecedor: Briefcase, organizador: CalendarDays };
 
 const aguardando = (u) => (u.criadoEm ? tempoDesde(u.criadoEm) : "—");
+
+// "Ana Paula Souza" -> "AS"
+function iniciais(nome = "") {
+  const partes = nome.trim().split(/\s+/).filter(Boolean);
+  if (!partes.length) return "?";
+  return (partes[0][0] + (partes.length > 1 ? partes[partes.length - 1][0] : "")).toUpperCase();
+}
 
 function detalhes(u) {
   return [
@@ -23,6 +33,21 @@ function detalhes(u) {
     { rotulo: "Perfil", valor: ROTULO_PERFIL[u.perfil] },
     { rotulo: "Aguardando", valor: aguardando(u) },
   ];
+}
+
+function EsqueletoCadastro() {
+  return (
+    <Card style={{ padding: "var(--esp-5)" }}>
+      <div className="tt-cadastro" aria-hidden="true">
+        <Esqueleto largura="44px" altura="44px" raio="50%" />
+        <div style={{ flex: 1, display: "grid", gap: 8 }}>
+          <Esqueleto largura="40%" altura="16px" />
+          <Esqueleto largura="60%" />
+        </div>
+        <Esqueleto largura="220px" altura="32px" raio="8px" />
+      </div>
+    </Card>
+  );
 }
 
 export default function Aprovacoes() {
@@ -73,71 +98,87 @@ export default function Aprovacoes() {
 
   return (
     <>
-      <TituloPagina titulo="Aprovações Pendentes" extra={<Contador valor={pendentes.length} grande />} sub="Revisão e aprovação de novos cadastros" />
+      <TituloPagina titulo="Aprovações Pendentes" extra={!carregandoPendentes && !erroPendentes && <Contador valor={pendentes.length} grande />} sub="Revise os novos cadastros antes de liberar o acesso" />
 
-      <div style={{ display: "flex", gap: "6px", marginBottom: "1.5rem", flexWrap: "wrap" }}>
-        {abas.map((a) => (
-          <Chip key={a.rotulo} rotulo={`${a.rotulo} (${doPerfil(a.perfil).length})`} ativo={aba === a} onClick={() => setAba(a)} redondo={false} />
-        ))}
-      </div>
+      {!erroPendentes && (
+        <div className="tt-filtros">
+          <div className="tt-filtros__abas" role="group" aria-label="Filtrar por perfil">
+            {abas.map((a) => (
+              <Chip key={a.rotulo} rotulo={`${a.rotulo} (${carregandoPendentes ? "…" : doPerfil(a.perfil).length})`} ativo={aba === a} onClick={() => setAba(a)} redondo={false} />
+            ))}
+          </div>
+        </div>
+      )}
 
       {sucesso && (
-        <Aviso variante="sucesso" onFechar={() => setSucesso("")} style={{ marginBottom: "1.25rem" }}>
+        <Aviso variante="sucesso" onFechar={() => setSucesso("")} style={{ marginBottom: "var(--esp-5)" }}>
           {sucesso}
         </Aviso>
       )}
 
       {carregandoPendentes ? (
-        <Carregando texto="Carregando cadastros pendentes..." />
+        <div style={{ display: "grid", gap: "var(--esp-3)" }} role="status" aria-label="Carregando cadastros pendentes">
+          {[0, 1, 2].map((i) => (
+            <EsqueletoCadastro key={i} />
+          ))}
+        </div>
       ) : erroPendentes ? (
-        <Aviso variante="erro">
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
-            <span>{erroPendentes}</span>
-            <Btn variante="danger" tamanho="sm" icone={RefreshCw} onClick={recarregarPendentes}>
-              Tentar de novo
-            </Btn>
-          </div>
-        </Aviso>
+        <ErroCarregar titulo="Não foi possível carregar os cadastros" mensagem={erroPendentes} onTentar={recarregarPendentes} />
+      ) : visiveis.length === 0 ? (
+        <Card>
+          <Vazio icone={CircleCheck} titulo="Nenhuma aprovação pendente" texto="Todas as solicitações desta categoria foram processadas." />
+        </Card>
       ) : (
-      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-        {visiveis.map((u) => (
-          <Card key={u.id} style={{ padding: "1.5rem" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
-              <div style={{ flex: 1, minWidth: "200px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" }}>
-                  <Badge variante={variantePerfil[u.perfil]}>{ROTULO_PERFIL[u.perfil]}</Badge>
-                  <h3 style={{ fontFamily: "Outfit", fontSize: "1rem", fontWeight: 700, color: "var(--texto)" }}>{u.nome}</h3>
+        <div style={{ display: "grid", gap: "var(--esp-3)" }}>
+          {visiveis.map((u) => (
+            <Card key={u.id} style={{ padding: "var(--esp-5)" }}>
+              <div className="tt-cadastro">
+                <span className={`tt-cadastro__avatar tt-badge--${variantePerfil[u.perfil]}`} aria-hidden="true">
+                  {iniciais(u.nome)}
+                </span>
+                <div className="tt-cadastro__dados">
+                  <div className="tt-cadastro__nome">
+                    <h3>{u.nome}</h3>
+                    <Badge variante={variantePerfil[u.perfil]}>
+                      <TextoComIcone icone={iconePerfil[u.perfil]} tamanho={12} style={{ gap: 4 }}>
+                        {ROTULO_PERFIL[u.perfil]}
+                      </TextoComIcone>
+                    </Badge>
+                  </div>
+                  <div className="tt-cadastro__meta">
+                    <TextoComIcone icone={Mail} tamanho={14}>
+                      {u.email}
+                    </TextoComIcone>
+                    <TextoComIcone icone={Clock} tamanho={14}>
+                      Aguardando {aguardando(u)}
+                    </TextoComIcone>
+                  </div>
                 </div>
-                <p style={{ fontSize: "0.8125rem", color: "var(--texto-suave)", marginBottom: "4px" }}>{u.email}</p>
-                <p style={{ fontSize: "0.75rem", color: "var(--texto-fraco)" }}>Aguardando {aguardando(u)}</p>
+                <div className="tt-cadastro__acoes">
+                  <Btn variante="ghost" tamanho="sm" onClick={() => setVendo(u)}>
+                    Ver detalhes
+                  </Btn>
+                  <Btn variante="danger" tamanho="sm" onClick={() => setRejeitando(u)}>
+                    Rejeitar
+                  </Btn>
+                  <Btn tamanho="sm" icone={CircleCheck} onClick={() => setAprovando(u)}>
+                    Aprovar
+                  </Btn>
+                </div>
               </div>
-              <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
-                <Btn variante="ghost" tamanho="sm" onClick={() => setVendo(u)}>
-                  Ver detalhes
-                </Btn>
-                <Btn variante="danger" tamanho="sm" onClick={() => setRejeitando(u)}>
-                  Rejeitar
-                </Btn>
-                <Btn tamanho="sm" onClick={() => setAprovando(u)}>
-                  Aprovar
-                </Btn>
-              </div>
-            </div>
-          </Card>
-        ))}
-
-        {visiveis.length === 0 && <Vazio icone={CircleCheck} titulo="Nenhuma aprovação pendente" texto="Todas as solicitações desta categoria foram processadas" />}
-      </div>
+            </Card>
+          ))}
+        </div>
       )}
 
       {vendo && (
         <Modal onClose={() => setVendo(null)}>
           <CabecalhoModal onFechar={() => setVendo(null)}>
             <Badge variante={variantePerfil[vendo.perfil]}>{ROTULO_PERFIL[vendo.perfil]}</Badge>
-            <h3 style={{ fontFamily: "Outfit", fontSize: "1.125rem", fontWeight: 700, color: "var(--texto)", marginTop: "8px" }}>{vendo.nome}</h3>
+            <h3 style={{ fontSize: "var(--tam-lg)", fontWeight: 700, color: "var(--texto)", marginTop: "var(--esp-2)" }}>{vendo.nome}</h3>
           </CabecalhoModal>
           <ListaDetalhes itens={detalhes(vendo)} />
-          <div style={{ display: "flex", gap: "10px" }}>
+          <div style={{ display: "flex", gap: "var(--esp-3)" }}>
             <Btn variante="danger" style={{ flex: 1 }} onClick={() => { setVendo(null); setRejeitando(vendo); }}>
               Rejeitar
             </Btn>
@@ -150,22 +191,23 @@ export default function Aprovacoes() {
 
       {rejeitando && (
         <Modal onClose={enviando ? undefined : fecharRejeicao}>
-          <h3 style={{ fontFamily: "Outfit", fontSize: "1.125rem", fontWeight: 700, color: "var(--texto)", marginBottom: "8px" }}>Rejeitar: {rejeitando.nome}</h3>
-          <p style={{ fontSize: "0.875rem", color: "var(--texto-suave)", marginBottom: "16px" }}>Informe o motivo da rejeição. O solicitante verá esse motivo ao tentar entrar.</p>
+          <h3 style={{ fontSize: "var(--tam-lg)", fontWeight: 700, color: "var(--texto)", marginBottom: "var(--esp-2)" }}>Rejeitar: {rejeitando.nome}</h3>
+          <p style={{ fontSize: "var(--tam-base)", color: "var(--texto-suave)", marginBottom: "var(--esp-4)" }}>Informe o motivo da rejeição. O solicitante verá esse motivo ao tentar entrar.</p>
           <TextArea
             placeholder="Ex: Documentação incompleta, CNPJ inválido, categoria não suportada..."
             value={motivo}
             onChange={(e) => setMotivo(e.target.value)}
             maxLength={500}
-            style={{ marginBottom: "16px" }}
+            style={{ marginBottom: "var(--esp-2)" }}
           />
+          <p style={{ fontSize: "var(--tam-xs)", color: "var(--texto-suave)", textAlign: "right", marginBottom: "var(--esp-4)" }}>{motivo.length}/500</p>
           {erro && (
-            <Aviso variante="erro" style={{ marginBottom: "16px" }}>
+            <Aviso variante="erro" style={{ marginBottom: "var(--esp-4)" }}>
               {erro}
             </Aviso>
           )}
-          <div style={{ display: "flex", gap: "10px" }}>
-            <Btn variante="ghost" style={{ flex: 1 }} onClick={fecharRejeicao} disabled={enviando}>
+          <div style={{ display: "flex", gap: "var(--esp-3)" }}>
+            <Btn variante="secondary" style={{ flex: 1 }} onClick={fecharRejeicao} disabled={enviando}>
               Cancelar
             </Btn>
             <Btn variante="danger" style={{ flex: 1 }} onClick={rejeitar} disabled={!motivo.trim()} carregando={enviando}>
