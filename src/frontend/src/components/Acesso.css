@@ -1,0 +1,333 @@
+/* Telas de acesso (Login e Criar conta): formulário à esquerda, painel (RightPanel) à direita.
+   Abaixo de 960px o painel some e o formulário ocupa a tela toda. */
+.tt-acesso {
+  display: flex;
+  min-height: 100vh;
+  background: var(--superficie-2);
+  color: var(--texto);
+}
+
+.tt-acesso__lado {
+  flex: 0 0 48%;
+  max-width: 48%;
+  display: flex;
+  flex-direction: column;
+  padding: 0 clamp(var(--esp-6), 5vw, var(--esp-16));
+}
+
+.tt-acesso__topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-4);
+  min-height: 72px;
+}
+
+.tt-acesso__marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: var(--esp-1);
+  margin-left: calc(-1 * var(--esp-1));
+  border: none;
+  border-radius: var(--raio-md);
+  background: none;
+  color: var(--texto);
+  font-size: var(--tam-md);
+  font-weight: var(--peso-extra);
+  letter-spacing: -0.01em;
+  cursor: pointer;
+}
+
+.tt-acesso__atalho {
+  margin: 0;
+  font-size: var(--tam-sm);
+  color: var(--texto-suave);
+  text-align: right;
+}
+
+.tt-acesso__link {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--azul-texto);
+  font-size: inherit;
+  font-weight: var(--peso-semi);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--duracao) var(--curva);
+}
+
+.tt-acesso__link:hover {
+  text-decoration-color: currentColor;
+}
+
+.tt-acesso__principal {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: var(--esp-8) 0 var(--esp-12);
+}
+
+.tt-acesso__caixa {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.tt-acesso__cabecalho {
+  margin-bottom: var(--esp-8);
+}
+
+.tt-acesso__cabecalho h1 {
+  margin: 0 0 var(--esp-2);
+  font-size: clamp(var(--tam-3xl), 2.4vw, var(--tam-4xl));
+  font-weight: var(--peso-extra);
+  line-height: var(--linha-justa);
+  letter-spacing: -0.03em;
+}
+
+.tt-acesso__cabecalho p {
+  margin: 0;
+  max-width: 44ch;
+  font-size: var(--tam-md);
+  line-height: var(--linha-normal);
+  color: var(--texto-suave);
+}
+
+.tt-acesso__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-4);
+}
+
+/* Campo com ícone */
+.tt-acesso__rotulo-linha {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--esp-3);
+  margin-bottom: 6px;
+}
+
+.tt-acesso__rotulo-linha label {
+  font-size: var(--tam-sm);
+  font-weight: var(--peso-medio);
+  color: var(--texto-2);
+}
+
+.tt-acesso__entrada {
+  position: relative;
+}
+
+.tt-acesso__entrada .tt-campo {
+  min-height: 44px;
+  padding-left: 40px;
+  font-size: var(--tam-md);
+}
+
+.tt-acesso__entrada--com-acao .tt-campo {
+  padding-right: 44px;
+}
+
+.tt-acesso__icone {
+  position: absolute;
+  left: var(--esp-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--texto-fraco);
+  pointer-events: none;
+  transition: color var(--duracao) var(--curva);
+}
+
+.tt-acesso__entrada:focus-within .tt-acesso__icone {
+  color: var(--azul-texto);
+}
+
+.tt-acesso__olho {
+  position: absolute;
+  right: var(--esp-1);
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--raio-sm);
+  background: none;
+  color: var(--texto-fraco);
+  cursor: pointer;
+  transition: var(--transicao-cor);
+}
+
+.tt-acesso__olho:hover {
+  background: var(--superficie-3);
+  color: var(--texto-2);
+}
+
+/* Senha e confirmação: um embaixo do outro (lado a lado, a coluna de 420px cortava os placeholders) */
+.tt-acesso__dupla {
+  display: grid;
+  gap: var(--esp-4);
+}
+
+/* Seletor de perfil: controle segmentado */
+.tt-acesso__perfis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--esp-1);
+  padding: var(--esp-1);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-md);
+  background: var(--superficie-3);
+}
+
+.tt-acesso__perfis button {
+  min-height: 36px;
+  padding: 0 var(--esp-2);
+  border: 1px solid transparent;
+  border-radius: var(--raio-sm);
+  background: none;
+  color: var(--texto-suave);
+  font-size: var(--tam-sm);
+  font-weight: var(--peso-medio);
+  cursor: pointer;
+  transition: var(--transicao-cor);
+}
+
+.tt-acesso__perfis button:hover:not([aria-checked="true"]) {
+  color: var(--texto);
+}
+
+.tt-acesso__perfis button[aria-checked="true"] {
+  background: var(--superficie);
+  border-color: var(--borda);
+  color: var(--texto);
+  font-weight: var(--peso-semi);
+  box-shadow: var(--sombra-1);
+}
+
+.tt-acesso__grupo-rotulo {
+  display: block;
+  margin-bottom: 6px;
+  font-size: var(--tam-sm);
+  font-weight: var(--peso-medio);
+  color: var(--texto-2);
+}
+
+/* Aceite dos termos */
+.tt-acesso__termos {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: var(--tam-sm);
+  line-height: var(--linha-normal);
+  color: var(--texto-suave);
+  cursor: pointer;
+}
+
+.tt-acesso__termos input {
+  appearance: none;
+  display: grid;
+  place-content: center;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin: 2px 0 0;
+  border: 1.5px solid var(--borda-2);
+  border-radius: 5px;
+  background: var(--superficie);
+  cursor: pointer;
+  transition: var(--transicao-cor);
+}
+
+.tt-acesso__termos input::after {
+  content: "";
+  width: 9px;
+  height: 5px;
+  margin-top: -2px;
+  border-left: 2px solid #FFFFFF;
+  border-bottom: 2px solid #FFFFFF;
+  transform: rotate(-45deg) scale(0);
+  transition: transform var(--duracao-rapida) var(--curva);
+}
+
+.tt-acesso__termos input:checked {
+  background: var(--azul);
+  border-color: var(--azul);
+}
+
+.tt-acesso__termos input:checked::after {
+  transform: rotate(-45deg) scale(1);
+}
+
+.tt-acesso__termos .tt-acesso__link {
+  font-weight: var(--peso-medio);
+}
+
+.tt-acesso__largo {
+  width: 100%;
+}
+
+.tt-acesso__divisor {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  margin: var(--esp-6) 0;
+  font-size: var(--tam-xs);
+  color: var(--texto-fraco);
+}
+
+.tt-acesso__divisor::before,
+.tt-acesso__divisor::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--borda);
+}
+
+.tt-acesso__rodape {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 56px;
+  font-size: var(--tam-xs);
+  color: var(--texto-fraco);
+}
+
+/* Foco visível */
+.tt-acesso__marca:focus-visible,
+.tt-acesso__link:focus-visible,
+.tt-acesso__olho:focus-visible,
+.tt-acesso__perfis button:focus-visible,
+.tt-acesso__termos input:focus-visible {
+  outline: 2px solid var(--anel-foco);
+  outline-offset: 2px;
+}
+
+@media (max-width: 959px) {
+  .tt-acesso__lado {
+    flex: 1;
+    max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .tt-acesso__lado {
+    padding: 0 var(--esp-4);
+  }
+
+  .tt-acesso__atalho span {
+    display: none;
+  }
+
+  .tt-acesso__principal {
+    align-items: flex-start;
+    padding-top: var(--esp-4);
+  }
+}

@@ -1,0 +1,469 @@
+/* Estrutura das áreas logadas (Layout.jsx): menu lateral fixo no computador,
+   gaveta no celular (até 1023px). Usa só os tokens de src/index.css. */
+
+.tt-app {
+  --largura-lateral: 264px;
+  --altura-topo: 56px;
+  min-height: 100vh;
+  background: var(--fundo);
+  color: var(--texto);
+}
+
+/* Link "pular para o conteúdo": só aparece quando recebe foco pelo teclado */
+.tt-pular {
+  position: fixed;
+  top: var(--esp-2);
+  left: var(--esp-2);
+  z-index: 200;
+  padding: var(--esp-2) var(--esp-4);
+  border-radius: var(--raio-md);
+  background: var(--azul);
+  color: #FFFFFF;
+  font-weight: var(--peso-semi);
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.tt-pular:focus {
+  transform: none;
+}
+
+/* ── Menu lateral ── */
+.tt-lateral {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  width: var(--largura-lateral);
+  background: var(--superficie);
+  border-right: 1px solid var(--borda);
+}
+
+.tt-lateral__topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-2);
+  height: 72px;
+  padding: 0 var(--esp-4);
+}
+
+.tt-marca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: var(--esp-1);
+  margin-left: calc(-1 * var(--esp-1));
+  border: none;
+  border-radius: var(--raio-md);
+  background: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tt-marca__textos {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tt-marca__nome {
+  font-size: var(--tam-md);
+  font-weight: var(--peso-extra);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--texto);
+}
+
+.tt-marca__area {
+  font-size: var(--tam-xs);
+  line-height: 1.3;
+  color: var(--texto-suave);
+}
+
+.tt-lateral__fechar,
+.tt-topo__menu {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: var(--raio-md);
+  background: none;
+  color: var(--texto-2);
+  cursor: pointer;
+  transition: var(--transicao-cor);
+}
+
+.tt-lateral__fechar:hover,
+.tt-topo__menu:hover {
+  background: var(--superficie-3);
+  color: var(--texto);
+}
+
+/* Navegação */
+.tt-lateral__nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--esp-2) var(--esp-3);
+}
+
+.tt-lateral__nav ul {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tt-nav-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  min-height: 40px;
+  padding: var(--esp-2) var(--esp-3);
+  border-radius: var(--raio-md);
+  color: var(--texto-2);
+  font-size: var(--tam-base);
+  font-weight: var(--peso-medio);
+  line-height: var(--linha-media);
+  text-decoration: none;
+  transition: var(--transicao-cor);
+}
+
+.tt-nav-link svg {
+  flex-shrink: 0;
+  color: var(--texto-suave);
+  transition: color var(--duracao) var(--curva);
+}
+
+.tt-nav-link__rotulo {
+  flex: 1;
+  min-width: 0;
+}
+
+.tt-nav-link:hover {
+  background: var(--superficie-3);
+  color: var(--texto);
+}
+
+.tt-nav-link:hover svg {
+  color: var(--texto-2);
+}
+
+/* Página atual: fundo azul suave e um traço à esquerda */
+.tt-nav-link[aria-current="page"] {
+  background: var(--ativo-fundo);
+  color: var(--ativo-texto);
+  font-weight: var(--peso-semi);
+}
+
+.tt-nav-link[aria-current="page"] svg {
+  color: var(--ativo-texto);
+}
+
+.tt-nav-link[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  left: calc(-1 * var(--esp-3));
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--azul);
+}
+
+/* Rodapé do menu: tema e usuário logado */
+.tt-lateral__rodape {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-2);
+  padding: var(--esp-3);
+  border-top: 1px solid var(--borda);
+}
+
+.tt-tema-menu {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  width: 100%;
+  min-height: 40px;
+  padding: var(--esp-2) var(--esp-3);
+  border: none;
+  border-radius: var(--raio-md);
+  background: none;
+  color: var(--texto-2);
+  font-size: var(--tam-base);
+  font-weight: var(--peso-medio);
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transicao-cor);
+}
+
+.tt-tema-menu svg {
+  color: var(--texto-suave);
+}
+
+.tt-tema-menu span:not(.tt-tema-menu__chave) {
+  flex: 1;
+}
+
+.tt-tema-menu:hover {
+  background: var(--superficie-3);
+  color: var(--texto);
+}
+
+/* Chave liga/desliga desenhada em CSS */
+.tt-tema-menu__chave {
+  position: relative;
+  width: 32px;
+  height: 18px;
+  flex-shrink: 0;
+  border-radius: var(--raio-pilula);
+  background: var(--borda-2);
+  transition: background-color var(--duracao) var(--curva);
+}
+
+.tt-tema-menu__chave::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  box-shadow: var(--sombra-1);
+  transition: transform var(--duracao) var(--curva);
+}
+
+.tt-tema-menu[aria-checked="true"] .tt-tema-menu__chave {
+  background: var(--azul);
+}
+
+.tt-tema-menu[aria-checked="true"] .tt-tema-menu__chave::after {
+  transform: translateX(14px);
+}
+
+.tt-usuario {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: var(--esp-2);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-lg);
+  background: var(--superficie-2);
+}
+
+.tt-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--azul-suave);
+  color: var(--azul-texto);
+  font-size: var(--tam-sm);
+  font-weight: var(--peso-negrito);
+  letter-spacing: 0.02em;
+}
+
+.tt-usuario__textos {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.tt-usuario__nome,
+.tt-usuario__email {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.tt-usuario__nome {
+  font-size: var(--tam-sm);
+  font-weight: var(--peso-semi);
+  line-height: 1.3;
+  color: var(--texto);
+}
+
+.tt-usuario__email {
+  font-size: var(--tam-xs);
+  line-height: 1.3;
+  color: var(--texto-suave);
+}
+
+.tt-usuario__sair {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: var(--raio-md);
+  background: none;
+  color: var(--texto-suave);
+  cursor: pointer;
+  transition: var(--transicao-cor);
+}
+
+.tt-usuario__sair:hover {
+  background: var(--vermelho-suave);
+  color: var(--vermelho-texto);
+}
+
+/* ── Coluna principal ── */
+.tt-app__coluna {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin-left: var(--largura-lateral);
+}
+
+.tt-topo {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  height: var(--altura-topo);
+  padding: 0 var(--esp-8);
+  background: color-mix(in srgb, var(--fundo) 85%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--borda);
+}
+
+.tt-topo__marca {
+  display: none;
+  align-items: center;
+  gap: var(--esp-2);
+  font-size: var(--tam-md);
+  font-weight: var(--peso-extra);
+  letter-spacing: -0.01em;
+  color: var(--texto);
+}
+
+.tt-topo__voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-1);
+  min-height: 32px;
+  padding: 0 var(--esp-3) 0 var(--esp-2);
+  border: 1px solid transparent;
+  border-radius: var(--raio-md);
+  background: none;
+  color: var(--texto-suave);
+  font-size: var(--tam-sm);
+  font-weight: var(--peso-medio);
+  cursor: pointer;
+  transition: var(--transicao-cor);
+}
+
+.tt-topo__voltar:hover {
+  background: var(--superficie-3);
+  color: var(--texto);
+}
+
+.tt-conteudo {
+  flex: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--esp-8);
+  outline: none;
+}
+
+/* Foco visível em tudo que é clicável no Layout */
+.tt-marca:focus-visible,
+.tt-lateral__fechar:focus-visible,
+.tt-topo__menu:focus-visible,
+.tt-nav-link:focus-visible,
+.tt-tema-menu:focus-visible,
+.tt-usuario__sair:focus-visible,
+.tt-topo__voltar:focus-visible {
+  outline: 2px solid var(--anel-foco);
+  outline-offset: 2px;
+}
+
+/* Fundo escurecido atrás da gaveta (só no celular) */
+.tt-app__fundo {
+  display: none;
+}
+
+/* ── Celular e tablet: o menu vira gaveta ── */
+@media (max-width: 1023px) {
+  .tt-lateral {
+    width: min(var(--largura-lateral), 86vw);
+    box-shadow: var(--sombra-3);
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform var(--duracao-lenta) var(--curva), visibility 0s linear var(--duracao-lenta);
+  }
+
+  .tt-lateral--aberta {
+    transform: none;
+    visibility: visible;
+    transition: transform var(--duracao-lenta) var(--curva), visibility 0s;
+  }
+
+  .tt-lateral__fechar,
+  .tt-topo__menu,
+  .tt-topo__marca {
+    display: inline-flex;
+  }
+
+  .tt-app__fundo {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    background: var(--fundo-modal);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duracao-lenta) var(--curva);
+  }
+
+  .tt-app__fundo--visivel {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .tt-app__coluna {
+    margin-left: 0;
+  }
+
+  .tt-topo {
+    padding: 0 var(--esp-2);
+  }
+
+  .tt-topo__voltar {
+    margin-left: auto;
+  }
+
+  .tt-conteudo {
+    padding: var(--esp-6) var(--esp-5);
+  }
+
+  body.tt-sem-rolagem {
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 480px) {
+  .tt-conteudo {
+    padding: var(--esp-5) var(--esp-4);
+  }
+}

@@ -1,7 +1,12 @@
-/* Cores neutras do tema. As cores da marca (azul, verde, laranja...) são as mesmas nos dois temas.
-   O tema escuro é ligado pelo atributo data-tema="escuro" no <html> (ver BotaoTema). */
+/* Design system do TrocaTicket.
+   - Cores neutras mudam com o tema; as cores da marca são as mesmas nos dois temas.
+   - Tons derivados (fundo suave, texto, borda) saem das cores da marca com color-mix, sem cores novas.
+   - O tema escuro é ligado pelo atributo data-tema="escuro" no <html> (ver BotaoTema).
+   Os estilos dos componentes base ficam em components/ui.css. */
 :root {
   color-scheme: light;
+
+  /* ── Neutros ── */
   --fundo: #F5F6FA;
   --superficie: #FFFFFF;
   --superficie-2: #F9FAFB;
@@ -24,6 +29,107 @@
   --ok-texto: #15803D;
   --destaque: #0A0A0A;
   --destaque-texto: #FFFFFF;
+
+  /* ── Cores da marca (iguais nos dois temas) ── */
+  --azul: #2563EB;
+  --azul-forte: #1D4ED8;
+  --azul-claro: #3B82F6;
+  --verde: #059669;
+  --ambar: #D97706;
+  --laranja: #EA580C;
+  --laranja-claro: #F97316;
+  --vermelho: #DC2626;
+  --roxo: #A855F7; /* só no degradê do logo */
+  --degrade-logo: linear-gradient(135deg, var(--laranja-claro), var(--roxo), var(--azul-claro));
+
+  /* ── Tons derivados ──
+     -texto: versão legível sobre a superfície do tema (no claro escurece, no escuro clareia)
+     -suave: fundo de badges e avisos; -borda: contorno desses fundos */
+  --mistura-texto: #000000;
+  --forca-texto: 82%;
+  --forca-suave: 10%;
+  --forca-borda: 28%;
+
+  --azul-texto: color-mix(in srgb, var(--azul) var(--forca-texto), var(--mistura-texto));
+  --verde-texto: color-mix(in srgb, var(--verde) var(--forca-texto), var(--mistura-texto));
+  --ambar-texto: color-mix(in srgb, var(--ambar) 72%, var(--mistura-texto));
+  --laranja-texto: color-mix(in srgb, var(--laranja) var(--forca-texto), var(--mistura-texto));
+  --vermelho-texto: color-mix(in srgb, var(--vermelho) 90%, var(--mistura-texto));
+
+  --azul-suave: color-mix(in srgb, var(--azul) var(--forca-suave), transparent);
+  --verde-suave: color-mix(in srgb, var(--verde) var(--forca-suave), transparent);
+  --ambar-suave: color-mix(in srgb, var(--ambar) var(--forca-suave), transparent);
+  --laranja-suave: color-mix(in srgb, var(--laranja) var(--forca-suave), transparent);
+  --vermelho-suave: color-mix(in srgb, var(--vermelho) var(--forca-suave), transparent);
+
+  --azul-borda: color-mix(in srgb, var(--azul) var(--forca-borda), transparent);
+  --verde-borda: color-mix(in srgb, var(--verde) var(--forca-borda), transparent);
+  --vermelho-borda: color-mix(in srgb, var(--vermelho) var(--forca-borda), transparent);
+
+  --laranja-forte: color-mix(in srgb, var(--laranja) 85%, #000000);
+  --anel-foco: color-mix(in srgb, var(--azul) 45%, transparent);
+  --fundo-modal: color-mix(in srgb, #111827 55%, transparent);
+
+  /* ── Tipografia ──
+     Uma família só (Schibsted Grotesk); a hierarquia vem de tamanho e peso.
+     Escala: 12 · 13 · 14 · 16 · 18 · 21 · 24 · 30 · 36 · 48 · 64px. Nada abaixo de 12px. */
+  --fonte: "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --tam-xs: 0.75rem;     /* 12 — legendas, badges */
+  --tam-sm: 0.8125rem;   /* 13 — rótulos, texto secundário */
+  --tam-base: 0.875rem;  /* 14 — texto do sistema */
+  --tam-md: 1rem;        /* 16 — texto de leitura, títulos de card */
+  --tam-lg: 1.125rem;    /* 18 */
+  --tam-xl: 1.3125rem;   /* 21 */
+  --tam-2xl: 1.5rem;     /* 24 — números de destaque */
+  --tam-3xl: 1.875rem;   /* 30 — título de página */
+  --tam-4xl: 2.25rem;    /* 36 */
+  --tam-5xl: 3rem;       /* 48 */
+  --tam-6xl: 4rem;       /* 64 — títulos da landing */
+
+  --peso-normal: 400;
+  --peso-medio: 500;
+  --peso-semi: 600;
+  --peso-negrito: 700;
+  --peso-extra: 800;
+
+  --linha-justa: 1.15;   /* títulos */
+  --linha-media: 1.35;   /* textos curtos, botões em duas linhas */
+  --linha-normal: 1.55;  /* parágrafos */
+
+  --espaco-titulo: -0.02em; /* títulos grandes ficam um pouco mais fechados */
+
+  /* ── Espaçamento (base 4px) ── */
+  --esp-1: 4px;
+  --esp-2: 8px;
+  --esp-3: 12px;
+  --esp-4: 16px;
+  --esp-5: 20px;
+  --esp-6: 24px;
+  --esp-8: 32px;
+  --esp-10: 40px;
+  --esp-12: 48px;
+  --esp-16: 64px;
+  --esp-24: 96px;
+
+  /* ── Raio de borda por hierarquia ── */
+  --raio-sm: 6px;       /* badges, chips de aba */
+  --raio-md: 8px;       /* botões, campos */
+  --raio-lg: 12px;      /* cards */
+  --raio-xl: 16px;      /* modais, painéis grandes */
+  --raio-pilula: 999px; /* contadores, filtros */
+
+  /* ── Sombras: só o que flutua tem sombra; o resto é separado por borda ── */
+  --sombra-1: 0 1px 2px rgba(17, 24, 39, 0.05);                                        /* cabeçalho fixo */
+  --sombra-2: 0 8px 24px rgba(17, 24, 39, 0.10), 0 2px 6px rgba(17, 24, 39, 0.05);     /* dropdowns, botão flutuante */
+  --sombra-3: 0 24px 64px rgba(17, 24, 39, 0.18), 0 4px 12px rgba(17, 24, 39, 0.06);   /* modais */
+
+  /* ── Transições ── */
+  --duracao-rapida: 120ms;
+  --duracao: 180ms;
+  --duracao-lenta: 320ms;
+  --curva: cubic-bezier(0.2, 0, 0, 1);
+  --transicao-cor: color var(--duracao) var(--curva), background-color var(--duracao) var(--curva), border-color var(--duracao) var(--curva), box-shadow var(--duracao) var(--curva);
 }
 
 :root[data-tema="escuro"] {
@@ -50,111 +156,149 @@
   --ok-texto: #6EE7B7;
   --destaque: #F3F4F6;
   --destaque-texto: #0A0A0A;
+
+  /* No escuro, os tons de texto clareiam e os fundos suaves ficam um pouco mais fortes */
+  --mistura-texto: #FFFFFF;
+  --forca-texto: 58%;
+  --forca-suave: 16%;
+  --forca-borda: 36%;
+  --ambar-texto: color-mix(in srgb, var(--ambar) 62%, #FFFFFF);
+  --vermelho-texto: color-mix(in srgb, var(--vermelho) 55%, #FFFFFF);
+
+  --anel-foco: color-mix(in srgb, var(--azul-claro) 60%, transparent);
+  --fundo-modal: rgba(0, 0, 0, 0.62);
+
+  --sombra-1: 0 1px 0 rgba(0, 0, 0, 0.4);
+  --sombra-2: 0 8px 24px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  --sombra-3: 0 24px 64px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 * {
-    box-sizing: border-box;
-  }
+  box-sizing: border-box;
+}
 
-  body {
-    margin: 0;
-    font-family: "Inter", sans-serif;
-    background: var(--fundo);
-    color: var(--texto);
-  }
+body {
+  margin: 0;
+  font-family: var(--fonte);
+  font-size: var(--tam-base);
+  line-height: var(--linha-normal);
+  background: var(--fundo);
+  color: var(--texto);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
 
-  /* Áreas logadas (Layout): títulos e parágrafos sem margem padrão, como no Figma */
-  .area-logada :is(h1, h2, h3, h4, h5, h6, p) {
-    margin: 0;
-  }
+/* Transição: algumas telas ainda têm fontFamily inline (Outfit, Inter, JetBrains Mono).
+   Enquanto elas não são refeitas, tudo herda a fonte do design system,
+   e onde havia fonte monoespaçada (valores) os números continuam alinhados.
+   Remover estas duas regras quando nenhuma tela tiver mais fontFamily inline. */
+body * {
+  font-family: inherit !important;
+}
 
-  /* Elementos clicáveis: resposta sutil ao passar o mouse e foco visível no teclado */
-  .tt-interativo:hover:not(:disabled) {
-    filter: brightness(0.96);
-  }
+[style*="JetBrains"] {
+  font-variant-numeric: tabular-nums;
+}
 
-  .tt-interativo:active:not(:disabled) {
-    transform: translateY(1px);
-  }
+/* Áreas logadas (Layout): títulos e parágrafos sem margem padrão, como no Figma */
+.area-logada :is(h1, h2, h3, h4, h5, h6, p) {
+  margin: 0;
+}
 
-  .tt-botao-icone {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4px;
-    border: none;
-    border-radius: 6px;
-    background: none;
-    cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease;
-  }
+/* Elementos clicáveis: resposta sutil ao passar o mouse e foco visível no teclado */
+.tt-interativo:hover:not(:disabled) {
+  filter: brightness(0.96);
+}
 
-  .tt-botao-icone:hover {
-    background: rgba(107, 114, 128, 0.1);
-  }
+.tt-interativo:active:not(:disabled) {
+  transform: translateY(1px);
+}
 
-  .tt-link {
-    transition: opacity 0.15s ease;
-  }
+.tt-botao-icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border: none;
+  border-radius: var(--raio-sm);
+  background: none;
+  cursor: pointer;
+  transition: var(--transicao-cor);
+}
 
-  .tt-link:hover {
-    opacity: 0.75;
-  }
+.tt-botao-icone:hover {
+  background: color-mix(in srgb, var(--texto-suave) 12%, transparent);
+}
 
-  .tt-interativo:focus-visible,
-  .tt-botao-icone:focus-visible,
-  .tt-link:focus-visible,
-  .tt-botao-tema:focus-visible {
-    outline: 2px solid #93C5FD;
-    outline-offset: 2px;
-  }
+.tt-link {
+  transition: opacity var(--duracao) var(--curva);
+}
 
-  /* Botão de tema: círculo pequeno fixo no canto inferior direito */
-  .tt-botao-tema {
-    position: fixed;
-    right: 20px;
-    bottom: 20px;
-    z-index: 90;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    background: var(--superficie);
-    color: var(--texto-2);
-    border: 1px solid var(--borda);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
-    cursor: pointer;
-    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
-  }
+.tt-link:hover {
+  opacity: 0.75;
+}
 
-  .tt-botao-tema:hover {
-    transform: translateY(-2px);
-    color: var(--texto);
-    border-color: var(--borda-2);
-  }
+.tt-interativo:focus-visible,
+.tt-botao-icone:focus-visible,
+.tt-link:focus-visible,
+.tt-botao-tema:focus-visible {
+  outline: 2px solid var(--anel-foco);
+  outline-offset: 2px;
+}
 
-  /* Troca de tema suave nas superfícies principais */
-  body,
-  .area-logada {
-    transition: background-color 0.2s ease, color 0.2s ease;
-  }
+/* Botão de tema: círculo pequeno fixo no canto inferior direito */
+.tt-botao-tema {
+  position: fixed;
+  right: var(--esp-5);
+  bottom: var(--esp-5);
+  z-index: 90;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: var(--superficie);
+  color: var(--texto-2);
+  border: 1px solid var(--borda);
+  box-shadow: var(--sombra-2);
+  cursor: pointer;
+  transition: var(--transicao-cor), transform var(--duracao) var(--curva);
+}
 
-  /* Ícone girando nos estados de carregando (botões e telas) */
-  @keyframes tt-girar {
-    to {
-      transform: rotate(360deg);
-    }
-  }
+.tt-botao-tema:hover {
+  transform: translateY(-2px);
+  color: var(--texto);
+  border-color: var(--borda-2);
+}
 
+/* Troca de tema suave nas superfícies principais */
+body,
+.area-logada {
+  transition: background-color var(--duracao) ease, color var(--duracao) ease;
+}
+
+/* Ícone girando nos estados de carregando (botões e telas) */
+@keyframes tt-girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.tt-girando {
+  animation: tt-girar 0.8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
   .tt-girando {
-    animation: tt-girar 0.8s linear infinite;
+    animation-duration: 2.4s;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .tt-girando {
-      animation-duration: 2.4s;
-    }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
   }
+}

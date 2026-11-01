@@ -1,38 +1,49 @@
+import { useEffect, useRef, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, LogOut, Menu, X } from "lucide-react";
 import { Contador, Icone, MarcaLogo } from "./ui";
+import BotaoTema from "./BotaoTema";
 import { ROTULO_PERFIL } from "../data/perfis";
+import "./Layout.css";
 
-const estiloLink = (ativo) => ({
-  position: "relative",
-  padding: "6px 13px",
-  borderRadius: "7px",
-  fontSize: "0.8125rem",
-  fontWeight: 500,
-  textDecoration: "none",
-  background: ativo ? "var(--ativo-fundo)" : "transparent",
-  border: `1px solid ${ativo ? "var(--ativo-borda)" : "transparent"}`,
-  color: ativo ? "var(--ativo-texto)" : "var(--texto-suave)",
-  transition: "all 0.15s ease",
-  whiteSpace: "nowrap",
-});
-
-// Muda a cor só dos links que não estão ativos.
-function hoverLink(fundo, cor) {
-  return (e) => {
-    if (e.currentTarget.getAttribute("aria-current") === "page") return;
-    e.currentTarget.style.background = fundo;
-    e.currentTarget.style.color = cor;
-  };
+// Iniciais do nome para o avatar: "Ana Paula Souza" -> "AS"
+function iniciais(nome = "") {
+  const partes = nome.trim().split(/\s+/).filter(Boolean);
+  if (partes.length === 0) return "?";
+  const primeira = partes[0][0];
+  const ultima = partes.length > 1 ? partes[partes.length - 1][0] : "";
+  return (primeira + ultima).toUpperCase();
 }
 
-// Estrutura das áreas logadas: cabeçalho com navegação + a página da rota atual.
-// `nav` é uma lista de { rotulo, para, end, contador }. O primeiro item é a página inicial da área.
+// Estrutura das áreas logadas: menu lateral + barra do topo + a página da rota atual.
+// `nav` é uma lista de { rotulo, para, end, contador, icone }. O primeiro item é a página inicial da área.
 // `contexto` fica disponível para as páginas via useOutletContext().
+// No celular (até 1023px) o menu lateral vira uma gaveta, aberta pelo botão de menu da barra do topo.
 export default function Layout({ nav, contexto }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [menuAberto, setMenuAberto] = useState(false);
+  const botaoMenuRef = useRef(null);
+  const botaoFecharRef = useRef(null);
+
+  // Com a gaveta aberta: foco no botão de fechar, Esc fecha e a página de trás não rola.
+  // Ao fechar, o foco volta para o botão que abriu.
+  useEffect(() => {
+    if (!menuAberto) return;
+    const botaoMenu = botaoMenuRef.current;
+    botaoFecharRef.current?.focus();
+    document.body.classList.add("tt-sem-rolagem");
+    const aoTeclar = (e) => e.key === "Escape" && setMenuAberto(false);
+    window.addEventListener("keydown", aoTeclar);
+    return () => {
+      document.body.classList.remove("tt-sem-rolagem");
+      window.removeEventListener("keydown", aoTeclar);
+      botaoMenu?.focus();
+    };
+  }, [menuAberto]);
+
+  const fecharMenu = () => setMenuAberto(false);
 
   function sairDaConta() {
     logout();
@@ -40,71 +51,99 @@ export default function Layout({ nav, contexto }) {
   }
 
   return (
-    <div className="area-logada" style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "var(--fundo)", fontFamily: "Inter, sans-serif", color: "var(--texto)" }}>
-      <header style={{ background: "var(--superficie)", borderBottom: "1px solid var(--borda)", position: "sticky", top: 0, zIndex: 40, boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem", height: "58px", display: "flex", alignItems: "center", gap: "1rem" }}>
+    <div className="area-logada tt-app">
+      <a href="#conteudo" className="tt-pular">
+        Pular para o conteúdo
+      </a>
+
+      <div className={`tt-app__fundo${menuAberto ? " tt-app__fundo--visivel" : ""}`} onClick={fecharMenu} aria-hidden="true" />
+
+      <aside id="menu-lateral" className={`tt-lateral${menuAberto ? " tt-lateral--aberta" : ""}`} aria-label="Menu principal">
+        <div className="tt-lateral__topo">
           <button
             type="button"
-            onClick={() => navigate(-1)}
-            title="Voltar"
-            style={{ display: "flex", alignItems: "center", gap: "5px", padding: "6px 12px", borderRadius: "7px", background: "var(--superficie-3)", border: "1px solid var(--borda)", color: "var(--texto-2)", fontSize: "0.8125rem", fontWeight: 500, cursor: "pointer", flexShrink: 0, transition: "background 0.15s, border-color 0.15s" }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "var(--borda)"; e.currentTarget.style.borderColor = "var(--borda-2)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "var(--superficie-3)"; e.currentTarget.style.borderColor = "var(--borda)"; }}
+            className="tt-marca"
+            onClick={() => {
+              fecharMenu();
+              navigate(nav[0].para);
+            }}
           >
-            <Icone icone={ChevronLeft} tamanho={16} />
-            Voltar
-          </button>
-
-          <button
-            type="button"
-            onClick={() => navigate(nav[0].para)}
-            style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", cursor: "pointer", padding: 0, flexShrink: 0, textAlign: "left" }}
-          >
-            <MarcaLogo />
-            <div>
-              <div style={{ fontFamily: "Outfit", fontWeight: 800, fontSize: "0.9375rem", color: "var(--texto)", lineHeight: 1.1 }}>TrocaTicket</div>
-              <div style={{ fontSize: "0.5rem", color: "var(--texto-fraco)", letterSpacing: "0.1em", textTransform: "uppercase", lineHeight: 1 }}>Eventos &amp; Ingressos</div>
-            </div>
-          </button>
-
-          <nav style={{ display: "flex", alignItems: "center", gap: "2px", flex: 1 }}>
-            {nav.map((item) => (
-              <NavLink
-                key={item.para}
-                to={item.para}
-                end={item.end}
-                style={({ isActive }) => estiloLink(isActive)}
-                onMouseEnter={hoverLink("var(--superficie-2)", "var(--texto-2)")}
-                onMouseLeave={hoverLink("transparent", "var(--texto-suave)")}
-              >
-                {item.rotulo}
-                {item.contador > 0 && (
-                  <span style={{ position: "absolute", top: "-6px", right: "-4px" }}>
-                    <Contador valor={item.contador} />
-                  </span>
-                )}
-              </NavLink>
-            ))}
-          </nav>
-
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
-            <span style={{ fontSize: "0.6875rem", fontWeight: 600, padding: "3px 9px", borderRadius: "5px", background: "var(--superficie-3)", color: "var(--texto-suave)", letterSpacing: "0.05em", textTransform: "uppercase" }}>
-              {ROTULO_PERFIL[user.perfil]}
+            <MarcaLogo tamanho={32} />
+            <span className="tt-marca__textos">
+              <span className="tt-marca__nome">TrocaTicket</span>
+              <span className="tt-marca__area">{ROTULO_PERFIL[user.perfil]}</span>
             </span>
-            <button
-              type="button"
-              onClick={sairDaConta}
-              style={{ fontSize: "0.8125rem", color: "var(--texto-fraco)", background: "none", border: "none", padding: 0, cursor: "pointer", transition: "color 0.15s" }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--texto-2)")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--texto-fraco)")}
-            >
-              Sair
+          </button>
+          <button type="button" ref={botaoFecharRef} className="tt-lateral__fechar" onClick={fecharMenu} aria-label="Fechar menu">
+            <Icone icone={X} tamanho={20} />
+          </button>
+        </div>
+
+        <nav className="tt-lateral__nav">
+          <ul>
+            {nav.map((item) => (
+              <li key={item.para}>
+                <NavLink to={item.para} end={item.end} className="tt-nav-link" onClick={fecharMenu}>
+                  {item.icone && <Icone icone={item.icone} tamanho={18} />}
+                  <span className="tt-nav-link__rotulo">{item.rotulo}</span>
+                  {item.contador > 0 && <Contador valor={item.contador} />}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div className="tt-lateral__rodape">
+          <BotaoTema variante="menu" />
+
+          <div className="tt-usuario">
+            <span className="tt-avatar" aria-hidden="true">
+              {iniciais(user.nome)}
+            </span>
+            <span className="tt-usuario__textos">
+              <span className="tt-usuario__nome" title={user.nome}>
+                {user.nome}
+              </span>
+              <span className="tt-usuario__email" title={user.email}>
+                {user.email}
+              </span>
+            </span>
+            <button type="button" className="tt-usuario__sair" onClick={sairDaConta} aria-label="Sair da conta" title="Sair da conta">
+              <Icone icone={LogOut} tamanho={18} />
             </button>
           </div>
         </div>
-      </header>
+      </aside>
 
-      <main style={{ flex: 1, maxWidth: "1280px", margin: "0 auto", width: "100%", padding: "2rem 1.5rem" }}><Outlet context={contexto} /></main>
+      <div className="tt-app__coluna">
+        <header className="tt-topo">
+          <button
+            type="button"
+            ref={botaoMenuRef}
+            className="tt-topo__menu"
+            onClick={() => setMenuAberto(true)}
+            aria-label="Abrir menu"
+            aria-expanded={menuAberto}
+            aria-controls="menu-lateral"
+          >
+            <Icone icone={Menu} tamanho={20} />
+          </button>
+
+          <span className="tt-topo__marca">
+            <MarcaLogo tamanho={26} />
+            TrocaTicket
+          </span>
+
+          <button type="button" className="tt-topo__voltar" onClick={() => navigate(-1)}>
+            <Icone icone={ChevronLeft} tamanho={16} />
+            Voltar
+          </button>
+        </header>
+
+        <main id="conteudo" className="tt-conteudo" tabIndex={-1}>
+          <Outlet context={contexto} />
+        </main>
+      </div>
     </div>
   );
 }

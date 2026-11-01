@@ -1,9 +1,11 @@
 // Componentes visuais reaproveitados nas telas (fornecedor, organizador, admin, login e landing).
+// Os estilos ficam em ui.css e usam os tokens de index.css. `style` continua funcionando em todos
+// para ajustes pontuais das telas.
 import { CircleAlert, CircleCheck, LoaderCircle, Search, Star, Ticket, X } from "lucide-react";
+import "./ui.css";
 
-const AZUL = "#2563EB";
-const VERDE = "#059669";
-const BORDA = "var(--borda)";
+// Junta classes ignorando as vazias: classes("a", cond && "b") -> "a b"
+const classes = (...lista) => lista.filter(Boolean).join(" ");
 
 // Todos os ícones do projeto passam por aqui: traço fino e tamanho padronizado.
 // Herdam a cor do texto (currentColor), então acompanham o tema de onde estão.
@@ -23,9 +25,8 @@ export function TextoComIcone({ icone, tamanho = 16, children, style }) {
 
 // Ícone num círculo suave, usado no topo de modais e em estados vazios.
 export function IconeDestaque({ icone, variante = "info" }) {
-  const { background, color } = estilosBadge[variante];
   return (
-    <div style={{ width: "52px", height: "52px", borderRadius: "50%", background, color, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
+    <div className={`tt-icone-destaque tt-badge--${variante}`}>
       <Icone icone={icone} tamanho={24} />
     </div>
   );
@@ -34,7 +35,7 @@ export function IconeDestaque({ icone, variante = "info" }) {
 // Quadradinho colorido do logo TrocaTicket.
 export function MarcaLogo({ tamanho = 26 }) {
   return (
-    <div style={{ width: tamanho, height: tamanho, borderRadius: tamanho / 4, background: "linear-gradient(135deg, #F97316, #A855F7, #3B82F6)", color: "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+    <div style={{ width: tamanho, height: tamanho, borderRadius: tamanho / 4, background: "var(--degrade-logo)", color: "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
       <Icone icone={Ticket} tamanho={Math.round(tamanho * 0.6)} />
     </div>
   );
@@ -49,85 +50,83 @@ export function BotaoIcone({ icone, rotulo, onClick, cor = "var(--texto-fraco)",
   );
 }
 
-const estilosCard = {
-  padrao: { background: "var(--superficie)", border: `1px solid ${BORDA}` },
-  sucesso: { background: "rgba(5,150,105,0.04)", border: "1px solid rgba(5,150,105,0.2)" },
-  info: { background: "var(--ativo-fundo)", border: "1px solid var(--ativo-borda)" },
-  selecionado: { background: "var(--selecionado-fundo)", border: "1px solid var(--ativo-borda)" },
-};
-
+// Variantes: padrao, sucesso, info, selecionado. O espaçamento interno fica com cada tela.
 export function Card({ children, variante = "padrao", style }) {
-  return <div style={{ borderRadius: "12px", ...estilosCard[variante], ...style }}>{children}</div>;
+  return (
+    <div className={classes("tt-card", variante !== "padrao" && `tt-card--${variante}`)} style={style}>
+      {children}
+    </div>
+  );
 }
 
 export function CardTitulo({ children }) {
-  return (
-    <h4 style={{ fontFamily: "Outfit", fontWeight: 700, color: "var(--texto)", marginBottom: "14px", fontSize: "0.9375rem" }}>
-      {children}
-    </h4>
-  );
+  return <h4 className="tt-card-titulo">{children}</h4>;
 }
 
 // Faixa de título no topo de um card, separada do conteúdo por uma borda.
 export function CabecalhoCard({ titulo, sub, children }) {
   return (
-    <div style={{ padding: "1.25rem 1.5rem", borderBottom: `1px solid ${BORDA}`, display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px" }}>
+    <div className="tt-card-cabecalho">
       <div>
-        <h3 style={{ fontFamily: "Outfit", fontSize: "1rem", fontWeight: 700, color: "var(--texto)" }}>{titulo}</h3>
-        {sub && <p style={{ fontSize: "0.8125rem", color: "var(--texto-fraco)", marginTop: "4px" }}>{sub}</p>}
+        <h3>{titulo}</h3>
+        {sub && <p>{sub}</p>}
       </div>
       {children}
     </div>
   );
 }
 
-// Rótulo pequeno em caixa alta, usado acima de números e totais.
+// Linha picotada do ingresso, separando a parte "evento" da parte "valores" de um card.
+// Use como filho direto de um Card com overflow: hidden. `fundo` é a cor de trás do card
+// (normalmente o fundo da página), que aparece nos recortes laterais.
+export function Picote({ fundo, style }) {
+  return <hr className="tt-picote" aria-hidden="true" style={{ ...(fundo && { "--tt-picote-fundo": fundo }), ...style }} />;
+}
+
+// Rótulo pequeno acima de números e totais.
 export function Rotulo({ children }) {
-  return (
-    <div style={{ fontSize: "0.6875rem", fontWeight: 600, color: "var(--texto-fraco)", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "8px" }}>
-      {children}
-    </div>
-  );
+  return <div className="tt-rotulo">{children}</div>;
 }
 
 // `extra` aparece ao lado do título (ex.: badge de status); `children`, à direita da página.
 export function TituloPagina({ titulo, sub, extra, children }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.75rem", flexWrap: "wrap", gap: "1rem" }}>
+    <div className="tt-titulo-pagina">
       <div>
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <h2 style={{ fontFamily: "Outfit", fontSize: "1.5rem", fontWeight: 700, color: "var(--texto)" }}>{titulo}</h2>
+        <div className="tt-titulo-pagina__linha">
+          <h2>{titulo}</h2>
           {extra}
         </div>
-        {sub && <p style={{ fontSize: "0.875rem", color: "var(--texto-fraco)", marginTop: "4px" }}>{sub}</p>}
+        {sub && <p>{sub}</p>}
       </div>
       {children}
     </div>
   );
 }
 
-// Valor numérico em fonte monoespaçada (dinheiro, quantidades).
-export function Valor({ children, cor = VERDE, tamanho = "0.875rem", peso = 600, riscado = false }) {
+// Valor numérico (dinheiro, quantidades) com algarismos de largura fixa, para alinhar em colunas.
+export function Valor({ children, cor = "var(--verde-texto)", tamanho = "0.875rem", peso = 600, riscado = false }) {
   return (
-    <span style={{ fontFamily: "JetBrains Mono", fontSize: tamanho, fontWeight: peso, color: cor, textDecoration: riscado ? "line-through" : "none" }}>
+    <span className="tt-valor" style={{ fontSize: tamanho, fontWeight: peso, color: cor, textDecoration: riscado ? "line-through" : "none" }}>
       {children}
     </span>
   );
 }
 
 // Card com um número de destaque (KPI).
-export function Indicador({ rotulo, valor, cor, mono = true, tamanho = "1.5rem", detalhe, variante, riscado }) {
+export function Indicador({ rotulo, valor, cor = "var(--texto)", mono = true, tamanho = "1.5rem", detalhe, variante, riscado }) {
   return (
-    <Card variante={variante} style={{ padding: "1.25rem 1.5rem" }}>
-      <Rotulo>{rotulo}</Rotulo>
-      {mono ? (
-        <Valor cor={cor} tamanho={tamanho} peso={700} riscado={riscado}>
+    <Card variante={variante}>
+      <div className="tt-indicador">
+        <Rotulo>{rotulo}</Rotulo>
+        <span
+          className={classes("tt-indicador__valor", mono && "tt-valor")}
+          style={{ fontSize: tamanho, fontWeight: 700, color: cor, textDecoration: riscado ? "line-through" : "none" }}
+        >
           {valor}
-        </Valor>
-      ) : (
-        <div style={{ fontFamily: "Outfit", fontSize: tamanho, fontWeight: 700, color: cor }}>{valor}</div>
-      )}
-      {detalhe && <div style={{ fontSize: "0.75rem", color: "var(--texto-suave)", marginTop: "4px" }}>{detalhe}</div>}
+        </span>
+        {detalhe && <div className="tt-indicador__detalhe">{detalhe}</div>}
+      </div>
     </Card>
   );
 }
@@ -135,56 +134,40 @@ export function Indicador({ rotulo, valor, cor, mono = true, tamanho = "1.5rem",
 // Lista de pares rótulo / valor, usada em resumos laterais.
 export function ListaInfo({ itens }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+    <dl className="tt-lista-info">
       {itens.map(({ rotulo, valor }) => (
-        <div key={rotulo} style={{ display: "flex", justifyContent: "space-between", gap: "12px", fontSize: "0.8125rem" }}>
-          <span style={{ color: "var(--texto-fraco)" }}>{rotulo}</span>
-          <span style={{ color: "var(--texto-2)", fontWeight: 500, textAlign: "right" }}>{valor}</span>
+        <div key={rotulo}>
+          <dt>{rotulo}</dt>
+          <dd>{valor}</dd>
         </div>
       ))}
-    </div>
+    </dl>
   );
 }
 
-// Pares rótulo / valor em caixinhas, usados nos modais de detalhes.
+// Pares rótulo / valor num bloco com divisórias, usados nos modais de detalhes.
 export function ListaDetalhes({ itens }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "1.5rem" }}>
+    <dl className="tt-lista-detalhes">
       {itens.map(({ rotulo, valor }) => (
-        <div key={rotulo} style={{ display: "flex", justifyContent: "space-between", gap: "12px", padding: "9px 12px", background: "var(--superficie-2)", borderRadius: "7px", fontSize: "0.875rem", border: `1px solid ${BORDA}` }}>
-          <span style={{ color: "var(--texto-fraco)" }}>{rotulo}</span>
-          <span style={{ color: "var(--texto-2)", fontWeight: 500, textAlign: "right" }}>{valor}</span>
+        <div key={rotulo}>
+          <dt>{rotulo}</dt>
+          <dd>{valor}</dd>
         </div>
       ))}
-    </div>
+    </dl>
   );
 }
 
 // Bolinha laranja com um número (ex.: aprovações pendentes).
 export function Contador({ valor, grande = false }) {
-  const tamanho = grande ? "26px" : "17px";
-  return (
-    <span style={{ minWidth: tamanho, height: tamanho, borderRadius: "999px", background: "#EA580C", color: "#fff", fontSize: grande ? "0.75rem" : "0.5625rem", fontWeight: 700, display: "inline-flex", alignItems: "center", justifyContent: "center", padding: grande ? "0 6px" : "0 4px" }}>
-      {valor}
-    </span>
-  );
+  return <span className={classes("tt-contador", grande && "tt-contador--grande")}>{valor}</span>;
 }
 
-const estilosBadge = {
-  success: { background: "rgba(5,150,105,0.10)", color: VERDE },
-  warning: { background: "rgba(217,119,6,0.10)", color: "#D97706" },
-  error: { background: "rgba(220,38,38,0.10)", color: "#DC2626" },
-  info: { background: "rgba(37,99,235,0.10)", color: AZUL },
-  neutral: { background: "var(--superficie-3)", color: "var(--texto-suave)" },
-  accent: { background: "rgba(234,88,12,0.10)", color: "#EA580C" },
-};
-
+// Variantes: success, warning, error, info, accent, neutral.
+// As que indicam um estado ganham uma bolinha antes do texto; neutral (ex.: categoria) não.
 export function Badge({ children, variante = "neutral" }) {
-  return (
-    <span style={{ fontSize: "0.6875rem", fontWeight: 600, padding: "3px 8px", borderRadius: "5px", letterSpacing: "0.03em", whiteSpace: "nowrap", ...estilosBadge[variante] }}>
-      {children}
-    </span>
-  );
+  return <span className={classes("tt-badge", `tt-badge--${variante}`, variante !== "neutral" && "tt-badge--ponto")}>{children}</span>;
 }
 
 const variantePorStatus = {
@@ -203,47 +186,20 @@ export function StatusBadge({ status }) {
   return <Badge variante={variantePorStatus[status] ?? "neutral"}>{status}</Badge>;
 }
 
-const estilosBotao = {
-  primary: { background: AZUL, color: "#fff", border: "none", fontWeight: 700 },
-  secondary: { background: "var(--superficie-3)", color: "var(--texto-2)", border: `1px solid ${BORDA}`, fontWeight: 600 },
-  ghost: { background: "transparent", color: "var(--texto-suave)", border: `1px solid ${BORDA}`, fontWeight: 500 },
-  danger: { background: "rgba(220,38,38,0.08)", color: "#DC2626", border: "1px solid rgba(220,38,38,0.25)", fontWeight: 600 },
-  accent: { background: "#EA580C", color: "#fff", border: "none", fontWeight: 700 },
-};
-
-const tamanhosBotao = {
-  sm: { padding: "6px 12px", fontSize: "0.75rem", borderRadius: "7px" },
-  md: { padding: "9px 17px", fontSize: "0.8125rem", borderRadius: "8px" },
-  lg: { padding: "12px 22px", fontSize: "0.9375rem", borderRadius: "9px" },
-};
-
 const tamanhoIconeBotao = { sm: 14, md: 16, lg: 18 };
 
+// Variantes: primary, secondary, ghost, danger, accent. Tamanhos: sm, md, lg.
 // `icone` aparece antes do texto e `iconeDepois` depois (ex.: seta de avançar).
 // Com `carregando`, o botão fica desativado e o ícone vira um indicador girando.
 export function Btn({ children, onClick, variante = "primary", tamanho = "md", disabled = false, carregando = false, icone, iconeDepois, style }) {
-  const desativado = disabled || carregando;
   return (
     <button
       type="button"
-      className="tt-interativo"
+      className={`tt-btn tt-btn--${variante} tt-btn--${tamanho}`}
       onClick={onClick}
-      disabled={desativado}
+      disabled={disabled || carregando}
       aria-busy={carregando || undefined}
-      style={{
-        cursor: carregando ? "progress" : disabled ? "not-allowed" : "pointer",
-        opacity: carregando ? 0.75 : disabled ? 0.4 : 1,
-        fontFamily: "Outfit, sans-serif",
-        transition: "all 0.15s ease",
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "6px",
-        whiteSpace: "nowrap",
-        ...estilosBotao[variante],
-        ...tamanhosBotao[tamanho],
-        ...style,
-      }}
+      style={style}
     >
       {carregando ? (
         <Icone icone={LoaderCircle} tamanho={tamanhoIconeBotao[tamanho]} className="tt-girando" />
@@ -256,33 +212,15 @@ export function Btn({ children, onClick, variante = "primary", tamanho = "md", d
   );
 }
 
-// Borda azul no foco. Com `destacado`, a borda continua azul depois que o campo perde o foco.
-function bordaAoFocar(destacado) {
-  return {
-    onFocus: (e) => (e.currentTarget.style.borderColor = AZUL),
-    onBlur: (e) => (e.currentTarget.style.borderColor = destacado ? AZUL : BORDA),
-  };
-}
-
-const estiloCampo = {
-  width: "100%",
-  padding: "10px 14px",
-  borderRadius: "9px",
-  background: "var(--superficie-2)",
-  color: "var(--texto)",
-  fontSize: "0.875rem",
-  outline: "none",
-  transition: "border-color 0.15s ease",
-};
-
-export function Input({ destacado = false, style, ...props }) {
-  return <input {...props} {...bordaAoFocar(destacado)} style={{ ...estiloCampo, border: `1px solid ${destacado ? AZUL : BORDA}`, ...style }} />;
+// Com `destacado`, a borda fica azul mesmo sem foco.
+export function Input({ destacado = false, className, ...props }) {
+  return <input {...props} className={classes("tt-campo", destacado && "tt-campo--destacado", className)} />;
 }
 
 // `opcoes`: lista de textos, ou de { valor, rotulo } quando o valor salvo é diferente do texto mostrado.
-export function Select({ opcoes, style, ...props }) {
+export function Select({ opcoes, className, ...props }) {
   return (
-    <select {...props} {...bordaAoFocar(false)} style={{ ...estiloCampo, border: `1px solid ${BORDA}`, ...style }}>
+    <select {...props} className={classes("tt-campo", className)}>
       {opcoes.map((o) => (
         <option key={o.valor ?? o} value={o.valor ?? o}>
           {o.rotulo ?? o}
@@ -292,24 +230,15 @@ export function Select({ opcoes, style, ...props }) {
   );
 }
 
-export function TextArea({ style, ...props }) {
-  return (
-    <textarea
-      rows={4}
-      {...props}
-      {...bordaAoFocar(false)}
-      style={{ ...estiloCampo, padding: "11px 14px", border: `1px solid ${BORDA}`, resize: "vertical", fontFamily: "Inter", lineHeight: 1.5, ...style }}
-    />
-  );
+export function TextArea({ className, ...props }) {
+  return <textarea rows={4} {...props} className={classes("tt-campo", className)} />;
 }
 
-// Campo de formulário com rótulo em caixa alta.
+// Campo de formulário com rótulo acima.
 export function Campo({ rotulo, children }) {
   return (
     <label style={{ display: "block" }}>
-      <span style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--texto-suave)", marginBottom: "5px", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-        {rotulo}
-      </span>
+      <span className="tt-rotulo-campo">{rotulo}</span>
       {children}
     </label>
   );
@@ -317,35 +246,31 @@ export function Campo({ rotulo, children }) {
 
 export function CampoBusca({ valor, onChange, placeholder }) {
   return (
-    <div style={{ position: "relative", flex: 1, minWidth: "240px" }}>
-      <Icone icone={Search} style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "var(--texto-fraco)", pointerEvents: "none" }} />
-      <Input type="search" aria-label={placeholder} placeholder={placeholder} value={valor} onChange={(e) => onChange(e.target.value)} style={{ paddingLeft: "38px" }} />
+    <div className="tt-busca">
+      <Icone icone={Search} className="tt-busca__icone" />
+      <Input type="search" aria-label={placeholder} placeholder={placeholder} value={valor} onChange={(e) => onChange(e.target.value)} />
     </div>
   );
 }
 
 export function Vazio({ icone, titulo, texto }) {
   return (
-    <div style={{ textAlign: "center", padding: "3rem", color: "var(--texto-fraco)" }}>
+    <div className="tt-vazio">
       <IconeDestaque icone={icone} variante="neutral" />
-      {titulo && <h3 style={{ fontFamily: "Outfit", fontSize: "1.125rem", color: "var(--texto-suave)", marginBottom: "6px" }}>{titulo}</h3>}
-      <p style={{ fontSize: "0.875rem" }}>{texto}</p>
+      {titulo && <h3>{titulo}</h3>}
+      <p>{texto}</p>
     </div>
   );
 }
 
-const estilosAviso = {
-  erro: { background: "var(--erro-fundo)", border: "1px solid var(--erro-borda)", color: "var(--erro-texto)", icone: CircleAlert },
-  sucesso: { background: "var(--sucesso-fundo)", border: "1px solid var(--ok-borda)", color: "var(--ok-texto)", icone: CircleCheck },
-};
+const iconeAviso = { erro: CircleAlert, sucesso: CircleCheck };
 
 // Faixa de mensagem (erro ou sucesso), no mesmo estilo do erro do Login.
 // Com `onFechar`, mostra um X para a pessoa dispensar a mensagem.
 export function Aviso({ variante = "erro", children, onFechar, style }) {
-  const { icone, ...cores } = estilosAviso[variante];
   return (
-    <div role={variante === "erro" ? "alert" : "status"} style={{ display: "flex", alignItems: "flex-start", gap: "10px", padding: "10px 14px", borderRadius: "9px", fontSize: "0.8125rem", lineHeight: 1.5, ...cores, ...style }}>
-      <Icone icone={icone} tamanho={16} style={{ flexShrink: 0, marginTop: "2px" }} />
+    <div role={variante === "erro" ? "alert" : "status"} className={`tt-aviso tt-aviso--${variante}`} style={style}>
+      <Icone icone={iconeAviso[variante]} tamanho={16} style={{ flexShrink: 0, marginTop: "3px" }} />
       <div style={{ flex: 1 }}>{children}</div>
       {onFechar && <BotaoIcone icone={X} rotulo="Fechar mensagem" onClick={onFechar} cor="currentColor" tamanho={14} />}
     </div>
@@ -355,7 +280,7 @@ export function Aviso({ variante = "erro", children, onFechar, style }) {
 // Estado de carregando de uma tela ou card.
 export function Carregando({ texto = "Carregando..." }) {
   return (
-    <div role="status" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", padding: "3rem", color: "var(--texto-fraco)", fontSize: "0.875rem" }}>
+    <div role="status" className="tt-carregando">
       <Icone icone={LoaderCircle} tamanho={20} className="tt-girando" />
       {texto}
     </div>
@@ -364,8 +289,8 @@ export function Carregando({ texto = "Carregando..." }) {
 
 export function Modal({ children, onClose }) {
   return (
-    <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(17,24,39,0.5)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: "1rem" }}>
-      <div onClick={(e) => e.stopPropagation()} style={{ background: "var(--superficie)", border: `1px solid ${BORDA}`, borderRadius: "16px", padding: "2rem", maxWidth: "460px", width: "100%", boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }}>
+    <div className="tt-modal-fundo" onClick={onClose}>
+      <div className="tt-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
         {children}
       </div>
     </div>
@@ -375,7 +300,7 @@ export function Modal({ children, onClose }) {
 // Topo de modal: conteúdo à esquerda e botão de fechar à direita.
 export function CabecalhoModal({ children, onFechar }) {
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", marginBottom: "1.25rem" }}>
+    <div className="tt-modal-cabecalho">
       <div>{children}</div>
       <BotaoIcone icone={X} rotulo="Fechar" onClick={onFechar} tamanho={20} />
     </div>
@@ -389,13 +314,13 @@ export function CabecalhoModal({ children, onFechar }) {
 export function ModalConfirmacao({ icone, variante, titulo, descricao, rotuloValor, valor, rotuloCancelar = "Cancelar", rotuloConfirmar, iconeConfirmar, varianteConfirmar = "primary", carregando = false, erro, onCancelar, onConfirmar }) {
   return (
     <Modal onClose={carregando ? undefined : onCancelar}>
-      <div style={{ textAlign: "center" }}>
+      <div className="tt-confirmacao">
         <IconeDestaque icone={icone} variante={variante} />
-        <h3 style={{ fontFamily: "Outfit", fontSize: "1.25rem", fontWeight: 700, color: "var(--texto)", marginBottom: "8px" }}>{titulo}</h3>
-        <p style={{ color: "var(--texto-suave)", fontSize: "0.875rem", marginBottom: "1.5rem" }}>{descricao}</p>
+        <h3>{titulo}</h3>
+        <p>{descricao}</p>
         {rotuloValor && (
-          <div style={{ background: "var(--superficie-2)", borderRadius: "10px", padding: "12px", marginTop: "-0.25rem", marginBottom: "1.5rem", border: `1px solid ${BORDA}`, display: "flex", justifyContent: "space-between", fontSize: "0.875rem" }}>
-            <span style={{ color: "var(--texto-suave)" }}>{rotuloValor}</span>
+          <div className="tt-confirmacao__valor">
+            <span>{rotuloValor}</span>
             <Valor peso={700}>{valor}</Valor>
           </div>
         )}
@@ -404,11 +329,11 @@ export function ModalConfirmacao({ icone, variante, titulo, descricao, rotuloVal
             {erro}
           </Aviso>
         )}
-        <div style={{ display: "flex", gap: "10px" }}>
-          <Btn variante="ghost" style={{ flex: 1 }} onClick={onCancelar} disabled={carregando}>
+        <div className="tt-confirmacao__acoes">
+          <Btn variante="secondary" onClick={onCancelar} disabled={carregando}>
             {rotuloCancelar}
           </Btn>
-          <Btn variante={varianteConfirmar} style={{ flex: 1 }} onClick={onConfirmar} icone={iconeConfirmar} carregando={carregando}>
+          <Btn variante={varianteConfirmar} onClick={onConfirmar} icone={iconeConfirmar} carregando={carregando}>
             {rotuloConfirmar}
           </Btn>
         </div>
@@ -421,48 +346,29 @@ export function ModalConfirmacao({ icone, variante, titulo, descricao, rotuloVal
 export function Estrelas({ nota }) {
   const cheias = Math.round(nota);
   return (
-    <span role="img" aria-label={`Nota ${nota.toFixed(1)} de 5`} style={{ display: "inline-flex", alignItems: "center", gap: "1px", color: "#D97706", whiteSpace: "nowrap" }}>
+    <span role="img" aria-label={`Nota ${nota.toFixed(1)} de 5`} className="tt-estrelas">
       {[1, 2, 3, 4, 5].map((n) => (
         <Icone key={n} icone={Star} tamanho={14} fill={n <= cheias ? "currentColor" : "none"} />
       ))}
-      <span style={{ fontFamily: "JetBrains Mono", fontSize: "0.8125rem", color: "var(--texto-fraco)", marginLeft: "5px" }}>{nota.toFixed(1)}</span>
+      <span className="tt-estrelas__nota">{nota.toFixed(1)}</span>
     </span>
   );
 }
 
-// Botão de seleção usado em filtros (`redondo`) e abas.
+// Botão de seleção usado em filtros (`redondo`) e abas (`redondo={false}`).
 export function Chip({ rotulo, ativo, onClick, redondo = true, icone }) {
   return (
-    <button
-      type="button"
-      className="tt-interativo"
-      onClick={onClick}
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: "6px",
-        padding: redondo ? "6px 14px" : "7px 14px",
-        borderRadius: redondo ? "999px" : "8px",
-        fontSize: "0.8125rem",
-        fontWeight: 500,
-        background: ativo ? "var(--ativo-fundo)" : redondo ? "var(--superficie-2)" : "transparent",
-        border: `1px solid ${ativo ? "var(--ativo-borda)" : BORDA}`,
-        color: ativo ? "var(--ativo-texto)" : "var(--texto-suave)",
-        cursor: "pointer",
-        transition: "all 0.15s ease",
-        whiteSpace: "nowrap",
-      }}
-    >
+    <button type="button" className={classes("tt-chip", !redondo && "tt-chip--aba", ativo && "tt-chip--ativo")} aria-pressed={!!ativo} onClick={onClick}>
       {icone && <Icone icone={icone} tamanho={14} />}
       {rotulo}
     </button>
   );
 }
 
-export function BarraProgresso({ porcentagem, cor = "linear-gradient(90deg, #2563EB, #3B82F6)", altura = "6px" }) {
+export function BarraProgresso({ porcentagem, cor = "var(--azul)", altura = "6px" }) {
   return (
-    <div style={{ flex: 1, height: altura, borderRadius: "3px", background: "var(--superficie-3)", overflow: "hidden" }}>
-      <div style={{ height: "100%", width: `${porcentagem}%`, background: cor, borderRadius: "3px", transition: "width 0.5s ease" }} />
+    <div className="tt-barra" style={{ height: altura }}>
+      <div className="tt-barra__preenchida" style={{ width: `${porcentagem}%`, background: cor }} />
     </div>
   );
 }
@@ -471,41 +377,44 @@ export function BarraProgresso({ porcentagem, cor = "linear-gradient(90deg, #256
 export function BarraRotulada({ rotulo, valor, porcentagem, altura }) {
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8125rem", marginBottom: "5px" }}>
-        <span style={{ color: "var(--texto-suave)" }}>{rotulo}</span>
-        <span style={{ fontFamily: "JetBrains Mono", color: AZUL }}>{valor}</span>
+      <div className="tt-barra-rotulada__topo">
+        <span>{rotulo}</span>
+        <span>{valor}</span>
       </div>
       <BarraProgresso porcentagem={porcentagem} altura={altura} />
     </div>
   );
 }
 
+// Tabela com cabeçalho; em telas estreitas rola na horizontal em vez de estourar o card.
 export function Tabela({ colunas, children, rodape }) {
   return (
-    <table style={{ width: "100%", borderCollapse: "collapse" }}>
-      <thead>
-        <tr style={{ background: "var(--superficie-2)" }}>
-          {colunas.map((c) => (
-            <th key={c} style={{ padding: "12px 16px", textAlign: "left", fontSize: "0.6875rem", fontWeight: 600, color: "var(--texto-fraco)", letterSpacing: "0.05em", textTransform: "uppercase", borderBottom: `1px solid ${BORDA}` }}>
-              {c}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>{children}</tbody>
-      {rodape && <tfoot>{rodape}</tfoot>}
-    </table>
+    <div className="tt-tabela-rolagem">
+      <table className="tt-tabela">
+        <thead>
+          <tr>
+            {colunas.map((c) => (
+              <th key={c} scope="col">
+                {c}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>{children}</tbody>
+        {rodape && <tfoot>{rodape}</tfoot>}
+      </table>
+    </div>
   );
 }
 
 // Linha da tabela com borda embaixo, exceto na última.
-export function Linha({ ultima, style, ...props }) {
-  return <tr {...props} style={{ borderBottom: ultima ? "none" : "1px solid var(--superficie-3)", ...style }} />;
+export function Linha({ ultima, className, ...props }) {
+  return <tr {...props} className={classes("tt-linha", ultima && "tt-linha--ultima", className)} />;
 }
 
 export function Celula({ children, colSpan, style }) {
   return (
-    <td colSpan={colSpan} style={{ padding: "14px 16px", ...style }}>
+    <td colSpan={colSpan} style={style}>
       {children}
     </td>
   );
@@ -513,9 +422,5 @@ export function Celula({ children, colSpan, style }) {
 
 // Faixa cinza no rodapé de um card com tabela (totais, ações).
 export function RodapeCard({ children }) {
-  return (
-    <div style={{ padding: "14px 16px", background: "var(--superficie-2)", borderTop: `1px solid ${BORDA}`, display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
-      {children}
-    </div>
-  );
+  return <div className="tt-card-rodape">{children}</div>;
 }

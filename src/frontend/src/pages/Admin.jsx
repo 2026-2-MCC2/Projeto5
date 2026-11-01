@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { LayoutDashboard, UserCheck } from "lucide-react";
 import Layout from "../components/Layout";
 import { listarPendentes } from "../services/authService";
 
@@ -32,8 +33,8 @@ export default function Admin() {
   }, [buscar]);
 
   const nav = [
-    { rotulo: "Dashboard", para: "/admin", end: true },
-    { rotulo: "Aprovações", para: "/admin/aprovacoes", contador: pendentes.length },
+    { rotulo: "Dashboard", para: "/admin", end: true, icone: LayoutDashboard },
+    { rotulo: "Aprovações", para: "/admin/aprovacoes", contador: pendentes.length, icone: UserCheck },
   ];
 
   return <Layout nav={nav} contexto={{ pendentes, carregandoPendentes, erroPendentes, recarregarPendentes }} />;
