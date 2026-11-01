@@ -265,9 +265,9 @@ select.tt-campo {
   color: var(--texto-suave);
 }
 
-/* ── Números ── */
+/* ── Números ──
+   Sem algarismos tabulares: na Schibsted Grotesk o "tnum" alarga também ponto e vírgula ("R$ 30 . 750 , 00"). */
 .tt-valor {
-  font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
 }
 
@@ -440,7 +440,7 @@ select.tt-campo {
 }
 
 .tt-barra-rotulada__topo span:first-child { color: var(--texto-suave); }
-.tt-barra-rotulada__topo span:last-child { color: var(--azul-texto); font-weight: var(--peso-semi); font-variant-numeric: tabular-nums; }
+.tt-barra-rotulada__topo span:last-child { color: var(--azul-texto); font-weight: var(--peso-semi); }
 
 /* ── Tabela ── */
 .tt-tabela-rolagem {
@@ -452,7 +452,6 @@ select.tt-campo {
 .tt-tabela {
   width: 100%;
   border-collapse: collapse;
-  font-variant-numeric: tabular-nums;
 }
 
 .tt-tabela th {
@@ -629,7 +628,6 @@ select.tt-campo {
   margin-left: 6px;
   font-size: var(--tam-sm);
   font-weight: var(--peso-semi);
-  font-variant-numeric: tabular-nums;
   color: var(--texto-suave);
 }
 

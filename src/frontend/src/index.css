@@ -190,15 +190,10 @@ body {
 }
 
 /* Transição: algumas telas ainda têm fontFamily inline (Outfit, Inter, JetBrains Mono).
-   Enquanto elas não são refeitas, tudo herda a fonte do design system,
-   e onde havia fonte monoespaçada (valores) os números continuam alinhados.
-   Remover estas duas regras quando nenhuma tela tiver mais fontFamily inline. */
+   Enquanto elas não são refeitas, tudo herda a fonte do design system.
+   Remover esta regra quando nenhuma tela tiver mais fontFamily inline. */
 body * {
   font-family: inherit !important;
-}
-
-[style*="JetBrains"] {
-  font-variant-numeric: tabular-nums;
 }
 
 /* Áreas logadas (Layout): títulos e parágrafos sem margem padrão, como no Figma */

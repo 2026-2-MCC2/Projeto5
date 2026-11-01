@@ -1,391 +1,374 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { CalendarPlus, CircleCheck, Link2, ShieldCheck, Ticket, Zap } from 'lucide-react';
-import { Icone, MarcaLogo } from '../components/ui';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ArrowRight, BadgeCheck, CalendarDays, Check, ClipboardList, FileText, Menu, Scale, Star, TrendingDown, Users, X } from "lucide-react";
+import { Badge, Estrelas, Icone, MarcaLogo, Picote } from "../components/ui";
+import fotoShow from "../assets/troca_ticket.jpg";
+import logotipo from "../assets/logotipo_troca_ticket.png";
+import "./Landing.css";
 
-// `secao` rola até um id da própria página; `rota` navega para outra página
-const navLinks = [
-  { label: 'Sobre', secao: 'sobre' },
-  {
-    label: 'Plataforma',
-    itens: [
-      { label: 'Para Organizadores', rota: '/organizador' },
-      { label: 'Para Fornecedores', rota: '/fornecedor' },
-      { label: 'Para Administradores', rota: '/admin' },
-    ],
-  },
-  { label: 'Eventos', rota: '/organizador' },
-  { label: 'Recursos', secao: 'recursos' },
+const ANO = new Date().getFullYear();
+
+const links = [
+  { rotulo: "Como funciona", id: "como-funciona" },
+  { rotulo: "Para organizadores", id: "organizadores" },
+  { rotulo: "Para fornecedores", id: "fornecedores" },
 ];
+
+// Exemplo usado nas ilustrações da página (hero e "Como funciona").
+const itensExemplo = [
+  { item: "Sonorização", estimado: "R$ 8.500", acordado: "R$ 7.650" },
+  { item: "Buffet para 200 pessoas", estimado: "R$ 14.000", acordado: "R$ 12.880" },
+  { item: "Iluminação de palco", estimado: "R$ 6.200", acordado: "R$ 5.900" },
+  { item: "Segurança", estimado: "R$ 4.800", acordado: "R$ 4.320" },
+];
+
+const propostasExemplo = [
+  { fornecedor: "Sabor & Cia Buffet", valor: "R$ 12.880", nota: 4.8, melhor: true },
+  { fornecedor: "Casa Nobre Eventos", valor: "R$ 13.450", nota: 4.6 },
+  { fornecedor: "Delícias SP", valor: "R$ 14.200", nota: 4.2 },
+];
+
+const passos = [
+  {
+    perfil: "Organizador",
+    titulo: "Publique o evento e o que precisa contratar",
+    texto: "Cadastre data, local e público, e liste cada item com o valor que você estima gastar.",
+  },
+  {
+    perfil: "Fornecedores",
+    titulo: "Receba propostas item por item",
+    texto: "Fornecedores aprovados veem a oportunidade e enviam o preço que conseguem oferecer.",
+  },
+  {
+    perfil: "Acordo fechado",
+    titulo: "Compare, escolha e feche o ticket",
+    texto: "Selecione a melhor proposta de cada item e veja o total acordado e quanto economizou.",
+  },
+];
+
+const beneficiosOrganizador = [
+  { icone: ClipboardList, titulo: "Orçamento organizado", texto: "Todos os itens do evento numa lista só, com estimado e acordado lado a lado." },
+  { icone: Scale, titulo: "Comparação justa", texto: "Propostas do mesmo item uma ao lado da outra, com a nota de cada fornecedor." },
+  { icone: TrendingDown, titulo: "Economia visível", texto: "O resultado mostra o total acordado e a diferença para o que você estimou." },
+];
+
+const beneficiosFornecedor = [
+  { icone: CalendarDays, titulo: "Oportunidades abertas", texto: "Eventos em cotação com os itens que você fornece, prontos para receber proposta." },
+  { icone: FileText, titulo: "Propostas acompanhadas", texto: "Veja quais propostas estão em análise, foram selecionadas ou recusadas." },
+  { icone: Star, titulo: "Reputação que conta", texto: "As avaliações dos organizadores formam sua nota e ajudam a ganhar os próximos eventos." },
+];
+
+// Canhoto do acordo fechado: o "ticket" que dá nome ao produto.
+function TicketAcordo({ compacto = false }) {
+  return (
+    <div className={`tt-ticket${compacto ? " tt-ticket--compacto" : ""}`}>
+      <div className="tt-ticket__topo">
+        <div>
+          <span className="tt-ticket__legenda">Semana Acadêmica 2026</span>
+          <strong className="tt-ticket__titulo">Acordo fechado</strong>
+        </div>
+        <Badge variante="success">4 de 4 itens</Badge>
+      </div>
+
+      {!compacto && (
+        <ul className="tt-ticket__itens">
+          {itensExemplo.map((i) => (
+            <li key={i.item}>
+              <span>{i.item}</span>
+              <span className="tt-ticket__valor">{i.acordado}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <Picote fundo="var(--ticket-recorte)" />
+
+      <div className="tt-ticket__total">
+        <div>
+          <span className="tt-ticket__legenda">Total acordado</span>
+          <strong className="tt-ticket__valor tt-ticket__valor--grande">R$ 30.750,00</strong>
+        </div>
+        <div className="tt-ticket__economia">
+          <Icone icone={TrendingDown} tamanho={16} />
+          R$ 2.750 abaixo do estimado
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Ilustração de cada passo do "Como funciona".
+function IlustracaoPasso({ indice }) {
+  if (indice === 0) {
+    return (
+      <ul className="tt-mini tt-mini--lista">
+        {itensExemplo.map((i) => (
+          <li key={i.item}>
+            <span>{i.item}</span>
+            <span className="tt-ticket__valor">{i.estimado}</span>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  if (indice === 1) {
+    return (
+      <ul className="tt-mini tt-mini--propostas">
+        {propostasExemplo.map((p) => (
+          <li key={p.fornecedor} className={p.melhor ? "tt-mini__melhor" : undefined}>
+            <div>
+              <strong>{p.fornecedor}</strong>
+              <Estrelas nota={p.nota} />
+            </div>
+            <span className="tt-ticket__valor">{p.valor}</span>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  return <TicketAcordo compacto />;
+}
+
+function ListaBeneficios({ itens }) {
+  return (
+    <ul className="tt-beneficios__lista">
+      {itens.map((b) => (
+        <li key={b.titulo}>
+          <span className="tt-beneficios__icone">
+            <Icone icone={b.icone} tamanho={20} />
+          </span>
+          <div>
+            <h4>{b.titulo}</h4>
+            <p>{b.texto}</p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 export default function LandingView() {
   const navigate = useNavigate();
-  const [openDropdown, setOpenDropdown] = useState(null);
-  const [scrollY, setScrollY] = useState(0);
+  const [rolou, setRolou] = useState(false);
+  const [menuAberto, setMenuAberto] = useState(false);
 
-  const irPara = ({ secao, rota }) => {
-    setOpenDropdown(null);
-    if (secao) document.getElementById(secao)?.scrollIntoView({ behavior: 'smooth' });
-    else if (rota) navigate(rota);
-  };
-
+  // O cabeçalho fica transparente sobre a foto do hero e ganha fundo depois de rolar.
   useEffect(() => {
-    const onScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
+    const aoRolar = () => setRolou(window.scrollY > 24);
+    aoRolar();
+    window.addEventListener("scroll", aoRolar, { passive: true });
+    return () => window.removeEventListener("scroll", aoRolar);
   }, []);
 
+  useEffect(() => {
+    if (!menuAberto) return;
+    const aoTeclar = (e) => e.key === "Escape" && setMenuAberto(false);
+    window.addEventListener("keydown", aoTeclar);
+    return () => window.removeEventListener("keydown", aoTeclar);
+  }, [menuAberto]);
+
+  const irPara = (rota) => {
+    setMenuAberto(false);
+    navigate(rota);
+  };
+
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--fundo)', fontFamily: 'Inter, sans-serif', color: 'var(--texto)', overflowX: 'hidden' }}>
+    <div className="tt-landing">
+      {/* ── Cabeçalho ── */}
+      <header className={`tt-l-topo${rolou || menuAberto ? " tt-l-topo--solido" : ""}`}>
+        <div className="tt-l-container tt-l-topo__linha">
+          <a href="#inicio" className="tt-l-marca" onClick={() => setMenuAberto(false)}>
+            <MarcaLogo tamanho={30} />
+            TrocaTicket
+          </a>
 
-
-{/* ── Navbar (dark) ── */}
-      <header style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
-        background: scrollY > 60 ? 'rgba(10,10,10,0.97)' : '#0A0A0A',
-        backdropFilter: 'blur(12px)',
-        transition: 'all 0.25s ease',
-      }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 2rem', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          {/* Logo */}
-          <button onClick={() => navigate('/')} style={{ display: 'flex', alignItems: 'center', gap: '9px', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-            <MarcaLogo tamanho={28} />
-            <div>
-              <div style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '0.9375rem', color: '#FFFFFF', lineHeight: 1.1 }}>TrocaTicket</div>
-              <div style={{ fontSize: '0.5rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.12em', textTransform: 'uppercase', lineHeight: 1 }}>Eventos &amp; Ingressos</div>
-            </div>
-          </button>
-
-          {/* Nav links */}
-          <nav style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-            {navLinks.map((link) => (
-              <div key={link.label} style={{ position: 'relative' }}
-                onMouseEnter={() => link.itens && setOpenDropdown(link.label)}
-                onMouseLeave={() => setOpenDropdown(null)}
-              >
-                <button
-                  onClick={() => (link.itens ? setOpenDropdown(openDropdown === link.label ? null : link.label) : irPara(link))}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: '4px',
-                    padding: '7px 14px', borderRadius: '7px',
-                    background: 'transparent', border: 'none',
-                    color: 'rgba(255,255,255,0.75)', fontSize: '0.8125rem', fontWeight: 500,
-                    letterSpacing: '0.06em', textTransform: 'uppercase',
-                    cursor: 'pointer', transition: 'color 0.15s, background 0.15s',
-                    fontFamily: 'Inter',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.75)'; e.currentTarget.style.background = 'transparent'; }}
-                >
-                  {link.label}
-                  {link.itens && (
-                    <svg width="9" height="6" viewBox="0 0 9 6" fill="none">
-                      <path d="M1 1L4.5 5L8 1" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  )}
-                </button>
-                {link.itens && openDropdown === link.label && (
-                  <div style={{ position: 'absolute', top: 'calc(100% + 6px)', left: '50%', transform: 'translateX(-50%)', background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '6px', minWidth: '200px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', zIndex: 100 }}>
-                    {link.itens.map(item => (
-                      <button key={item.label} onClick={() => irPara(item)} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '9px 12px', borderRadius: '7px', background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.6)', fontSize: '0.8125rem', cursor: 'pointer', fontFamily: 'Inter', transition: 'background 0.12s, color 0.12s' }}
-                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; e.currentTarget.style.color = '#fff'; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; }}
-                      >{item.label}</button>
-                    ))}
-                  </div>
-                )}
-              </div>
+          <nav className="tt-l-nav" aria-label="Seções da página">
+            {links.map((l) => (
+              <a key={l.id} href={`#${l.id}`}>
+                {l.rotulo}
+              </a>
             ))}
           </nav>
 
-          {/* Auth actions */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <button onClick={() => navigate('/login')} style={{ padding: '7px 16px', borderRadius: '7px', background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.75)', fontSize: '0.8125rem', fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'Inter', transition: 'color 0.15s' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.75)')}
-            >Entrar</button>
-            <button onClick={() => navigate('/criar-conta')} style={{ display: 'flex', alignItems: 'center', gap: '7px', padding: '8px 18px', borderRadius: '999px', background: 'transparent', border: '1.5px solid rgba(255,255,255,0.8)', color: '#fff', fontSize: '0.8125rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'Outfit', transition: 'background 0.15s, border-color 0.15s' }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.borderColor = '#fff'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.8)'; }}
+          <div className="tt-l-topo__acoes">
+            <button type="button" className="tt-l-entrar" onClick={() => irPara("/login")}>
+              Entrar
+            </button>
+            <button type="button" className="tt-btn tt-btn--primary tt-btn--md" onClick={() => irPara("/criar-conta")}>
+              Criar conta
+            </button>
+            <button
+              type="button"
+              className="tt-l-menu"
+              onClick={() => setMenuAberto(!menuAberto)}
+              aria-label={menuAberto ? "Fechar menu" : "Abrir menu"}
+              aria-expanded={menuAberto}
+              aria-controls="menu-landing"
             >
-              Criar Conta
-              <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 9.5L9.5 1.5M9.5 1.5H3.5M9.5 1.5V7.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              <Icone icone={menuAberto ? X : Menu} tamanho={22} />
             </button>
           </div>
         </div>
+
+        {menuAberto && (
+          <div id="menu-landing" className="tt-l-gaveta">
+            {links.map((l) => (
+              <a key={l.id} href={`#${l.id}`} onClick={() => setMenuAberto(false)}>
+                {l.rotulo}
+              </a>
+            ))}
+            <div className="tt-l-gaveta__acoes">
+              <button type="button" className="tt-btn tt-btn--secondary tt-btn--lg" onClick={() => irPara("/login")}>
+                Entrar
+              </button>
+              <button type="button" className="tt-btn tt-btn--primary tt-btn--lg" onClick={() => irPara("/criar-conta")}>
+                Criar conta
+              </button>
+            </div>
+          </div>
+        )}
       </header>
 
-      {/* ── Hero — fullscreen with photo background ── */}
-      <section style={{
-        position: 'relative', zIndex: 1,
-        height: '100vh', minHeight: '600px',
-        display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
-        overflow: 'hidden',
-      }}>
-        {/* Background photo */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          backgroundImage: `url('https://images.unsplash.com/photo-1551873575-9b0d1535a8d7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1920&q=85')`,
-          backgroundSize: 'cover', backgroundPosition: 'center 30%',
-        }} />
-        {/* Dark overlay gradient — lighter at top, darker at bottom */}
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.1) 30%, rgba(0,0,0,0.55) 70%, rgba(0,0,0,0.75) 100%)' }} />
+      <main>
+        {/* ── Hero ── */}
+        <section id="inicio" className="tt-hero">
+          <img className="tt-hero__foto" src={fotoShow} alt="" aria-hidden="true" />
+          <div className="tt-hero__veu" aria-hidden="true" />
 
-        {/* Pixel-dot "TrocaTicket" title spanning the full width */}
-        <div style={{
-          position: 'absolute', top: '50%', left: 0, right: 0,
-          transform: 'translateY(-62%)',
-          padding: '0 2rem',
-          pointerEvents: 'none',
-        }}>
-          <h1 style={{
-            fontFamily: 'Outfit, sans-serif',
-            fontSize: 'clamp(4rem, 12vw, 11rem)',
-            fontWeight: 900,
-            lineHeight: 0.9,
-            letterSpacing: '-0.02em',
-            textTransform: 'none',
-            margin: 0,
-            /* Pixel-dot fill: repeating radial gradient as text fill */
-            background: 'radial-gradient(circle, rgba(255,255,255,0.92) 38%, transparent 38%) 0 0 / 7px 7px',
-            WebkitBackgroundClip: 'text',
-            backgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            color: 'transparent',
-          }}>
-            TrocaTicket
-          </h1>
-        </div>
-
-        {/* Bottom-left: subtitle + CTAs */}
-        <div style={{ position: 'relative', zIndex: 2, padding: '0 2.5rem 3.5rem', maxWidth: '600px' }}>
-          <p style={{ fontSize: 'clamp(0.9375rem, 1.5vw, 1.0625rem)', color: 'rgba(255,255,255,0.85)', lineHeight: 1.65, marginBottom: '1.75rem' }}>
-            Compre, revenda e gerencie ingressos em um único ecossistema, com mais clareza, segurança e controle em todas as etapas.
-          </p>
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            <button onClick={() => navigate('/criar-conta')} style={{ display: 'flex', alignItems: 'center', gap: '9px', padding: '13px 26px', borderRadius: '999px', background: '#fff', border: 'none', color: '#0A0A0A', fontSize: '0.875rem', fontWeight: 700, fontFamily: 'Outfit', letterSpacing: '0.06em', textTransform: 'uppercase', cursor: 'pointer', transition: 'opacity 0.18s' }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '0.9')}
-              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-            >
-              Criar Conta
-              <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#0A0A0A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M1 9L9 1M9 1H3M9 1V7" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          <div className="tt-l-container tt-hero__grade">
+            <div className="tt-hero__texto">
+              <h1>Monte seu evento com as melhores propostas.</h1>
+              <p>
+                O organizador publica o que precisa contratar, fornecedores enviam suas propostas e o acordo fecha num só
+                lugar, com cada valor registrado.
+              </p>
+              <div className="tt-hero__acoes">
+                <button type="button" className="tt-btn tt-btn--primary tt-btn--lg" onClick={() => navigate("/criar-conta")}>
+                  Criar conta grátis
+                  <Icone icone={ArrowRight} tamanho={18} />
+                </button>
+                <a href="#como-funciona" className="tt-btn tt-btn--lg tt-hero__secundario">
+                  Ver como funciona
+                </a>
               </div>
-            </button>
-            <button onClick={() => document.getElementById('sobre')?.scrollIntoView({ behavior: 'smooth' })} style={{ padding: '13px 26px', borderRadius: '999px', background: 'rgba(0,0,0,0.55)', border: '1.5px solid rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.9)', fontSize: '0.875rem', fontWeight: 600, fontFamily: 'Outfit', letterSpacing: '0.06em', textTransform: 'uppercase', cursor: 'pointer', backdropFilter: 'blur(8px)', transition: 'border-color 0.15s, background 0.15s' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.6)'; e.currentTarget.style.background = 'rgba(0,0,0,0.7)'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)'; e.currentTarget.style.background = 'rgba(0,0,0,0.55)'; }}
-            >
-              Explorar Plataforma
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Sobre o Produto ── */}
-      <section id="sobre" style={{ background: '#080810', padding: '0 2rem', overflow: 'hidden' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-
-          {/* Top strip: label + número decorativo */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '3.5rem 0 2.5rem', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-            <span style={{ fontSize: '0.6875rem', fontWeight: 700, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.18em', textTransform: 'uppercase', fontFamily: 'Inter' }}>— Sobre o Produto</span>
-            <span style={{ fontFamily: 'JetBrains Mono', fontSize: '0.75rem', color: 'rgba(255,255,255,0.15)', letterSpacing: '0.1em' }}>01 / 04</span>
-          </div>
-
-          {/* Main bento grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: 'auto auto', gap: '1px', background: 'rgba(255,255,255,0.07)', margin: '0 0 1px' }}>
-
-            {/* Cell 1 — heading + description (spans vertically) */}
-            <div style={{ background: '#080810', padding: '3.5rem 3rem 3.5rem 0', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '340px' }}>
-              <div>
-                <h2 style={{
-                  fontFamily: 'Outfit, sans-serif',
-                  fontSize: 'clamp(4.5rem, 9vw, 8rem)',
-                  fontWeight: 900,
-                  lineHeight: 0.88,
-                  letterSpacing: '-0.03em',
-                  textTransform: 'uppercase',
-                  margin: '0 0 2rem',
-                  color: '#fff',
-                  WebkitTextStroke: '0px transparent',
-                }}>
-                  SOBRE
-                </h2>
-                <p style={{ fontSize: '1.0625rem', color: 'rgba(255,255,255,0.65)', lineHeight: 1.7, maxWidth: '400px' }}>
-                  O TrocaTicket nasceu para transformar a forma como as pessoas compram, vendem e acessam ingressos para shows, festas, apresentações e eventos.
-                </p>
-              </div>
-            </div>
-
-            {/* Cell 2 — ticket card floating over dark bg */}
-            <div style={{ background: '#0D0D1A', padding: '3rem 2.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
-              {/* Glow behind ticket */}
-              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: '280px', height: '280px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(37,99,235,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
-
-              {/* Ticket — slightly rotated */}
-              <div style={{
-                background: 'var(--superficie)',
-                borderRadius: '18px',
-                padding: '1.5rem',
-                width: '100%',
-                maxWidth: '300px',
-                boxShadow: '0 24px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06)',
-                transform: 'rotate(2.5deg)',
-                position: 'relative',
-                zIndex: 1,
-              }}>
-                {/* Punch holes */}
-                <div style={{ position: 'absolute', left: '-11px', top: '46%', width: '22px', height: '22px', borderRadius: '50%', background: '#0D0D1A' }} />
-                <div style={{ position: 'absolute', right: '-11px', top: '46%', width: '22px', height: '22px', borderRadius: '50%', background: '#0D0D1A' }} />
-
-                {/* Header */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.125rem' }}>
-                  <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'rgba(37,99,235,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                      <path d="M5 9.5L8 12.5L13 7" stroke="#2563EB" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                  <div>
-                    <div style={{ fontFamily: 'Outfit', fontSize: '0.9375rem', fontWeight: 700, color: 'var(--texto)' }}>Ingresso emitido!</div>
-                    <div style={{ fontSize: '0.6875rem', color: 'var(--texto-fraco)' }}>Compra confirmada com sucesso.</div>
-                  </div>
-                </div>
-
-                <div style={{ borderTop: '1.5px dashed var(--borda)', marginBottom: '1rem' }} />
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '1rem' }}>
-                  <div>
-                    <div style={{ fontSize: '0.5625rem', fontWeight: 700, color: 'var(--texto-fraco)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '2px' }}>Ticket ID</div>
-                    <div style={{ fontFamily: 'JetBrains Mono', fontSize: '0.8125rem', fontWeight: 700, color: 'var(--texto)' }}>TT-2026-0098</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: '0.5625rem', fontWeight: 700, color: 'var(--texto-fraco)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '2px' }}>Valor</div>
-                    <div style={{ fontFamily: 'JetBrains Mono', fontSize: '0.8125rem', fontWeight: 700, color: 'var(--texto)' }}>R$ 89,90</div>
-                  </div>
-                </div>
-
-                <div style={{ marginBottom: '1rem' }}>
-                  <div style={{ fontSize: '0.5625rem', fontWeight: 700, color: 'var(--texto-fraco)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '2px' }}>Data e Horário</div>
-                  <div style={{ fontFamily: 'JetBrains Mono', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--texto)' }}>12 jul. 2026 · 21:00</div>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 10px', background: 'var(--superficie-2)', borderRadius: '8px', marginBottom: '1rem' }}>
-                  <div style={{ width: '26px', height: '18px', borderRadius: '3px', background: 'linear-gradient(135deg, #FF5F00 40%, #EB001B 100%)', flexShrink: 0 }} />
-                  <div>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--texto)' }}>Cliente TrocaTicket</div>
-                    <div style={{ fontFamily: 'JetBrains Mono', fontSize: '0.625rem', color: 'var(--texto-fraco)' }}>•••• 8237</div>
-                  </div>
-                </div>
-
-                <div style={{ borderTop: '1.5px dashed var(--borda)', marginBottom: '0.875rem' }} />
-
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-                  <svg width="200" height="36" viewBox="0 0 200 36" fill="none">
-                    {Array.from({ length: 50 }, (_, i) => {
-                      const x = i * 4;
-                      const w = [2,3,1,2,1,3,2,1,2,3,1,2,3,1,2,1,3,2,1,2,3,1,2,2,3,1,2,1,3,2,1,2,3,1,2,3,1,2,1,3,2,1,2,3,1,2,2,3,1,2][i] ?? 2;
-                      return <rect key={i} x={x} y={0} width={w} height={36} fill="var(--texto)" />;
-                    })}
-                  </svg>
-                  <div style={{ fontFamily: 'JetBrains Mono', fontSize: '0.5625rem', color: 'var(--texto-fraco)', letterSpacing: '0.08em' }}>28937281273650</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Cell 3 — Experiência */}
-            <div style={{ background: '#080810', padding: '2.5rem 3rem 3rem 0', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
-                <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(37,99,235,0.15)', color: '#60A5FA', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Icone icone={Zap} tamanho={16} /></div>
-                <span style={{ fontSize: '0.6875rem', fontWeight: 700, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.14em', textTransform: 'uppercase', fontFamily: 'Inter' }}>Experiência</span>
-              </div>
-              <p style={{ fontSize: '0.9375rem', color: 'rgba(255,255,255,0.65)', lineHeight: 1.7 }}>
-                A plataforma oferece uma experiência prática, rápida e intuitiva, com jornada de compra simplificada, acesso digital ao ingresso e menos atrito em cada etapa.
+              <p className="tt-hero__nota">
+                <Icone icone={BadgeCheck} tamanho={16} />
+                Cadastros conferidos pela equipe TrocaTicket antes do primeiro acesso.
               </p>
             </div>
 
-            {/* Cell 4 — Ecossistema */}
-            <div style={{ background: '#0D0D1A', padding: '2.5rem 2.5rem 3rem', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
-                <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(234,88,12,0.15)', color: '#FB923C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Icone icone={Link2} tamanho={16} /></div>
-                <span style={{ fontSize: '0.6875rem', fontWeight: 700, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.14em', textTransform: 'uppercase', fontFamily: 'Inter' }}>Ecossistema</span>
-              </div>
-              <p style={{ fontSize: '0.9375rem', color: 'rgba(255,255,255,0.65)', lineHeight: 1.7 }}>
-                Com marketplace próprio para revenda segura e ferramentas de gestão para organizadores, o produto conecta público, operação e confiança em um único ecossistema.
-              </p>
+            <div className="tt-hero__ticket">
+              <TicketAcordo />
             </div>
           </div>
+        </section>
 
-          {/* Bottom strip */}
-          <div style={{ padding: '1.5rem 0 3.5rem', borderTop: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontFamily: 'JetBrains Mono', fontSize: '0.6875rem', color: 'rgba(255,255,255,0.18)', letterSpacing: '0.12em' }}>TrocaTicket · Plataforma de Eventos · 2025</span>
-            <span style={{ fontFamily: 'JetBrains Mono', fontSize: '0.6875rem', color: 'rgba(255,255,255,0.18)', letterSpacing: '0.08em' }}>BR</span>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Features ── */}
-      <section id="recursos" style={{ position: 'relative', zIndex: 1, background: '#0A0A0A', padding: '6rem 2rem' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-            <h2 style={{ fontFamily: 'Outfit', fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 900, color: '#fff', lineHeight: 1.15, marginBottom: '1rem' }}>
-              Tudo o que você precisa<br/>para viver e gerenciar eventos.
-            </h2>
-            <p style={{ fontSize: '1.0625rem', color: 'var(--texto-fraco)', maxWidth: '480px', margin: '0 auto', lineHeight: 1.65 }}>
-              Uma experiência simples e segura para organizadores e participantes, do primeiro acesso até a entrada no evento.
-            </p>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
-            {[
-              { icon: CalendarPlus, title: 'Crie e organize eventos', desc: 'Centralize informações, lotes, participantes e vendas.' },
-              { icon: Ticket, title: 'Venda e gerencie ingressos', desc: 'Controle seus ingressos e acompanhe os pedidos em um único ambiente.' },
-              { icon: ShieldCheck, title: 'Conta segura', desc: 'Autenticação e proteção de dados integradas à plataforma.' },
-              { icon: CircleCheck, title: 'Cadastro simples e rápido', desc: 'Após criar sua conta, aguarde a aprovação do administrador para começar a usar a TrocaTicket.' },
-            ].map((f, i) => (
-              <div key={i} style={{ padding: '1.5rem', background: i === 3 ? '#1A1A1A' : '#141414', border: '1px solid #1F1F1F', borderRadius: '12px' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#1F1F1F', color: '#D1D5DB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}><Icone icone={f.icon} /></div>
-                <h3 style={{ fontFamily: 'Outfit', fontSize: '0.9375rem', fontWeight: 700, color: '#fff', marginBottom: '6px' }}>{f.title}</h3>
-                <p style={{ fontSize: '0.875rem', color: 'var(--texto-suave)', lineHeight: 1.6 }}>{f.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Footer ── */}
-      <footer style={{ position: 'relative', zIndex: 1, background: 'var(--superficie-2)', borderTop: '1px solid var(--borda)', padding: '3rem 2rem 2rem' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr repeat(3, auto)', gap: '3rem', marginBottom: '2.5rem', flexWrap: 'wrap' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                <MarcaLogo />
-                <span style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '0.875rem', color: 'var(--texto)' }}>TrocaTicket</span>
-              </div>
-              <p style={{ fontSize: '0.875rem', color: 'var(--texto-fraco)', lineHeight: 1.65, maxWidth: '220px' }}>A plataforma de eventos do Brasil. Conectando organizadores, fornecedores e compradores.</p>
+        {/* ── Como funciona ── */}
+        <section id="como-funciona" className="tt-l-secao">
+          <div className="tt-l-container">
+            <div className="tt-l-cabecalho">
+              <h2>Do pedido ao acordo, em três passos</h2>
+              <p>Cada evento passa pelo mesmo caminho: o organizador diz o que precisa, os fornecedores respondem e o acordo fica registrado.</p>
             </div>
-            {[
-              { title: 'Plataforma', links: ['Para Organizadores', 'Para Fornecedores', 'Painel Admin', 'Preços'] },
-              { title: 'Recursos', links: ['Documentação', 'API', 'Blog', 'Suporte'] },
-              { title: 'Empresa', links: ['Sobre nós', 'Carreiras', 'Privacidade', 'Termos'] },
-            ].map(col => (
-              <div key={col.title}>
-                <h4 style={{ fontFamily: 'Outfit', fontWeight: 700, fontSize: '0.75rem', color: 'var(--texto-2)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '12px' }}>{col.title}</h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {col.links.map(link => (
-                    <button key={link} style={{ background: 'none', border: 'none', textAlign: 'left', fontSize: '0.875rem', color: 'var(--texto-fraco)', cursor: 'pointer', padding: 0, fontFamily: 'Inter', transition: 'color 0.15s' }}
-                      onMouseEnter={e => (e.currentTarget.style.color = 'var(--texto-2)')}
-                      onMouseLeave={e => (e.currentTarget.style.color = 'var(--texto-fraco)')}
-                    >{link}</button>
+
+            <ol className="tt-passos">
+              {passos.map((p, i) => (
+                <li key={p.titulo} className="tt-passo">
+                  <div className="tt-passo__cabeca">
+                    <span className="tt-passo__numero">{i + 1}</span>
+                    <span className="tt-passo__perfil">{p.perfil}</span>
+                  </div>
+                  <h3>{p.titulo}</h3>
+                  <p>{p.texto}</p>
+                  <div className="tt-passo__ilustracao">
+                    <IlustracaoPasso indice={i} />
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        {/* ── Benefícios por perfil ── */}
+        <section className="tt-l-secao tt-l-secao--alternada">
+          <div className="tt-l-container tt-beneficios">
+            <article id="organizadores" className="tt-beneficios__perfil">
+              <span className="tt-beneficios__selo tt-beneficios__selo--azul">
+                <Icone icone={CalendarDays} tamanho={20} />
+              </span>
+              <h2>Para organizadores</h2>
+              <p className="tt-beneficios__intro">Contrate tudo o que o evento precisa sem planilha solta e sem perder proposta no e-mail.</p>
+              <ListaBeneficios itens={beneficiosOrganizador} />
+              <button type="button" className="tt-btn tt-btn--primary tt-btn--lg" onClick={() => navigate("/criar-conta")}>
+                Criar conta de organizador
+              </button>
+            </article>
+
+            <article id="fornecedores" className="tt-beneficios__perfil">
+              <span className="tt-beneficios__selo tt-beneficios__selo--laranja">
+                <Icone icone={Users} tamanho={20} />
+              </span>
+              <h2>Para fornecedores</h2>
+              <p className="tt-beneficios__intro">Encontre eventos que precisam do seu serviço e envie propostas direto para quem decide.</p>
+              <ListaBeneficios itens={beneficiosFornecedor} />
+              <button type="button" className="tt-btn tt-btn--accent tt-btn--lg" onClick={() => navigate("/criar-conta")}>
+                Criar conta de fornecedor
+              </button>
+            </article>
+          </div>
+        </section>
+
+        {/* ── Chamada final ── */}
+        <section className="tt-l-secao">
+          <div className="tt-l-container">
+            <div className="tt-cta">
+              <div className="tt-cta__texto">
+                <h2>Seu próximo evento começa com uma lista de itens.</h2>
+                <p>Crie sua conta gratuita. Assim que a equipe aprovar o cadastro, você já pode publicar eventos ou enviar propostas.</p>
+                <ul>
+                  {["Cadastro gratuito", "Aprovação pela equipe", "Organizadores e fornecedores"].map((t) => (
+                    <li key={t}>
+                      <Icone icone={Check} tamanho={16} />
+                      {t}
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
-            ))}
-          </div>
-          <div style={{ borderTop: '1px solid var(--borda)', paddingTop: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-            <p style={{ fontSize: '0.8125rem', color: 'var(--texto-fraco)' }}>© 2025 TrocaTicket. Todos os direitos reservados.</p>
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <button style={{ fontSize: '0.8125rem', color: 'var(--texto-fraco)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter' }}>Termos</button>
-              <button style={{ fontSize: '0.8125rem', color: 'var(--texto-fraco)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter' }}>Privacidade</button>
+              <div className="tt-cta__acoes">
+                <button type="button" className="tt-btn tt-btn--primary tt-btn--lg" onClick={() => navigate("/criar-conta")}>
+                  Criar conta grátis
+                  <Icone icone={ArrowRight} tamanho={18} />
+                </button>
+                <button type="button" className="tt-btn tt-btn--lg tt-cta__entrar" onClick={() => navigate("/login")}>
+                  Já tenho conta
+                </button>
+              </div>
             </div>
+          </div>
+        </section>
+      </main>
+
+      {/* ── Rodapé ── */}
+      <footer className="tt-l-rodape">
+        <div className="tt-l-container tt-l-rodape__linha">
+          <span className="tt-l-rodape__placa">
+            <img src={logotipo} alt="TrocaTicket" />
+          </span>
+          <nav aria-label="Rodapé">
+            {links.map((l) => (
+              <a key={l.id} href={`#${l.id}`}>
+                {l.rotulo}
+              </a>
+            ))}
+            <button type="button" onClick={() => navigate("/login")}>
+              Entrar
+            </button>
+          </nav>
+        </div>
+        <div className="tt-l-container">
+          <div className="tt-l-rodape__base">
+            <span>© {ANO} TrocaTicket</span>
+            <span>Projeto Interdisciplinar da FECAP</span>
           </div>
         </div>
       </footer>

@@ -1,0 +1,861 @@
+/* Landing (Landing.jsx). Todo o CSS do app vai num arquivo só, então tudo aqui fica dentro de .tt-landing.
+   O hero é sempre escuro (foto); as outras seções seguem o tema. */
+
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.tt-landing) {
+    scroll-behavior: smooth;
+  }
+}
+
+.tt-landing {
+  --altura-topo: 68px;
+  min-height: 100vh;
+  background: var(--fundo);
+  color: var(--texto);
+  overflow-x: clip;
+}
+
+.tt-landing :is(h1, h2, h3, h4, p) {
+  margin: 0;
+}
+
+.tt-landing section[id],
+.tt-landing article[id] {
+  scroll-margin-top: calc(var(--altura-topo) + var(--esp-4));
+}
+
+.tt-l-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--esp-6);
+}
+
+.tt-landing a:focus-visible,
+.tt-landing button:focus-visible {
+  outline: 2px solid var(--anel-foco);
+  outline-offset: 2px;
+}
+
+/* ── Cabeçalho ── */
+.tt-l-topo {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  color: #FFFFFF;
+  transition: var(--transicao-cor);
+  border-bottom: 1px solid transparent;
+}
+
+.tt-l-topo--solido {
+  background: color-mix(in srgb, var(--superficie) 88%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom-color: var(--borda);
+  color: var(--texto);
+}
+
+.tt-l-topo__linha {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-6);
+  height: var(--altura-topo);
+}
+
+.tt-l-marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: inherit;
+  font-size: var(--tam-lg);
+  font-weight: var(--peso-extra);
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+
+.tt-l-nav {
+  display: flex;
+  gap: var(--esp-1);
+  margin-left: var(--esp-4);
+}
+
+.tt-l-nav a {
+  padding: var(--esp-2) var(--esp-3);
+  border-radius: var(--raio-md);
+  color: inherit;
+  font-size: var(--tam-base);
+  font-weight: var(--peso-medio);
+  text-decoration: none;
+  opacity: 0.82;
+  transition: opacity var(--duracao) var(--curva), background-color var(--duracao) var(--curva);
+}
+
+.tt-l-nav a:hover {
+  opacity: 1;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.tt-l-topo__acoes {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  margin-left: auto;
+}
+
+.tt-l-entrar {
+  min-height: 40px;
+  padding: 0 var(--esp-4);
+  border: none;
+  border-radius: var(--raio-md);
+  background: none;
+  color: inherit;
+  font-size: var(--tam-base);
+  font-weight: var(--peso-semi);
+  cursor: pointer;
+  transition: background-color var(--duracao) var(--curva);
+}
+
+.tt-l-entrar:hover {
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.tt-l-menu {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: var(--raio-md);
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.tt-l-gaveta {
+  display: none;
+}
+
+/* ── Hero ── */
+.tt-hero {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: max(640px, 100svh);
+  padding: calc(var(--altura-topo) + var(--esp-24)) 0 var(--esp-16);
+  overflow: hidden;
+  background: #0B0F19; /* mesmo tom do --fundo escuro, aparece enquanto a foto carrega */
+  color: #FFFFFF;
+  /* recorte do canhoto: cor de trás do ticket no hero */
+  --ticket-recorte: #0B0F19;
+}
+
+.tt-hero__foto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: left top; /* mantém o letreiro "Troca Ticket" da arte visível */
+}
+
+.tt-hero__veu {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, rgba(11, 15, 25, 0.15) 0%, rgba(11, 15, 25, 0.1) 30%, rgba(11, 15, 25, 0.75) 68%, rgba(11, 15, 25, 0.96) 100%),
+    linear-gradient(to right, rgba(11, 15, 25, 0.55) 0%, transparent 60%);
+}
+
+.tt-hero__grade {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  align-items: end;
+  gap: var(--esp-12);
+}
+
+.tt-hero__texto h1 {
+  max-width: 14ch;
+  margin-bottom: var(--esp-5);
+  font-size: clamp(2.5rem, 1.4rem + 4.2vw, var(--tam-6xl));
+  font-weight: var(--peso-extra);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.tt-hero__texto > p:not(.tt-hero__nota) {
+  max-width: 52ch;
+  margin-bottom: var(--esp-8);
+  font-size: clamp(var(--tam-md), 0.9rem + 0.4vw, var(--tam-lg));
+  line-height: var(--linha-normal);
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.tt-hero__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-3);
+  margin-bottom: var(--esp-6);
+}
+
+.tt-hero__secundario {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #FFFFFF;
+  text-decoration: none;
+  backdrop-filter: blur(6px);
+}
+
+.tt-hero__secundario:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.tt-hero__nota {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  font-size: var(--tam-sm);
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.tt-hero__ticket {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ── Ticket do acordo (hero e passo 3) ── */
+.tt-ticket {
+  width: 100%;
+  max-width: 380px;
+  overflow: hidden;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-xl);
+  background: var(--superficie);
+  color: var(--texto);
+  font-size: var(--tam-base);
+}
+
+.tt-hero .tt-ticket {
+  box-shadow: var(--sombra-3);
+  transform: rotate(-2deg);
+}
+
+/* O único movimento automático da página: o ticket "carimbado" ao abrir */
+@media (prefers-reduced-motion: no-preference) {
+  .tt-hero .tt-ticket {
+    animation: tt-carimbar 700ms var(--curva) 200ms both;
+  }
+}
+
+@keyframes tt-carimbar {
+  from { opacity: 0; transform: rotate(-7deg) translateY(16px) scale(1.04); }
+  to { opacity: 1; transform: rotate(-2deg); }
+}
+
+.tt-ticket__topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--esp-3);
+  padding: var(--esp-5) var(--esp-5) var(--esp-4);
+}
+
+.tt-ticket__legenda {
+  display: block;
+  font-size: var(--tam-xs);
+  color: var(--texto-suave);
+}
+
+.tt-ticket__titulo {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--tam-lg);
+  font-weight: var(--peso-negrito);
+  letter-spacing: -0.01em;
+}
+
+.tt-ticket__itens {
+  margin: 0 0 var(--esp-4);
+  padding: 0 var(--esp-5);
+  list-style: none;
+}
+
+.tt-ticket__itens li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--esp-3);
+  padding: 7px 0;
+  color: var(--texto-2);
+}
+
+.tt-ticket__itens li + li {
+  border-top: 1px solid var(--borda);
+}
+
+.tt-ticket__valor {
+  font-weight: var(--peso-semi);
+  color: var(--texto);
+  white-space: nowrap;
+}
+
+.tt-ticket__valor--grande {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--tam-2xl);
+  font-weight: var(--peso-extra);
+  letter-spacing: -0.02em;
+}
+
+.tt-ticket__total {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: var(--esp-3);
+  padding: var(--esp-4) var(--esp-5) var(--esp-5);
+}
+
+.tt-ticket__economia {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--raio-pilula);
+  background: var(--verde-suave);
+  color: var(--verde-texto);
+  font-size: var(--tam-xs);
+  font-weight: var(--peso-semi);
+}
+
+.tt-ticket--compacto .tt-ticket__valor--grande {
+  font-size: var(--tam-xl);
+}
+
+/* ── Seções ── */
+.tt-l-secao {
+  padding: var(--esp-24) 0;
+}
+
+.tt-l-secao--alternada {
+  background: var(--superficie-2);
+  border-top: 1px solid var(--borda);
+  border-bottom: 1px solid var(--borda);
+}
+
+.tt-l-cabecalho {
+  max-width: 640px;
+  margin-bottom: var(--esp-12);
+}
+
+.tt-l-cabecalho h2,
+.tt-beneficios__perfil h2,
+.tt-cta h2 {
+  font-size: clamp(var(--tam-3xl), 1.3rem + 2vw, var(--tam-5xl));
+  font-weight: var(--peso-extra);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.tt-l-cabecalho p {
+  margin-top: var(--esp-4);
+  font-size: var(--tam-lg);
+  line-height: var(--linha-normal);
+  color: var(--texto-suave);
+}
+
+/* Como funciona: três passos ligados por uma linha picotada */
+.tt-passos {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--esp-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tt-passos::before {
+  content: "";
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  right: 18px;
+  border-top: 2px dashed var(--borda-2);
+}
+
+.tt-passo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.tt-passo__cabeca {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  margin-bottom: var(--esp-5);
+}
+
+.tt-passo__numero {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border: 2px solid var(--azul);
+  border-radius: 50%;
+  background: var(--fundo);
+  color: var(--azul-texto);
+  font-weight: var(--peso-extra);
+  font-variant-numeric: tabular-nums;
+}
+
+.tt-passo:last-child .tt-passo__numero {
+  border-color: var(--verde);
+  background: var(--verde);
+  color: #FFFFFF;
+}
+
+.tt-passo__perfil {
+  padding: 2px var(--esp-2);
+  border-radius: var(--raio-sm);
+  background: var(--fundo);
+  color: var(--texto-suave);
+  font-size: var(--tam-sm);
+  font-weight: var(--peso-semi);
+}
+
+.tt-passo h3 {
+  margin-bottom: var(--esp-2);
+  font-size: var(--tam-xl);
+  font-weight: var(--peso-negrito);
+  line-height: var(--linha-justa);
+  letter-spacing: -0.015em;
+}
+
+.tt-passo > p {
+  margin-bottom: var(--esp-6);
+  max-width: 38ch;
+  font-size: var(--tam-md);
+  line-height: var(--linha-normal);
+  color: var(--texto-suave);
+}
+
+.tt-passo__ilustracao {
+  margin-top: auto;
+  --ticket-recorte: var(--fundo);
+}
+
+.tt-mini {
+  margin: 0;
+  padding: var(--esp-2) 0;
+  list-style: none;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-xl);
+  background: var(--superficie);
+  font-size: var(--tam-base);
+}
+
+.tt-mini li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--esp-3);
+  padding: 10px var(--esp-5);
+  color: var(--texto-2);
+}
+
+.tt-mini li + li {
+  border-top: 1px solid var(--borda);
+}
+
+.tt-mini--propostas strong {
+  display: block;
+  margin-bottom: 2px;
+  font-size: var(--tam-base);
+  font-weight: var(--peso-semi);
+  color: var(--texto);
+}
+
+.tt-mini__melhor {
+  background: var(--verde-suave);
+}
+
+.tt-mini__melhor .tt-ticket__valor {
+  color: var(--verde-texto);
+}
+
+.tt-passo__ilustracao .tt-ticket {
+  max-width: none;
+}
+
+/* Benefícios por perfil */
+.tt-beneficios {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--esp-6);
+}
+
+.tt-beneficios__perfil {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: var(--esp-10);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-xl);
+  background: var(--superficie);
+}
+
+.tt-beneficios__selo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: var(--esp-5);
+  border-radius: var(--raio-lg);
+}
+
+.tt-beneficios__selo--azul { background: var(--azul-suave); color: var(--azul-texto); }
+.tt-beneficios__selo--laranja { background: var(--laranja-suave); color: var(--laranja-texto); }
+
+.tt-beneficios__perfil h2 {
+  font-size: clamp(var(--tam-2xl), 1.1rem + 1.2vw, var(--tam-4xl));
+}
+
+.tt-beneficios__perfil .tt-beneficios__intro {
+  margin: var(--esp-3) 0 var(--esp-8);
+  max-width: 44ch;
+  font-size: var(--tam-md);
+  line-height: var(--linha-normal);
+  color: var(--texto-suave);
+}
+
+.tt-beneficios__lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-5);
+  margin: 0 0 var(--esp-10);
+  padding: 0;
+  list-style: none;
+}
+
+.tt-beneficios__lista li {
+  display: flex;
+  gap: var(--esp-4);
+}
+
+.tt-beneficios__icone {
+  display: inline-flex;
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--texto-suave);
+}
+
+.tt-beneficios__lista h4 {
+  margin-bottom: 2px;
+  font-size: var(--tam-md);
+  font-weight: var(--peso-semi);
+}
+
+.tt-beneficios__lista p {
+  font-size: var(--tam-base);
+  line-height: var(--linha-normal);
+  color: var(--texto-suave);
+}
+
+.tt-beneficios__perfil > .tt-btn {
+  margin-top: auto;
+}
+
+/* Chamada final: bloco escuro no tema claro, superfície no tema escuro (mesma lógica do painel do Login) */
+.tt-cta {
+  --cta-fundo: var(--destaque);
+  --cta-texto: var(--destaque-texto);
+  --cta-suave: color-mix(in srgb, var(--destaque-texto) 70%, var(--destaque));
+  --cta-borda: color-mix(in srgb, var(--destaque-texto) 22%, var(--destaque));
+
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) auto;
+  align-items: end;
+  gap: var(--esp-10);
+  padding: clamp(var(--esp-8), 5vw, var(--esp-16));
+  border-radius: var(--raio-xl);
+  background: var(--cta-fundo);
+  color: var(--cta-texto);
+}
+
+:root[data-tema="escuro"] .tt-cta {
+  --cta-fundo: var(--superficie);
+  --cta-texto: var(--texto);
+  --cta-suave: var(--texto-suave);
+  --cta-borda: var(--borda-2);
+  border: 1px solid var(--borda);
+}
+
+.tt-cta__texto p {
+  max-width: 52ch;
+  margin: var(--esp-4) 0 var(--esp-6);
+  font-size: var(--tam-lg);
+  line-height: var(--linha-normal);
+  color: var(--cta-suave);
+}
+
+.tt-cta__texto ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-2) var(--esp-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--tam-base);
+  color: var(--cta-suave);
+}
+
+.tt-cta__texto li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tt-cta__texto li svg {
+  color: var(--verde);
+}
+
+.tt-cta__acoes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-3);
+  min-width: 240px;
+}
+
+.tt-cta__entrar {
+  background: transparent;
+  border-color: var(--cta-borda);
+  color: var(--cta-texto);
+}
+
+.tt-cta__entrar:hover {
+  background: color-mix(in srgb, var(--cta-texto) 10%, transparent);
+}
+
+/* ── Rodapé ── */
+.tt-l-rodape {
+  padding: var(--esp-12) 0 var(--esp-8);
+  border-top: 1px solid var(--borda);
+}
+
+.tt-l-rodape__linha {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--esp-6);
+  margin-bottom: var(--esp-8);
+}
+
+/* O logotipo tem fundo branco: fica numa placa clara nos dois temas */
+.tt-l-rodape__placa {
+  display: inline-flex;
+  padding: var(--esp-2) var(--esp-3);
+  border-radius: var(--raio-md);
+  background: #FFFFFF;
+  border: 1px solid var(--borda);
+}
+
+.tt-l-rodape__placa img {
+  display: block;
+  height: 36px;
+  width: auto;
+}
+
+.tt-l-rodape nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-2) var(--esp-6);
+}
+
+.tt-l-rodape nav :is(a, button) {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--texto-suave);
+  font-size: var(--tam-base);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color var(--duracao) var(--curva);
+}
+
+.tt-l-rodape nav :is(a, button):hover {
+  color: var(--texto);
+}
+
+.tt-l-rodape__base {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--esp-2);
+  padding-top: var(--esp-6);
+  border-top: 1px solid var(--borda);
+  font-size: var(--tam-sm);
+  color: var(--texto-fraco);
+}
+
+/* ── Responsivo ── */
+@media (max-width: 1023px) {
+  .tt-l-nav {
+    display: none;
+  }
+
+  .tt-l-menu {
+    display: inline-flex;
+  }
+
+  .tt-l-gaveta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--esp-1);
+    padding: var(--esp-2) var(--esp-6) var(--esp-6);
+    border-top: 1px solid var(--borda);
+    background: var(--superficie);
+  }
+
+  .tt-l-gaveta > a {
+    padding: var(--esp-3) 0;
+    color: var(--texto);
+    font-size: var(--tam-md);
+    font-weight: var(--peso-medio);
+    text-decoration: none;
+    border-bottom: 1px solid var(--borda);
+  }
+
+  .tt-l-gaveta__acoes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--esp-3);
+    margin-top: var(--esp-4);
+  }
+
+  .tt-hero__grade {
+    grid-template-columns: 1fr;
+    gap: var(--esp-10);
+  }
+
+  .tt-hero__ticket {
+    justify-content: flex-start;
+  }
+
+  .tt-passos {
+    grid-template-columns: 1fr;
+    gap: var(--esp-12);
+  }
+
+  /* No celular a linha picotada desce pela esquerda, ligando os números */
+  .tt-passos::before {
+    top: 18px;
+    bottom: 18px;
+    left: 18px;
+    right: auto;
+    border-top: none;
+    border-left: 2px dashed var(--borda-2);
+  }
+
+  .tt-passo {
+    padding-left: 56px;
+  }
+
+  .tt-passo__cabeca {
+    margin-left: -56px;
+  }
+
+  .tt-passo__numero {
+    margin-right: var(--esp-2);
+  }
+
+  .tt-beneficios {
+    grid-template-columns: 1fr;
+  }
+
+  .tt-cta {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .tt-cta__acoes {
+    flex-direction: row;
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .tt-l-container {
+    padding: 0 var(--esp-4);
+  }
+
+  .tt-l-topo__acoes > :not(.tt-l-menu) {
+    display: none;
+  }
+
+  .tt-l-gaveta {
+    padding: var(--esp-2) var(--esp-4) var(--esp-5);
+  }
+
+  /* No celular a foto vira uma faixa no topo, pequena o bastante para o letreiro caber inteiro,
+     e o texto começa logo abaixo dele (em vez de ficar por cima). */
+  .tt-hero {
+    min-height: 0;
+    padding: 260px 0 var(--esp-12);
+  }
+
+  .tt-hero__foto,
+  .tt-hero__veu {
+    height: 340px;
+    bottom: auto;
+  }
+
+  .tt-hero__foto {
+    object-position: left top;
+  }
+
+  .tt-hero__veu {
+    background: linear-gradient(to bottom, rgba(11, 15, 25, 0.25) 0%, rgba(11, 15, 25, 0.1) 35%, rgba(11, 15, 25, 0.85) 75%, #0B0F19 100%);
+  }
+
+  .tt-l-rodape {
+    padding-bottom: 88px; /* espaço para o botão de tema flutuante não cobrir o texto */
+  }
+
+  .tt-hero__acoes .tt-btn {
+    flex: 1 1 100%;
+  }
+
+  .tt-l-secao {
+    padding: var(--esp-16) 0;
+  }
+
+  .tt-beneficios__perfil {
+    padding: var(--esp-6);
+  }
+
+  .tt-beneficios__perfil > .tt-btn,
+  .tt-cta__acoes .tt-btn {
+    width: 100%;
+  }
+
+  .tt-passo {
+    padding-left: 0;
+  }
+
+  .tt-passo__cabeca {
+    margin-left: 0;
+  }
+
+  .tt-passos::before {
+    display: none;
+  }
+}
