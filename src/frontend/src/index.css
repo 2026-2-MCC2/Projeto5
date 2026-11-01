@@ -15,7 +15,9 @@
   --borda-2: #D1D5DB;
   --texto: #111827;
   --texto-2: #374151;
-  --texto-suave: #6B7280;
+  /* Cinza original (#6B7280) puxado 10% para o --texto: passa de 4,4:1 para 5,0:1 no fundo claro (mínimo WCAG 4,5) */
+  --texto-suave: color-mix(in srgb, #6B7280 90%, #111827);
+  /* Só para ícones decorativos, bordas e marcas: 2,5:1 no claro, não serve como cor de texto */
   --texto-fraco: #9CA3AF;
   --ativo-fundo: #EFF6FF;
   --ativo-borda: #BFDBFE;
@@ -66,7 +68,9 @@
   --verde-borda: color-mix(in srgb, var(--verde) var(--forca-borda), transparent);
   --vermelho-borda: color-mix(in srgb, var(--vermelho) var(--forca-borda), transparent);
 
+  /* Fundos com texto branco: o laranja e o verde puros dão 3,6:1 e 3,8:1; estes tons dão 4,7:1 e 5,0:1 */
   --laranja-forte: color-mix(in srgb, var(--laranja) 85%, #000000);
+  --verde-forte: color-mix(in srgb, var(--verde) 85%, #000000);
   --anel-foco: color-mix(in srgb, var(--azul) 45%, transparent);
   --fundo-modal: color-mix(in srgb, #111827 55%, transparent);
 
@@ -118,6 +122,9 @@
   --raio-lg: 12px;      /* cards */
   --raio-xl: 16px;      /* modais, painéis grandes */
   --raio-pilula: 999px; /* contadores, filtros */
+
+  /* Espaço interno dos cartões de formulário: menor no celular (ver @media no fim do arquivo) */
+  --espaco-cartao: var(--esp-8);
 
   /* ── Sombras: só o que flutua tem sombra; o resto é separado por borda ── */
   --sombra-1: 0 1px 2px rgba(17, 24, 39, 0.05);                                        /* cabeçalho fixo */
@@ -189,11 +196,19 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Transição: algumas telas ainda têm fontFamily inline (Outfit, Inter, JetBrains Mono).
-   Enquanto elas não são refeitas, tudo herda a fonte do design system.
-   Remover esta regra quando nenhuma tela tiver mais fontFamily inline. */
-body * {
-  font-family: inherit !important;
+/* Campos e botões não herdam a fonte do body por padrão no navegador */
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+/* Foco visível padrão para qualquer elemento clicável que não tenha um estilo próprio.
+   :where() deixa a especificidade zero, então os estilos de foco dos componentes têm prioridade. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--anel-foco);
+  outline-offset: 2px;
 }
 
 /* Áreas logadas (Layout): títulos e parágrafos sem margem padrão, como no Figma */
@@ -284,6 +299,12 @@ body,
 
 .tt-girando {
   animation: tt-girar 0.8s linear infinite;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --espaco-cartao: var(--esp-5);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

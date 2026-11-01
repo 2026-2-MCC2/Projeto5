@@ -58,8 +58,8 @@
 .tt-btn--primary { background: var(--azul); color: #FFFFFF; }
 .tt-btn--primary:hover:not(:disabled) { background: var(--azul-forte); }
 
-.tt-btn--accent { background: var(--laranja); color: #FFFFFF; }
-.tt-btn--accent:hover:not(:disabled) { background: var(--laranja-forte); }
+.tt-btn--accent { background: var(--laranja-forte); color: #FFFFFF; }
+.tt-btn--accent:hover:not(:disabled) { background: color-mix(in srgb, var(--laranja) 72%, #000000); }
 
 .tt-btn--secondary { background: var(--superficie); color: var(--texto); border-color: var(--borda-2); }
 .tt-btn--secondary:hover:not(:disabled) { background: var(--superficie-3); }
@@ -86,7 +86,7 @@
 }
 
 .tt-campo::placeholder {
-  color: var(--texto-fraco);
+  color: var(--texto-suave);
 }
 
 .tt-campo:hover:not(:disabled):not(:focus) {
@@ -361,7 +361,7 @@ select.tt-campo {
   height: 18px;
   padding: 0 5px;
   border-radius: var(--raio-pilula);
-  background: var(--laranja);
+  background: var(--laranja-forte);
   color: #FFFFFF;
   font-size: 0.6875rem; /* exceção à escala: cabe dentro da bolinha de 18px */
   font-weight: var(--peso-negrito);
@@ -685,6 +685,8 @@ select.tt-campo {
   .tt-indicador { padding: var(--esp-4); }
   .tt-titulo-pagina { margin-bottom: var(--esp-6); }
   .tt-confirmacao__acoes { flex-direction: column-reverse; }
+  /* Em vez de espremer as colunas (texto quebrando palavra por palavra), a tabela rola na horizontal */
+  .tt-tabela { min-width: 600px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -148,7 +148,7 @@
 .tt-barras__linha--warning { --cor-barra: var(--ambar); }
 .tt-barras__linha--success { --cor-barra: var(--verde); }
 .tt-barras__linha--error { --cor-barra: var(--vermelho); }
-.tt-barras__linha--neutral { --cor-barra: var(--texto-fraco); }
+.tt-barras__linha--neutral { --cor-barra: var(--texto-suave); }
 
 .tt-barras__rotulo {
   display: inline-flex;

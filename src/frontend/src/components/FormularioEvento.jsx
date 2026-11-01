@@ -28,7 +28,7 @@ export default function FormularioEvento({ valores, onChange, comStatus = false 
   const campo = (nome) => ({ value: valores[nome], onChange: (e) => onChange({ ...valores, [nome]: e.target.value }) });
 
   return (
-    <Card style={{ padding: "var(--esp-8)" }}>
+    <Card style={{ padding: "var(--espaco-cartao)" }}>
       <Secao titulo="Sobre o evento" texto="Como o evento vai aparecer para os fornecedores.">
         <Campo rotulo="Nome do evento *">
           <Input placeholder="Ex: Festival Gastronômico SP 2026" maxLength={150} {...campo("nome")} />

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CalendarPlus, Plus, SearchX } from "lucide-react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 import { Aviso, Btn, Chip, CampoBusca, ErroCarregar, TituloPagina, Vazio } from "../../components/ui";
 import { CartaoEvento, EsqueletoCartaoEvento } from "../../components/organizador";
 import { listarEventos } from "../../services/organizadorService";

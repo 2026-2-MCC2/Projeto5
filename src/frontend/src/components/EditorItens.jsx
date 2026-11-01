@@ -4,7 +4,7 @@ import { CATEGORIAS_FORNECEDOR } from "../data/categorias";
 import { novoItem, somaEstimado } from "../services/organizadorService";
 import { moeda } from "../utils/formatar";
 
-const estiloCampoTabela = { padding: "6px 9px", borderRadius: "6px", fontSize: "0.8125rem" };
+const estiloCampoTabela = { minHeight: "36px", padding: "0 var(--esp-2)", borderRadius: "var(--raio-sm)", fontSize: "var(--tam-sm)" };
 const estiloNumero = estiloCampoTabela;
 const estiloCelula = { padding: "10px 6px" };
 
@@ -53,7 +53,7 @@ export default function EditorItens({ itens, onChange, comAcordado = false }) {
               </Celula>
             )}
             <Celula style={estiloCelula}>
-              <BotaoIcone icone={Trash2} rotulo="Remover item" cor="#DC2626" tamanho={16} onClick={() => onChange(itens.filter((x) => x.id !== item.id))} />
+              <BotaoIcone icone={Trash2} rotulo="Remover item" cor="var(--vermelho-texto)" tamanho={16} onClick={() => onChange(itens.filter((x) => x.id !== item.id))} />
             </Celula>
           </Linha>
         ))}
@@ -64,8 +64,8 @@ export default function EditorItens({ itens, onChange, comAcordado = false }) {
           Adicionar Item
         </Btn>
         <div>
-          <span style={{ fontSize: "0.875rem", color: "var(--texto-suave)", marginRight: "12px" }}>Total Estimado</span>
-          <Valor cor="var(--texto)" tamanho="1.125rem" peso={700}>
+          <span style={{ fontSize: "var(--tam-base)", color: "var(--texto-suave)", marginRight: "var(--esp-3)" }}>Total Estimado</span>
+          <Valor cor="var(--texto)" tamanho="var(--tam-lg)" peso={700}>
             {moeda(somaEstimado(itens))}
           </Valor>
         </div>

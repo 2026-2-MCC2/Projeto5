@@ -200,7 +200,10 @@
 
 .tt-filtros__abas {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
   gap: var(--esp-1);
   padding: var(--esp-1);
   border: 1px solid var(--borda);
@@ -426,8 +429,8 @@
 }
 
 .tt-etapas__item--feita .tt-etapas__numero {
-  border-color: var(--verde);
-  background: var(--verde);
+  border-color: var(--verde-forte);
+  background: var(--verde-forte);
   color: #FFFFFF;
 }
 

@@ -415,8 +415,8 @@
 }
 
 .tt-passo:last-child .tt-passo__numero {
-  border-color: var(--verde);
-  background: var(--verde);
+  border-color: var(--verde-forte);
+  background: var(--verde-forte);
   color: #FFFFFF;
 }
 
@@ -702,7 +702,7 @@
   padding-top: var(--esp-6);
   border-top: 1px solid var(--borda);
   font-size: var(--tam-sm);
-  color: var(--texto-fraco);
+  color: var(--texto-suave);
 }
 
 /* ── Responsivo ── */

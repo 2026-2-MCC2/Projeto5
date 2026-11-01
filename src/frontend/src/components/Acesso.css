@@ -159,7 +159,7 @@
   border: none;
   border-radius: var(--raio-sm);
   background: none;
-  color: var(--texto-fraco);
+  color: var(--texto-suave);
   cursor: pointer;
   transition: var(--transicao-cor);
 }
@@ -533,7 +533,7 @@
   gap: var(--esp-3);
   margin: var(--esp-6) 0;
   font-size: var(--tam-xs);
-  color: var(--texto-fraco);
+  color: var(--texto-suave);
 }
 
 .tt-acesso__divisor::before,
@@ -551,7 +551,7 @@
   gap: 6px;
   min-height: 56px;
   font-size: var(--tam-xs);
-  color: var(--texto-fraco);
+  color: var(--texto-suave);
 }
 
 /* Foco visível */

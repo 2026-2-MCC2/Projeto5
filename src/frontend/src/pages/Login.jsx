@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 import { LayoutDashboard, Lock, Mail, ShieldCheck, Ticket } from "lucide-react";
 import RightPanel from "../components/RightPanel";
 import { AvisoAcesso, BotaoGoogle, BotaoMostrarSenha, CabecalhoAcesso, CampoAcesso, ConteudoBotao, DivisorOu, TelaAcesso } from "../components/Acesso";

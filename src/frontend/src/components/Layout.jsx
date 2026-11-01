@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 import { ChevronLeft, LogOut, Menu, X } from "lucide-react";
 import { Contador, Icone, MarcaLogo } from "./ui";
 import BotaoTema from "./BotaoTema";

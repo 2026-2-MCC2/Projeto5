@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft, House } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 import { Btn, MarcaLogo, Picote } from "../components/ui";
 import "./NaoEncontrado.css";
 

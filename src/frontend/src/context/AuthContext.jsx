@@ -1,8 +1,7 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { conferirSessao, entrar, sair, usuarioLogado } from "../services/authService";
 import { EVENTO_SESSAO_EXPIRADA } from "../services/api";
-
-const AuthContext = createContext();
+import { AuthContext } from "./useAuth";
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(usuarioLogado());
@@ -39,5 +38,3 @@ export function AuthProvider({ children }) {
     </AuthContext.Provider>
   );
 }
-
-export const useAuth = () => useContext(AuthContext);

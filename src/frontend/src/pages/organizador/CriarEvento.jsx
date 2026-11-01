@@ -96,7 +96,7 @@ export default function CriarEvento() {
         <div style={{ display: "grid", gap: "var(--esp-6)" }}>
           <FormularioEvento valores={formulario} onChange={setFormulario} />
 
-          <Card style={{ padding: "var(--esp-8)" }}>
+          <Card style={{ padding: "var(--espaco-cartao)" }}>
             <TituloSecao>Fornecedores que pretende orçar</TituloSecao>
             <p style={{ fontSize: "var(--tam-sm)", color: "var(--texto-suave)", margin: "calc(-1 * var(--esp-3)) 0 var(--esp-4)" }}>
               Opcional. Cada tipo escolhido vira um item sugerido na composição de custos.
@@ -119,7 +119,7 @@ export default function CriarEvento() {
       )}
 
       {passo === 2 && (
-        <Card style={{ padding: "var(--esp-8)" }}>
+        <Card style={{ padding: "var(--espaco-cartao)" }}>
           <TituloSecao>Fornecedores selecionados</TituloSecao>
           {fornecedores.length === 0 ? (
             <Vazio icone={Users} titulo="Nenhum tipo de fornecedor escolhido" texto="Esta etapa é opcional. Se quiser, volte à primeira etapa e escolha os tipos de fornecedor.">
@@ -140,7 +140,7 @@ export default function CriarEvento() {
       {passo === 3 && (
         <div className="tt-detalhes">
           <div className="tt-detalhes__principal">
-            <Card style={{ padding: "var(--esp-8)" }}>
+            <Card style={{ padding: "var(--espaco-cartao)" }}>
               <TituloSecao>{pendencias.length ? "Quase lá" : "Pronto para publicar"}</TituloSecao>
               {pendencias.length ? (
                 <>

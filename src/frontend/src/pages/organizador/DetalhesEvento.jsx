@@ -218,10 +218,10 @@ export default function DetalhesEvento() {
         <Indicador
           rotulo="Total acordado"
           valor={comAcordo.length ? moeda(totalAcordado) : "—"}
-          cor={comAcordo.length ? "var(--verde-texto)" : "var(--texto-fraco)"}
+          cor={comAcordo.length ? "var(--verde-texto)" : "var(--texto-suave)"}
           detalhe={comAcordo.length ? `${comAcordo.length} de ${itens.length} itens com proposta escolhida` : "Nenhuma proposta escolhida ainda"}
         />
-        <Indicador rotulo="Propostas recebidas" valor={evento.total_propostas} cor={evento.total_propostas ? "var(--azul-texto)" : "var(--texto-fraco)"} detalhe={evento.total_propostas ? "de fornecedores qualificados" : "Nenhuma até agora"} />
+        <Indicador rotulo="Propostas recebidas" valor={evento.total_propostas} cor={evento.total_propostas ? "var(--azul-texto)" : "var(--texto-suave)"} detalhe={evento.total_propostas ? "de fornecedores qualificados" : "Nenhuma até agora"} />
       </div>
 
       <div className="tt-detalhes">
@@ -270,7 +270,7 @@ export default function DetalhesEvento() {
                         </Valor>
                       </Celula>
                       <Celula>
-                        <Valor cor={item.acordado === null ? "var(--texto-fraco)" : "var(--verde-texto)"}>{item.acordado === null ? "—" : moeda(item.acordado)}</Valor>
+                        <Valor cor={item.acordado === null ? "var(--texto-suave)" : "var(--verde-texto)"}>{item.acordado === null ? "—" : moeda(item.acordado)}</Valor>
                       </Celula>
                     </Linha>
                   ))}

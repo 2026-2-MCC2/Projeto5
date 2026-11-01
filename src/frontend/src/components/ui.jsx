@@ -42,7 +42,7 @@ export function MarcaLogo({ tamanho = 26 }) {
 }
 
 // Botão só com ícone (fechar, remover). `rotulo` é lido por leitores de tela.
-export function BotaoIcone({ icone, rotulo, onClick, cor = "var(--texto-fraco)", tamanho = 18 }) {
+export function BotaoIcone({ icone, rotulo, onClick, cor = "var(--texto-suave)", tamanho = 18 }) {
   return (
     <button type="button" className="tt-botao-icone" aria-label={rotulo} title={rotulo} onClick={onClick} style={{ color: cor }}>
       <Icone icone={icone} tamanho={tamanho} />
@@ -105,7 +105,7 @@ export function TituloPagina({ titulo, sub, extra, children }) {
 }
 
 // Valor numérico (dinheiro, quantidades) com algarismos de largura fixa, para alinhar em colunas.
-export function Valor({ children, cor = "var(--verde-texto)", tamanho = "0.875rem", peso = 600, riscado = false }) {
+export function Valor({ children, cor = "var(--verde-texto)", tamanho = "var(--tam-base)", peso = 600, riscado = false }) {
   return (
     <span className="tt-valor" style={{ fontSize: tamanho, fontWeight: peso, color: cor, textDecoration: riscado ? "line-through" : "none" }}>
       {children}
@@ -114,7 +114,7 @@ export function Valor({ children, cor = "var(--verde-texto)", tamanho = "0.875re
 }
 
 // Card com um número de destaque (KPI).
-export function Indicador({ rotulo, valor, cor = "var(--texto)", mono = true, tamanho = "1.5rem", detalhe, variante, riscado }) {
+export function Indicador({ rotulo, valor, cor = "var(--texto)", mono = true, tamanho = "var(--tam-2xl)", detalhe, variante, riscado }) {
   return (
     <Card variante={variante}>
       <div className="tt-indicador">
@@ -348,7 +348,7 @@ export function ModalConfirmacao({ icone, variante, titulo, descricao, rotuloVal
           </div>
         )}
         {erro && (
-          <Aviso variante="erro" style={{ marginBottom: "1rem", textAlign: "left" }}>
+          <Aviso variante="erro" style={{ marginBottom: "var(--esp-4)", textAlign: "left" }}>
             {erro}
           </Aviso>
         )}
