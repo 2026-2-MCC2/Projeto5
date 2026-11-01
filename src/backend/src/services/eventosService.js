@@ -9,13 +9,19 @@ export const STATUS_EVENTO = ["rascunho", "aguardando_data", "em_andamento", "co
 // Mesma lista de front/src/data/categorias.js (CATEGORIAS_EVENTO).
 export const CATEGORIAS_EVENTO = ["Corporativo", "Festival & Show", "Casamento", "Formatura", "Social", "Esportivo"];
 
-// orcamento = soma dos valores estimados dos itens; total_propostas = propostas recebidas em todos os itens.
+// orcamento = soma dos valores estimados dos itens; total_propostas = propostas recebidas em todos os itens;
+// organizador_nome e categorias_itens (o que o evento precisa contratar) servem à tela de oportunidades do fornecedor.
 const SELECT_EVENTOS = `
-  SELECT e.id, e.organizador_id, e.nome, e.descricao, e.categoria, e.data_inicio, e.data_fim, e.local,
+  SELECT e.id, e.organizador_id, u.nome AS organizador_nome, e.nome, e.descricao, e.categoria, e.data_inicio, e.data_fim, e.local,
          e.publico_minimo, e.publico_maximo, e.margem_lucro, e.status, e.criado_em,
          (SELECT COALESCE(SUM(i.valor_estimado), 0) FROM itens_custo i WHERE i.evento_id = e.id) AS orcamento,
-         (SELECT COUNT(*) FROM propostas p JOIN itens_custo i ON i.id = p.item_id WHERE i.evento_id = e.id) AS total_propostas
-  FROM eventos e`;
+         (SELECT COUNT(*) FROM propostas p JOIN itens_custo i ON i.id = p.item_id WHERE i.evento_id = e.id) AS total_propostas,
+         (SELECT GROUP_CONCAT(DISTINCT i.categoria ORDER BY i.categoria SEPARATOR '|') FROM itens_custo i WHERE i.evento_id = e.id) AS categorias_itens
+  FROM eventos e
+  JOIN usuarios u ON u.id = e.organizador_id`;
+
+// categorias_itens chega do MySQL como "A|B"; a API devolve como lista.
+const formatar = (linha) => ({ ...linha, categorias_itens: linha.categorias_itens ? linha.categorias_itens.split("|") : [] });
 
 // ── Validação ──────────────────────────────────────────────────────────────
 
@@ -125,13 +131,13 @@ export async function listar({ organizador_id, status } = {}) {
 
   const where = filtros.length ? `WHERE ${filtros.join(" AND ")}` : "";
   const [linhas] = await pool.query(`${SELECT_EVENTOS} ${where} ORDER BY e.data_inicio`, valores);
-  return linhas;
+  return linhas.map(formatar);
 }
 
 export async function buscarPorId(id) {
   const [linhas] = await pool.query(`${SELECT_EVENTOS} WHERE e.id = ?`, [validarId(id)]);
   if (!linhas[0]) throw HttpError.notFound("Evento não encontrado.");
-  return linhas[0];
+  return formatar(linhas[0]);
 }
 
 // O dono é sempre quem está logado (vem do token); organizador_id no corpo é ignorado.

@@ -1,104 +1,31 @@
-import { hojeIso } from "../utils/formatar";
+import api from "./api";
 
-const PROPOSTAS_KEY = "propostas";
+// Fornecedor: eventos abertos para cotação e propostas, pela API.
+// Avaliações e desempenho ainda não têm tabela no banco: continuam como dados de exemplo (tela Reputação).
 
-// Dados de exemplo enquanto o back-end não existe.
-const eventos = [
-  {
-    id: 1,
-    nome: "Festival Gastronômico SP",
-    data: "2025-03-15",
-    local: "Parque Ibirapuera, SP",
-    categoria: "Festival & Show",
-    necessidades: ["Buffet & Gastronomia", "Sonorização & Luz"],
-    orcamento: { min: 45000, max: 55000 },
-    convidados: 500,
-    prazo: "2025-02-28",
-    organizador: "Carlos Mendes",
-    itens: [
-      { descricao: "Buffet completo com bebidas", quantidade: 200, unidade: "pessoas" },
-      { descricao: "Estação de massas ao vivo", quantidade: 1, unidade: "pacote" },
-      { descricao: "Bar de drinks e coquetéis", quantidade: 200, unidade: "pessoas" },
-      { descricao: "Coffee break (2 pausas)", quantidade: 200, unidade: "pessoas" },
-    ],
-  },
-  {
-    id: 2,
-    nome: "Congresso Tech Brasil 2025",
-    data: "2025-04-20",
-    local: "Expo Center Norte, SP",
-    categoria: "Corporativo",
-    necessidades: ["Foto & Filmagem", "Sonorização & Luz"],
-    orcamento: { min: 28000, max: 35000 },
-    convidados: 800,
-    prazo: "2025-03-05",
-    organizador: "Patrícia Souza",
-    itens: [
-      { descricao: "Cobertura fotográfica", quantidade: 2, unidade: "diárias" },
-      { descricao: "Filmagem com edição", quantidade: 1, unidade: "pacote" },
-      { descricao: "Transmissão ao vivo", quantidade: 2, unidade: "diárias" },
-    ],
-  },
-  {
-    id: 3,
-    nome: "Casamento Rodrigues & Lima",
-    data: "2025-04-12",
-    local: "Quinta da Boa Vista, RJ",
-    categoria: "Casamento",
-    necessidades: ["Buffet & Gastronomia", "Cenografia & Decoração", "Foto & Filmagem"],
-    orcamento: { min: 80000, max: 100000 },
-    convidados: 180,
-    prazo: "2025-03-15",
-    organizador: "Ana Lima",
-    itens: [
-      { descricao: "Jantar completo", quantidade: 180, unidade: "pessoas" },
-      { descricao: "Mesa de doces", quantidade: 1, unidade: "pacote" },
-      { descricao: "Bar de drinks e coquetéis", quantidade: 180, unidade: "pessoas" },
-    ],
-  },
-  {
-    id: 4,
-    nome: "Show Nacional – Turnê Verão",
-    data: "2025-05-01",
-    local: "Arena Anhembi, SP",
-    categoria: "Festival & Show",
-    necessidades: ["Segurança & Apoio", "Transporte & Logística"],
-    orcamento: { min: 15000, max: 25000 },
-    convidados: 5000,
-    prazo: "2025-03-10",
-    organizador: "Roberto Castro",
-    itens: [
-      { descricao: "Seguranças", quantidade: 60, unidade: "profissionais" },
-      { descricao: "Brigadistas", quantidade: 10, unidade: "profissionais" },
-      { descricao: "Controle de acesso", quantidade: 1, unidade: "pacote" },
-    ],
-  },
-  {
-    id: 5,
-    nome: "Expo Sustentabilidade 2025",
-    data: "2025-07-28",
-    local: "Ciesp Campinas, SP",
-    categoria: "Corporativo",
-    necessidades: ["Cenografia & Decoração", "Foto & Filmagem"],
-    orcamento: { min: 18000, max: 22000 },
-    convidados: 300,
-    prazo: "2025-06-01",
-    organizador: "Marina Oliveira",
-    itens: [
-      { descricao: "Montagem de estandes", quantidade: 20, unidade: "unidades" },
-      { descricao: "Decoração do palco", quantidade: 1, unidade: "pacote" },
-      { descricao: "Sinalização do evento", quantidade: 1, unidade: "pacote" },
-    ],
-  },
-];
+// Eventos publicados (status em_andamento), os únicos que recebem propostas.
+// Cada evento traz organizador_nome e categorias_itens (o que ele precisa contratar).
+export function listarEventos() {
+  return api.get("/eventos?status=em_andamento");
+}
 
-const propostasIniciais = [
-  { id: 1, evento: "Festival Gastronômico SP", dataEvento: "2025-03-15", categoria: "Buffet & Gastronomia", valor: 43800, status: "Em análise", enviadaEm: "2025-01-18" },
-  { id: 2, evento: "Casamento Rodrigues & Lima", dataEvento: "2025-04-12", categoria: "Buffet & Gastronomia", valor: 82000, status: "Aprovada", enviadaEm: "2025-01-05" },
-  { id: 3, evento: "Congresso Tech Brasil 2025", dataEvento: "2025-04-20", categoria: "Buffet & Gastronomia", valor: 35500, status: "Em análise", enviadaEm: "2025-01-20" },
-  { id: 4, evento: "Baile de Gala APAE", dataEvento: "2024-09-20", categoria: "Buffet & Gastronomia", valor: 28000, status: "Concluído", enviadaEm: "2024-08-01" },
-  { id: 5, evento: "Formatura Medicina USP", dataEvento: "2024-11-05", categoria: "Buffet & Gastronomia", valor: 19500, status: "Rejeitada", enviadaEm: "2024-09-10" },
-];
+// Evento com os itens de custo, para o formulário de proposta.
+export async function buscarEvento(id) {
+  const [evento, itens] = await Promise.all([api.get(`/eventos/${id}`), api.get(`/eventos/${id}/itens`)]);
+  return { ...evento, itens };
+}
+
+// Propostas do fornecedor logado (uma por item), com evento e item de cada uma.
+export function listarPropostas() {
+  return api.get("/propostas/minhas");
+}
+
+// `itens`: [{ item_id, valor }] — valor total ofertado para o item (preço unitário × quantidade).
+export function enviarProposta(eventoId, { itens, observacoes }) {
+  return api.post(`/eventos/${eventoId}/propostas`, { itens, observacoes: observacoes?.trim() || undefined });
+}
+
+// ── Dados de exemplo (sem API ainda) ──────────────────────────────────────
 
 const avaliacoes = [
   { id: 1, evento: "Casamento Rodrigues & Lima", organizador: "Ana Lima", data: "2024-12-01", nota: 5, resumo: "Serviço impecável, pontual e de altíssima qualidade.", comentario: "O buffet foi simplesmente perfeito. Chegaram no horário combinado, montagem rápida e eficiente. A comida estava deliciosa e os convidados não pararam de elogiar. Superaram todas as expectativas. Com certeza contrataremos novamente!" },
@@ -114,37 +41,6 @@ const desempenho = [
   { criterio: "Comunicação", nota: 4.7 },
   { criterio: "Custo-benefício", nota: 4.6 },
 ];
-
-export function listarEventos() {
-  return eventos;
-}
-
-export function buscarEvento(id) {
-  return eventos.find((e) => e.id === id);
-}
-
-// Lê as propostas salvas. Na primeira vez, começa com as propostas de exemplo.
-export function listarPropostas() {
-  const salvas = JSON.parse(localStorage.getItem(PROPOSTAS_KEY) || "null");
-  if (salvas) return salvas;
-
-  localStorage.setItem(PROPOSTAS_KEY, JSON.stringify(propostasIniciais));
-  return propostasIniciais;
-}
-
-export function enviarProposta({ evento, valor, observacoes }) {
-  const nova = {
-    id: Date.now(),
-    evento: evento.nome,
-    dataEvento: evento.data,
-    categoria: evento.necessidades[0],
-    valor,
-    observacoes,
-    status: "Em análise",
-    enviadaEm: hojeIso(),
-  };
-  localStorage.setItem(PROPOSTAS_KEY, JSON.stringify([nova, ...listarPropostas()]));
-}
 
 export function listarAvaliacoes() {
   return avaliacoes;

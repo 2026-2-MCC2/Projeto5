@@ -127,7 +127,7 @@ Rotas protegidas exigem o cabeçalho `Authorization: Bearer <token>`, com o toke
 | Método | Rota | Acesso | Descrição |
 |---|---|---|---|
 | GET | `/eventos` | logado | Lista eventos. Filtros opcionais: `?organizador_id=2&status=rascunho` |
-| GET | `/eventos/:id` | logado | Um evento (inclui `orcamento` e `total_propostas`) |
+| GET | `/eventos/:id` | logado | Um evento (inclui `orcamento`, `total_propostas`, `organizador_nome` e `categorias_itens`) |
 | POST | `/eventos` | organizador | Cria evento do organizador logado. Pode incluir `itens: [...]` |
 | PUT | `/eventos/:id` | organizador dono | Substitui o evento inteiro (mande todos os campos) |
 | DELETE | `/eventos/:id` | organizador dono | Exclui o evento, com seus itens e propostas |
@@ -137,6 +137,20 @@ Rotas protegidas exigem o cabeçalho `Authorization: Bearer <token>`, com o toke
 **Campos de um evento:** `nome`\*, `descricao`, `categoria` (`Corporativo`, `Festival & Show`, `Casamento`, `Formatura`, `Social`, `Esportivo`), `data_inicio`\* e `data_fim`\* (`AAAA-MM-DD HH:MM`), `local`\*, `publico_minimo`\* e `publico_maximo`\* (inteiros, mínimo ≤ máximo), `margem_lucro` (de 0 a 0.99; `0.25` = 25%), `status` (`rascunho`, `aguardando_data`, `em_andamento`, `concluido`, `cancelado`). \* obrigatório.
 
 **Campos de um item:** `descricao`\*, `categoria`\*, `tipo` (`fornecedor`, `fiscal`, `operacional`, `variavel`), `quantidade` (> 0), `unidade`, `valor_estimado` (≥ 0). Para manter um item existente, mande o `id` dele; itens sem `id` são criados e os que não vierem são apagados.
+
+### Propostas
+
+Cada proposta é de um fornecedor para **um item** de custo. Status: `em_analise` → `selecionada` (escolhida pelo organizador) ou `recusada` (ao finalizar). Só eventos `em_andamento` (publicados) recebem propostas e podem ter a escolha alterada.
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| POST | `/eventos/:id/propostas` | fornecedor | Envia proposta para um ou mais itens: `{ "itens": [{ "item_id": 3, "valor": 11500 }], "descricao": "...", "validade": "AAAA-MM-DD", "observacoes": "..." }`. Só `itens` é obrigatório (validade padrão: 30 dias). Uma proposta por item por fornecedor (repetir → 409) |
+| GET | `/propostas/minhas` | fornecedor | Propostas do fornecedor logado, com evento e item de cada uma |
+| GET | `/eventos/:id/propostas` | organizador dono | Propostas recebidas pelo evento, com o nome do fornecedor (fornecedores não veem as dos concorrentes) |
+| PUT | `/eventos/:id/selecao` | organizador dono | Define as escolhidas: `{ "propostas": [1, 2] }` (no máximo uma por item). As que estavam escolhidas e não vieram voltam para `em_analise` |
+| POST | `/eventos/:id/finalizar` | organizador dono | Fecha a composição: as não escolhidas viram `recusada` e o evento vai para `aguardando_data`. Exige pelo menos uma escolhida |
+
+Na lista de eventos (`GET /eventos?status=em_andamento`), o fornecedor vê os eventos abertos para cotação; cada um traz `organizador_nome` e `categorias_itens` (as categorias do que o evento precisa contratar).
 
 ### Respostas de erro
 
@@ -148,7 +162,7 @@ Todo erro volta em JSON no formato `{ "erro": "mensagem" }`:
 | 401 | Sem token, token inválido/expirado ou e-mail/senha incorretos |
 | 403 | Logado sem permissão (ex.: fornecedor criando evento, organizador editando evento de outro) ou cadastro pendente/rejeitado |
 | 404 | Evento, usuário ou rota não encontrados |
-| 409 | E-mail já cadastrado |
+| 409 | E-mail já cadastrado; proposta repetida para o mesmo item; evento que não está mais recebendo propostas (não publicado ou já finalizado) |
 | 500 | Erro interno do servidor |
 
 ## Testando com o Postman

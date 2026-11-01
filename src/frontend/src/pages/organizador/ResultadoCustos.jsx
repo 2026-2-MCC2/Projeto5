@@ -2,15 +2,13 @@ import { useEffect, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import NaoEncontrado from "../NaoEncontrado";
 import { ArrowLeft, FileDown, Flag } from "lucide-react";
-import { Card, CabecalhoCard, Btn, BarraRotulada, ErroCarregar, Indicador, ModalConfirmacao, TituloPagina, Tabela, Linha, Celula, Valor } from "../../components/ui";
-import { EsqueletoTicket, TicketCenarios } from "../../components/organizador";
-// Ainda sem API de propostas: a composição usa os dados de exemplo do localStorage.
-import { buscarEvento, finalizarEvento, propostasSelecionadas, somaEstimado } from "../../services/mock/organizadorMock";
-// Público e margem (para o ticket) vêm do cadastro do evento na API, só para leitura.
-import { buscarEvento as buscarEventoCadastro } from "../../services/organizadorService";
+import { Card, CabecalhoCard, Btn, BarraRotulada, Esqueleto, ErroCarregar, Indicador, ModalConfirmacao, TituloPagina, Tabela, Linha, Celula, Valor } from "../../components/ui";
+import { EsqueletoTicket, SeloStatus, TicketCenarios } from "../../components/organizador";
+import "../../components/organizador.css";
+import { buscarEvento, finalizarEvento, listarPropostas } from "../../services/organizadorService";
 import { moeda } from "../../utils/formatar";
 
-const colunas = ["Categoria", "Fornecedor Selecionado", "Estimado", "Acordado", "Economia"];
+const colunas = ["Item", "Fornecedor Escolhido", "Estimado", "Acordado", "Economia"];
 
 // Economia positiva = gastou menos que o estimado.
 function ValorEconomia({ valor, peso = 400 }) {
@@ -26,102 +24,123 @@ function ValorEconomia({ valor, peso = 400 }) {
 export default function ResultadoCustos() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [confirmando, setConfirmando] = useState(false);
-  const evento = buscarEvento(Number(id));
-
-  // Cadastro do evento (público mínimo/máximo e margem) para calcular o ticket.
-  const [cadastro, setCadastro] = useState(null);
-  const [carregandoCadastro, setCarregandoCadastro] = useState(true);
-  const [erroCadastro, setErroCadastro] = useState(null); // { mensagem, podeTentar }
+  const [evento, setEvento] = useState(null);
+  const [propostas, setPropostas] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [naoExiste, setNaoExiste] = useState(false);
+  const [erroCarregar, setErroCarregar] = useState("");
   const [tentativa, setTentativa] = useState(0);
+  const [confirmando, setConfirmando] = useState(false);
+  const [finalizando, setFinalizando] = useState(false);
+  const [erroFinalizar, setErroFinalizar] = useState("");
 
   useEffect(() => {
     let ativo = true;
-    buscarEventoCadastro(id)
-      .then((ev) => ativo && setCadastro(ev))
+    Promise.all([buscarEvento(id), listarPropostas(id)])
+      .then(([ev, lista]) => {
+        if (!ativo) return;
+        setEvento(ev);
+        setPropostas(lista);
+      })
       .catch((err) => {
         if (!ativo) return;
-        const naoExiste = err.status === 404 || err.status === 400;
-        setErroCadastro({
-          mensagem: naoExiste ? "Este evento não tem público e margem cadastrados, então não dá para estimar o ingresso." : err.message,
-          podeTentar: !naoExiste,
-        });
+        if (err.status === 404 || err.status === 400) setNaoExiste(true);
+        else setErroCarregar(err.message);
       })
-      .finally(() => ativo && setCarregandoCadastro(false));
+      .finally(() => ativo && setCarregando(false));
     return () => {
       ativo = false;
     };
   }, [id, tentativa]);
 
-  if (!evento) return <NaoEncontrado dentroDoLayout titulo="Evento não encontrado" texto="Este evento não existe ou foi excluído." voltarPara="/organizador" rotuloVoltar="Ver meus eventos" />;
+  if (naoExiste) return <NaoEncontrado dentroDoLayout titulo="Evento não encontrado" texto="Este evento não existe ou foi excluído." voltarPara="/organizador" rotuloVoltar="Ver meus eventos" />;
+  if (carregando)
+    return (
+      <div role="status" aria-label="Carregando resultado">
+        <Esqueleto largura="min(460px, 85%)" altura="32px" style={{ marginBottom: "var(--esp-8)" }} />
+        <EsqueletoTicket />
+      </div>
+    );
+  if (erroCarregar)
+    return (
+      <ErroCarregar
+        titulo="Não foi possível carregar o resultado"
+        mensagem={erroCarregar}
+        onTentar={() => {
+          setCarregando(true);
+          setErroCarregar("");
+          setTentativa((n) => n + 1);
+        }}
+      />
+    );
 
-  const linhas = propostasSelecionadas(evento).map((p) => {
-    const estimado = somaEstimado(evento.itens.filter((i) => i.categoria === p.categoria));
-    return { categoria: p.categoria, fornecedor: p.fornecedor, estimado, acordado: p.valor, economia: estimado - p.valor };
-  });
+  // Uma linha por item com proposta escolhida.
+  const linhas = propostas
+    .filter((p) => p.status === "selecionada")
+    .map((p) => ({ id: p.id, item: p.item_descricao, categoria: p.item_categoria, fornecedor: p.fornecedor_nome, estimado: p.valor_estimado, acordado: p.valor, economia: p.valor_estimado - p.valor }));
 
   if (linhas.length === 0) return <Navigate to={`/organizador/eventos/${evento.id}/propostas`} replace />;
 
+  const finalizado = evento.status !== "em_andamento";
   const totalEstimado = linhas.reduce((soma, l) => soma + l.estimado, 0);
   const totalAcordado = linhas.reduce((soma, l) => soma + l.acordado, 0);
   const totalEconomia = totalEstimado - totalAcordado;
+  const semProposta = evento.itens.length - linhas.length;
 
-  function finalizar() {
-    finalizarEvento(evento.id);
-    navigate("/organizador");
+  async function finalizar() {
+    setErroFinalizar("");
+    setFinalizando(true);
+    try {
+      await finalizarEvento(evento.id);
+      navigate(`/organizador/eventos/${evento.id}`, { state: { sucesso: "Composição de custos finalizada. O evento agora está aguardando a data." } });
+    } catch (err) {
+      setErroFinalizar(err.message);
+      setFinalizando(false);
+    }
   }
 
   return (
     <>
-      <TituloPagina titulo="Resultado da Composição de Custos" sub={`${linhas.length} ${linhas.length === 1 ? "proposta selecionada" : "propostas selecionadas"} para ${evento.nome}`}>
+      <TituloPagina
+        titulo="Resultado da Composição de Custos"
+        extra={finalizado && <SeloStatus status={evento.status} />}
+        sub={`${linhas.length} ${linhas.length === 1 ? "proposta escolhida" : "propostas escolhidas"} para ${evento.nome}`}
+      >
         <Btn variante="ghost" tamanho="sm" icone={FileDown} onClick={() => window.print()}>
           Exportar PDF
         </Btn>
       </TituloPagina>
 
+      {semProposta > 0 && (
+        <Card variante="info" style={{ padding: "var(--esp-3) var(--esp-4)", marginBottom: "var(--esp-5)", fontSize: "var(--tam-base)", color: "var(--ativo-texto)" }}>
+          {semProposta === 1 ? "1 item do evento ainda não tem proposta escolhida" : `${semProposta} itens do evento ainda não têm proposta escolhida`} e não entra nesta conta.
+        </Card>
+      )}
+
       <div style={{ marginBottom: "var(--esp-6)" }}>
-        {carregandoCadastro ? (
-          <EsqueletoTicket />
-        ) : erroCadastro ? (
-          <ErroCarregar
-            titulo="Não foi possível calcular o ticket"
-            mensagem={erroCadastro.mensagem}
-            onTentar={
-              erroCadastro.podeTentar
-                ? () => {
-                    setCarregandoCadastro(true);
-                    setErroCadastro(null);
-                    setTentativa((n) => n + 1);
-                  }
-                : undefined
-            }
-          />
-        ) : (
-          <TicketCenarios
-            custo={totalAcordado}
-            rotuloCusto="Total acordado"
-            publicoMinimo={cadastro.publico_minimo}
-            publicoMaximo={cadastro.publico_maximo}
-            margem={cadastro.margem_lucro}
-            nota={cadastro.nome !== evento.nome ? `Público e margem vêm do cadastro do evento "${cadastro.nome}".` : undefined}
-          />
-        )}
+        <TicketCenarios
+          custo={totalAcordado}
+          rotuloCusto="Total acordado"
+          publicoMinimo={evento.publico_minimo}
+          publicoMaximo={evento.publico_maximo}
+          margem={evento.margem_lucro}
+        />
       </div>
 
       <div className="tt-indicadores">
-        <Indicador rotulo="Orçamento estimado" valor={moeda(totalEstimado)} cor="var(--texto-suave)" riscado />
+        <Indicador rotulo="Orçamento estimado" valor={moeda(totalEstimado)} cor="var(--texto-suave)" riscado detalhe="Dos itens com proposta escolhida" />
         <Indicador variante="sucesso" rotulo="Total acordado" valor={moeda(totalAcordado)} cor="var(--verde-texto)" />
         <Indicador
           variante="info"
-          rotulo="Economia total"
-          valor={moeda(totalEconomia)}
-          cor="var(--azul-texto)"
-          detalhe={totalEstimado > 0 && `${((totalEconomia / totalEstimado) * 100).toFixed(1)}% de economia`}
+          rotulo={totalEconomia >= 0 ? "Economia total" : "Acima do estimado"}
+          valor={moeda(Math.abs(totalEconomia))}
+          cor={totalEconomia >= 0 ? "var(--azul-texto)" : "var(--vermelho-texto)"}
+          detalhe={totalEstimado > 0 && `${((Math.abs(totalEconomia) / totalEstimado) * 100).toFixed(1)}% ${totalEconomia >= 0 ? "de economia" : "acima do estimado"}`}
         />
       </div>
 
       <Card style={{ overflow: "hidden", marginBottom: "var(--esp-6)" }}>
-        <CabecalhoCard titulo="Detalhamento por categoria" />
+        <CabecalhoCard titulo="Detalhamento por item" />
         <Tabela
           colunas={colunas}
           rodape={
@@ -146,8 +165,11 @@ export default function ResultadoCustos() {
           }
         >
           {linhas.map((l, i) => (
-            <Linha key={l.categoria} ultima={i === linhas.length - 1}>
-              <Celula style={{ fontWeight: 600, color: "var(--texto)" }}>{l.categoria}</Celula>
+            <Linha key={l.id} ultima={i === linhas.length - 1}>
+              <Celula style={{ fontWeight: 600, color: "var(--texto)" }}>
+                {l.item}
+                <span style={{ display: "block", fontSize: "var(--tam-xs)", fontWeight: 400, color: "var(--texto-suave)" }}>{l.categoria}</span>
+              </Celula>
               <Celula style={{ color: "var(--texto-2)" }}>{l.fornecedor}</Celula>
               <Celula>
                 <Valor cor="var(--texto-suave)" peso={400} riscado>
@@ -170,34 +192,42 @@ export default function ResultadoCustos() {
         <div style={{ display: "flex", flexDirection: "column", gap: "var(--esp-3)" }}>
           {linhas.map((l) => {
             const porcentagem = (l.acordado / totalAcordado) * 100;
-            return <BarraRotulada key={l.categoria} rotulo={l.categoria} valor={`${porcentagem.toFixed(0)}%`} porcentagem={porcentagem} />;
+            return <BarraRotulada key={l.id} rotulo={l.item} valor={`${porcentagem.toFixed(0)}%`} porcentagem={porcentagem} />;
           })}
         </div>
       </Card>
 
       <div style={{ display: "flex", justifyContent: "flex-end", flexWrap: "wrap", gap: "var(--esp-3)" }}>
         <Btn variante="secondary" icone={ArrowLeft} onClick={() => navigate(`/organizador/eventos/${evento.id}/propostas`)}>
-          Voltar à Comparação
+          {finalizado ? "Ver propostas" : "Voltar à Comparação"}
         </Btn>
-        <Btn variante="accent" tamanho="lg" icone={Flag} onClick={() => setConfirmando(true)}>
-          Finalizar Evento
-        </Btn>
+        {!finalizado && (
+          <Btn variante="accent" tamanho="lg" icone={Flag} onClick={() => setConfirmando(true)}>
+            Finalizar Evento
+          </Btn>
+        )}
       </div>
 
       {confirmando && (
         <ModalConfirmacao
           icone={Flag}
           variante="accent"
-          titulo="Finalizar Evento"
+          titulo="Finalizar composição de custos"
           descricao={
             <>
-              O evento será marcado como <strong style={{ color: "var(--laranja-texto)" }}>Aguardando Data</strong> e os fornecedores serão notificados. Esta ação não pode ser desfeita.
+              O evento passa para <strong style={{ color: "var(--laranja-texto)" }}>Aguardando Data</strong>, as propostas escolhidas ficam aprovadas e as outras são recusadas. Esta ação não pode ser desfeita.
             </>
           }
           rotuloValor="Total acordado"
           valor={moeda(totalAcordado)}
-          rotuloConfirmar="Confirmar"
-          onCancelar={() => setConfirmando(false)}
+          rotuloConfirmar={finalizando ? "Finalizando..." : "Finalizar"}
+          carregando={finalizando}
+          erro={erroFinalizar}
+          onCancelar={() => {
+            if (finalizando) return;
+            setConfirmando(false);
+            setErroFinalizar("");
+          }}
           onConfirmar={finalizar}
         />
       )}

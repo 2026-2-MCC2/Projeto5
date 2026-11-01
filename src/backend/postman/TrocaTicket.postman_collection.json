@@ -11,7 +11,9 @@
   "variable": [
     { "key": "baseUrl", "value": "http://localhost:3001/api", "type": "string" },
     { "key": "token", "value": "", "type": "string" },
-    { "key": "eventoId", "value": "", "type": "string" }
+    { "key": "eventoId", "value": "", "type": "string" },
+    { "key": "tokenFornecedor", "value": "", "type": "string" },
+    { "key": "propostaId", "value": "", "type": "string" }
   ],
   "item": [
     {
@@ -230,6 +232,346 @@
       ]
     },
     {
+      "name": "Propostas",
+      "description": "Fluxo de propostas: o fornecedor vê os eventos publicados e envia proposta por item; o organizador dono compara, escolhe e finaliza. Rode \"Login (organizador)\" (pasta Auth) e \"Login (fornecedor)\" antes.",
+      "item": [
+        {
+          "name": "Login (fornecedor)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.json();",
+                  "pm.test(\"Retorna usuário fornecedor\", () => pm.expect(corpo.usuario.perfil).to.eql(\"fornecedor\"));",
+                  "if (corpo.token) pm.collectionVariables.set(\"tokenFornecedor\", corpo.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"contato@saboresdobrasil.com\",\n  \"senha\": \"senha123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Faz login como fornecedor e guarda o JWT em {{tokenFornecedor}}."
+          }
+        },
+        {
+          "name": "Eventos abertos para cotação (fornecedor)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "const lista = pm.response.json();",
+                  "pm.test(\"Todos estão em andamento e trazem categorias_itens\", () => {",
+                  "  lista.forEach((e) => { pm.expect(e.status).to.eql(\"em_andamento\"); pm.expect(e.categorias_itens).to.be.an(\"array\"); });",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenFornecedor}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/eventos?status=em_andamento",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "eventos"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "em_andamento"
+                }
+              ]
+            },
+            "description": "Só eventos publicados (em_andamento). Cada um traz organizador_nome e categorias_itens."
+          }
+        },
+        {
+          "name": "Enviar proposta (fornecedor)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 Created\", () => pm.response.to.have.status(201));",
+                  "const lista = pm.response.json();",
+                  "pm.test(\"Proposta criada em análise\", () => pm.expect(lista[0].status).to.eql(\"em_analise\"));",
+                  "if (lista[0]) pm.collectionVariables.set(\"propostaId\", lista[0].id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenFornecedor}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"itens\": [\n    {\n      \"item_id\": 3,\n      \"valor\": 11500\n    }\n  ],\n  \"descricao\": \"Cobertura de foto e vídeo nos dois dias, com entrega em 15 dias.\",\n  \"observacoes\": \"Inclui drone.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/eventos/1/propostas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "eventos",
+                "1",
+                "propostas"
+              ]
+            },
+            "description": "Uma proposta por item: \"itens\": [{ item_id, valor }]. descricao, validade (AAAA-MM-DD, padrão: 30 dias) e observacoes são opcionais. Rodar de novo para o mesmo item devolve 409."
+          }
+        },
+        {
+          "name": "Minhas propostas (fornecedor)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Cada proposta traz o evento e o item\", () => pm.response.json().forEach((p) => { pm.expect(p).to.have.property(\"evento_nome\"); pm.expect(p).to.have.property(\"item_descricao\"); }));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenFornecedor}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/propostas/minhas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "propostas",
+                "minhas"
+              ]
+            },
+            "description": "Propostas do fornecedor logado, com evento e item de cada uma."
+          }
+        },
+        {
+          "name": "Propostas do evento (organizador dono)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Traz o nome do fornecedor\", () => pm.response.json().forEach((p) => pm.expect(p.fornecedor_nome).to.be.a(\"string\")));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/eventos/1/propostas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "eventos",
+                "1",
+                "propostas"
+              ]
+            },
+            "description": "Só o organizador dono do evento vê as propostas (com o nome do fornecedor)."
+          }
+        },
+        {
+          "name": "Salvar seleção (organizador dono)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"As propostas 1 e 2 ficam selecionadas\", () => {",
+                  "  const st = Object.fromEntries(pm.response.json().map((p) => [p.id, p.status]));",
+                  "  pm.expect(st[1]).to.eql(\"selecionada\"); pm.expect(st[2]).to.eql(\"selecionada\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"propostas\": [\n    1,\n    2\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/eventos/1/selecao",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "eventos",
+                "1",
+                "selecao"
+              ]
+            },
+            "description": "Define as propostas escolhidas (no máximo uma por item). As que estavam escolhidas e não vieram voltam para em_analise. Só em eventos em andamento."
+          }
+        },
+        {
+          "name": "Finalizar composição (organizador dono)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Evento aguardando a data\", () => pm.expect(pm.response.json().status).to.eql(\"aguardando_data\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/eventos/1/finalizar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "eventos",
+                "1",
+                "finalizar"
+              ]
+            },
+            "description": "ATENÇÃO: muda o evento para aguardando_data e recusa as propostas não escolhidas (não dá para desfazer pela API). Para repetir, recrie o banco (npm run db:recriar)."
+          }
+        }
+      ]
+    },
+    {
       "name": "Erros esperados",
       "item": [
         {
@@ -357,6 +699,100 @@
               "options": { "raw": { "language": "json" } }
             },
             "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Fornecedor vê propostas de um evento → 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403 Forbidden\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenFornecedor}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/eventos/1/propostas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "eventos",
+                "1",
+                "propostas"
+              ]
+            },
+            "description": "Fornecedores não veem as propostas dos concorrentes."
+          }
+        },
+        {
+          "name": "Proposta repetida para o mesmo item → 409",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 409 Conflict\", () => pm.response.to.have.status(409));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenFornecedor}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"itens\": [\n    {\n      \"item_id\": 1,\n      \"valor\": 40000\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/eventos/1/propostas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "eventos",
+                "1",
+                "propostas"
+              ]
+            },
+            "description": "O fornecedor do seed já mandou proposta para o item 1."
           }
         }
       ]

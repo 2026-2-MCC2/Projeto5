@@ -69,3 +69,21 @@ export async function salvarItens(id, itens) {
   const salvos = await api.put(`/eventos/${id}/itens`, { itens: paraItensApi(itens) });
   return salvos.map(doItemApi);
 }
+
+// ── Propostas recebidas ────────────────────────────────────────────────────
+
+// Uma proposta por item: id, item_id, item_descricao, item_categoria, quantidade, unidade, valor_estimado,
+// fornecedor_nome, valor, descricao, validade, observacoes, status (em_analise | selecionada | recusada).
+export function listarPropostas(eventoId) {
+  return api.get(`/eventos/${eventoId}/propostas`);
+}
+
+// Define as propostas escolhidas (no máximo uma por item). Devolve a lista atualizada.
+export function salvarSelecao(eventoId, idsPropostas) {
+  return api.put(`/eventos/${eventoId}/selecao`, { propostas: idsPropostas });
+}
+
+// Fecha a composição: o evento vai para "aguardando_data" e as não escolhidas viram "recusada".
+export function finalizarEvento(eventoId) {
+  return api.post(`/eventos/${eventoId}/finalizar`);
+}

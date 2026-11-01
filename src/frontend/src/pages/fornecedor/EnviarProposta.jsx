@@ -1,19 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import NaoEncontrado from "../NaoEncontrado";
-import { Calendar, Check, CircleAlert, MapPin, Send, Users } from "lucide-react";
+import { Building2, Calendar, Check, CircleAlert, Lock, MapPin, Send, Users } from "lucide-react";
 import {
+  Aviso,
   Badge,
   Card,
   CardTitulo,
   CabecalhoCard,
   Btn,
+  Esqueleto,
+  ErroCarregar,
   Icone,
   Input,
   TextArea,
   ListaInfo,
   ModalConfirmacao,
   Picote,
+  StatusBadge,
   TextoComIcone,
   TituloPagina,
   Tabela,
@@ -21,117 +25,219 @@ import {
   Celula,
   Valor,
 } from "../../components/ui";
+import { EsqueletoTicket } from "../../components/organizador";
 import "../../components/organizador.css";
-import { buscarEvento, enviarProposta } from "../../services/fornecedorService";
-import { dataCurta, faixaMoeda, moeda } from "../../utils/formatar";
+import { buscarEvento, enviarProposta, listarPropostas } from "../../services/fornecedorService";
+import { dataCurta, moeda } from "../../utils/formatar";
 
 const colunas = ["Descrição", "Qtd. Solicitada", "Unidade", "Preço Ofertado (unit.)", "Subtotal"];
+
+// Status da proposta (API) → rótulo usado pelo StatusBadge.
+const ROTULO_STATUS_PROPOSTA = { em_analise: "Em análise", selecionada: "Aprovada", recusada: "Rejeitada" };
+
+const centavos = (valor) => Math.round(valor * 100) / 100;
+
+function EsqueletoTela() {
+  return (
+    <div role="status" aria-label="Carregando evento">
+      <Esqueleto largura="min(420px, 80%)" altura="32px" style={{ marginBottom: 12 }} />
+      <Esqueleto largura="min(360px, 90%)" style={{ marginBottom: "var(--esp-8)" }} />
+      <div className="tt-detalhes">
+        <Card style={{ padding: "var(--esp-6)", display: "grid", gap: 14 }}>
+          {[0, 1, 2, 3, 4].map((i) => (
+            <Esqueleto key={i} altura="20px" />
+          ))}
+        </Card>
+        <EsqueletoTicket />
+      </div>
+    </div>
+  );
+}
 
 export default function EnviarProposta() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const evento = buscarEvento(Number(id));
-  const [precos, setPrecos] = useState(() => (evento ? evento.itens.map(() => 0) : []));
+  const [evento, setEvento] = useState(null);
+  const [enviadas, setEnviadas] = useState([]); // minhas propostas já enviadas para este evento
+  const [carregando, setCarregando] = useState(true);
+  const [naoExiste, setNaoExiste] = useState(false);
+  const [erroCarregar, setErroCarregar] = useState("");
+  const [tentativa, setTentativa] = useState(0);
+  const [precos, setPrecos] = useState({}); // item_id -> preço unitário digitado
   const [observacoes, setObservacoes] = useState("");
   const [confirmando, setConfirmando] = useState(false);
+  const [enviando, setEnviando] = useState(false);
+  const [erroEnvio, setErroEnvio] = useState("");
 
-  if (!evento) return <NaoEncontrado dentroDoLayout titulo="Evento não encontrado" texto="Este evento não existe ou foi excluído." voltarPara="/fornecedor" rotuloVoltar="Ver oportunidades" />;
+  useEffect(() => {
+    let ativo = true;
+    Promise.all([buscarEvento(id), listarPropostas()])
+      .then(([ev, minhas]) => {
+        if (!ativo) return;
+        setEvento(ev);
+        setEnviadas(minhas.filter((p) => p.evento_id === ev.id));
+      })
+      .catch((err) => {
+        if (!ativo) return;
+        if (err.status === 404 || err.status === 400) setNaoExiste(true);
+        else setErroCarregar(err.message);
+      })
+      .finally(() => ativo && setCarregando(false));
+    return () => {
+      ativo = false;
+    };
+  }, [id, tentativa]);
 
-  const total = evento.itens.reduce((soma, item, i) => soma + precos[i] * item.quantidade, 0);
-  const podeEnviar = precos.every((p) => p > 0);
-  const preenchidos = precos.filter((p) => p > 0).length;
-  const faltam = evento.itens.length - preenchidos;
+  if (naoExiste) return <NaoEncontrado dentroDoLayout titulo="Evento não encontrado" texto="Este evento não existe ou foi excluído." voltarPara="/fornecedor" rotuloVoltar="Ver oportunidades" />;
+  if (carregando) return <EsqueletoTela />;
+  if (erroCarregar)
+    return (
+      <ErroCarregar
+        titulo="Não foi possível carregar o evento"
+        mensagem={erroCarregar}
+        onTentar={() => {
+          setCarregando(true);
+          setErroCarregar("");
+          setTentativa((n) => n + 1);
+        }}
+      />
+    );
 
-  function alterarPreco(indice, valor) {
-    setPrecos(precos.map((p, i) => (i === indice ? Number(valor) : p)));
+  const aberto = evento.status === "em_andamento";
+  const enviadaPorItem = new Map(enviadas.map((p) => [p.item_id, p]));
+  const pendentes = evento.itens.filter((i) => !enviadaPorItem.has(i.id));
+  const comPreco = pendentes.filter((i) => precos[i.id] > 0);
+  const total = comPreco.reduce((soma, i) => soma + precos[i.id] * i.quantidade, 0);
+  const podeEnviar = aberto && comPreco.length > 0;
+
+  function alterarPreco(itemId, valor) {
+    setPrecos({ ...precos, [itemId]: valor === "" ? 0 : Number(valor) });
   }
 
-  function enviar() {
-    enviarProposta({ evento, valor: total, observacoes });
-    navigate("/fornecedor/propostas");
+  async function enviar() {
+    setErroEnvio("");
+    setEnviando(true);
+    try {
+      await enviarProposta(evento.id, {
+        itens: comPreco.map((i) => ({ item_id: i.id, valor: centavos(precos[i.id] * i.quantidade) })),
+        observacoes,
+      });
+      navigate("/fornecedor/propostas", { state: { sucesso: `Proposta enviada para "${evento.nome}".` } });
+    } catch (err) {
+      setErroEnvio(err.message);
+      setEnviando(false);
+    }
   }
 
   const resumo = [
-    { rotulo: "Organizador", valor: evento.organizador },
-    { rotulo: "Data", valor: dataCurta(evento.data) },
+    { rotulo: "Organizador", valor: evento.organizador_nome ?? "—" },
+    { rotulo: "Data", valor: dataCurta(evento.data_inicio) },
     { rotulo: "Local", valor: evento.local },
-    { rotulo: "Convidados", valor: `${evento.convidados.toLocaleString("pt-BR")} pessoas` },
-    { rotulo: "Orçamento", valor: faixaMoeda(evento.orcamento) },
-    { rotulo: "Prazo para envio", valor: dataCurta(evento.prazo) },
+    { rotulo: "Público", valor: `${evento.publico_minimo.toLocaleString("pt-BR")}–${evento.publico_maximo.toLocaleString("pt-BR")} pessoas` },
+    { rotulo: "Orçamento estimado", valor: moeda(evento.orcamento) },
   ];
 
   return (
     <>
       <TituloPagina
         titulo={evento.nome}
-        extra={<Badge>{evento.necessidades[0]}</Badge>}
+        extra={evento.categoria && <Badge>{evento.categoria}</Badge>}
         sub={
           <span style={{ display: "inline-flex", gap: "var(--esp-4)", flexWrap: "wrap" }}>
-            <TextoComIcone icone={Calendar}>{dataCurta(evento.data)}</TextoComIcone>
+            <TextoComIcone icone={Calendar}>{dataCurta(evento.data_inicio)}</TextoComIcone>
             <TextoComIcone icone={MapPin}>{evento.local}</TextoComIcone>
-            <TextoComIcone icone={Users}>{evento.convidados.toLocaleString("pt-BR")} convidados</TextoComIcone>
+            <TextoComIcone icone={Users}>{`${evento.publico_minimo.toLocaleString("pt-BR")}–${evento.publico_maximo.toLocaleString("pt-BR")} pessoas`}</TextoComIcone>
+            {evento.organizador_nome && <TextoComIcone icone={Building2}>{evento.organizador_nome}</TextoComIcone>}
           </span>
         }
       />
 
+      {!aberto && (
+        <Aviso variante="erro" style={{ marginBottom: "var(--esp-5)" }}>
+          Este evento não está mais recebendo propostas.{enviadas.length > 0 && " Suas propostas enviadas continuam listadas abaixo."}
+        </Aviso>
+      )}
+
       <div className="tt-detalhes">
         <div className="tt-detalhes__principal">
           <Card style={{ overflow: "hidden" }}>
-            <CabecalhoCard titulo="Formulário de proposta" sub="Preencha o preço unitário de cada item solicitado">
-              <span className="tt-progresso-itens">
-                <span>
-                  <strong>
-                    {preenchidos} de {evento.itens.length}
-                  </strong>{" "}
-                  itens com preço
+            <CabecalhoCard titulo="Formulário de proposta" sub="Preencha o preço unitário dos itens que você quer cotar. Pode deixar em branco os que você não fornece.">
+              {pendentes.length > 0 && (
+                <span className="tt-progresso-itens">
+                  <span>
+                    <strong>
+                      {comPreco.length} de {pendentes.length}
+                    </strong>{" "}
+                    itens com preço
+                  </span>
+                  <span className="tt-progresso-itens__barra" aria-hidden="true">
+                    <span style={{ width: `${(comPreco.length / pendentes.length) * 100}%` }} />
+                  </span>
                 </span>
-                <span className="tt-progresso-itens__barra" aria-hidden="true">
-                  <span style={{ width: `${(preenchidos / evento.itens.length) * 100}%` }} />
-                </span>
-              </span>
+              )}
             </CabecalhoCard>
 
             <Tabela colunas={colunas}>
-              {evento.itens.map((item, i) => (
-                <Linha key={item.descricao} ultima={i === evento.itens.length - 1}>
-                  <Celula style={{ color: "var(--texto)", fontWeight: 500 }}>{item.descricao}</Celula>
-                  <Celula>
-                    <Valor cor="var(--texto-2)" peso={400}>
-                      {item.quantidade}
-                    </Valor>
-                  </Celula>
-                  <Celula style={{ color: "var(--texto-suave)" }}>{item.unidade}</Celula>
-                  <Celula>
-                    <div style={{ position: "relative", width: "140px" }}>
-                      <span style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", fontSize: "var(--tam-sm)", color: "var(--texto-suave)", pointerEvents: "none" }}>R$</span>
-                      <Input
-                        type="number"
-                        min="0"
-                        placeholder="0,00"
-                        aria-label={`Preço unitário de ${item.descricao}`}
-                        value={precos[i] || ""}
-                        onChange={(e) => alterarPreco(i, e.target.value)}
-                        destacado={precos[i] > 0}
-                        style={{ paddingLeft: "36px", minHeight: "36px" }}
-                      />
-                    </div>
-                  </Celula>
-                  <Celula>
-                    <Valor cor={precos[i] > 0 ? "var(--verde-texto)" : "var(--texto-suave)"}>{precos[i] > 0 ? moeda(precos[i] * item.quantidade) : "—"}</Valor>
-                  </Celula>
-                </Linha>
-              ))}
+              {evento.itens.map((item, i) => {
+                const enviada = enviadaPorItem.get(item.id);
+                const preco = precos[item.id] ?? 0;
+                return (
+                  <Linha key={item.id} ultima={i === evento.itens.length - 1}>
+                    <Celula style={{ color: "var(--texto)", fontWeight: 500 }}>
+                      {item.descricao}
+                      <span style={{ display: "block", fontSize: "var(--tam-xs)", color: "var(--texto-suave)", fontWeight: 400 }}>{item.categoria}</span>
+                    </Celula>
+                    <Celula>
+                      <Valor cor="var(--texto-2)" peso={400}>
+                        {item.quantidade.toLocaleString("pt-BR")}
+                      </Valor>
+                    </Celula>
+                    <Celula style={{ color: "var(--texto-suave)" }}>{item.unidade}</Celula>
+                    <Celula>
+                      {enviada ? (
+                        <StatusBadge status={ROTULO_STATUS_PROPOSTA[enviada.status]} />
+                      ) : (
+                        <div style={{ position: "relative", width: "140px" }}>
+                          <span style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", fontSize: "var(--tam-sm)", color: "var(--texto-suave)", pointerEvents: "none" }}>R$</span>
+                          <Input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            placeholder="0,00"
+                            aria-label={`Preço unitário de ${item.descricao}`}
+                            value={preco || ""}
+                            onChange={(e) => alterarPreco(item.id, e.target.value)}
+                            destacado={preco > 0}
+                            disabled={!aberto}
+                            style={{ paddingLeft: "36px", minHeight: "36px" }}
+                          />
+                        </div>
+                      )}
+                    </Celula>
+                    <Celula>
+                      {enviada ? (
+                        <Valor cor="var(--texto-2)">{moeda(enviada.valor)}</Valor>
+                      ) : (
+                        <Valor cor={preco > 0 ? "var(--verde-texto)" : "var(--texto-suave)"}>{preco > 0 ? moeda(centavos(preco * item.quantidade)) : "—"}</Valor>
+                      )}
+                    </Celula>
+                  </Linha>
+                );
+              })}
             </Tabela>
           </Card>
 
-          <Card style={{ padding: "var(--esp-5) var(--esp-6)" }}>
-            <CardTitulo>Observações (opcional)</CardTitulo>
-            <TextArea
-              placeholder="Adicione informações adicionais, condições especiais, validade da proposta, etc."
-              value={observacoes}
-              onChange={(e) => setObservacoes(e.target.value)}
-            />
-          </Card>
+          {pendentes.length > 0 && aberto && (
+            <Card style={{ padding: "var(--esp-5) var(--esp-6)" }}>
+              <CardTitulo>Observações (opcional)</CardTitulo>
+              <TextArea
+                placeholder="Adicione informações adicionais, condições especiais, validade da proposta, etc."
+                value={observacoes}
+                maxLength={2000}
+                onChange={(e) => setObservacoes(e.target.value)}
+              />
+            </Card>
+          )}
         </div>
 
         <div className="tt-detalhes__lateral tt-lateral-fixa">
@@ -142,25 +248,34 @@ export default function EnviarProposta() {
               </span>
               <div>
                 <h3>Sua proposta</h3>
-                <p>Para {evento.organizador}</p>
+                <p>Para {evento.organizador_nome ?? "o organizador"}</p>
               </div>
             </div>
             <Picote />
             <div style={{ padding: "var(--esp-5) var(--esp-6)" }}>
-              <span className="tt-ticket-estimado__rotulo">Valor total</span>
-              <strong className="tt-ticket-estimado__preco" style={{ display: "block", marginTop: 4, color: total > 0 ? "var(--texto)" : "var(--texto-suave)" }}>
-                {total > 0 ? moeda(total) : "R$ 0"}
-              </strong>
-              <p style={{ fontSize: "var(--tam-sm)", color: "var(--texto-suave)", margin: "var(--esp-2) 0 var(--esp-5)" }}>Orçamento do organizador: {faixaMoeda(evento.orcamento)}</p>
-
-              <Btn tamanho="lg" icone={Send} onClick={() => setConfirmando(true)} disabled={!podeEnviar} style={{ width: "100%" }}>
-                Enviar proposta
-              </Btn>
-              {!podeEnviar && (
-                <p className="tt-pendencia" style={{ marginTop: "var(--esp-3)" }}>
-                  <Icone icone={CircleAlert} tamanho={16} />
-                  {faltam === 1 ? "Falta o preço de 1 item" : `Falta o preço de ${faltam} itens`}
+              {pendentes.length === 0 ? (
+                <p style={{ display: "flex", gap: "var(--esp-2)", color: "var(--verde-texto)", fontSize: "var(--tam-base)" }}>
+                  <Icone icone={Check} tamanho={18} />
+                  Você já enviou proposta para todos os itens deste evento.
                 </p>
+              ) : (
+                <>
+                  <span className="tt-ticket-estimado__rotulo">Valor total</span>
+                  <strong className="tt-ticket-estimado__preco" style={{ display: "block", marginTop: 4, color: total > 0 ? "var(--texto)" : "var(--texto-suave)" }}>
+                    {total > 0 ? moeda(centavos(total)) : "R$ 0"}
+                  </strong>
+                  <p style={{ fontSize: "var(--tam-sm)", color: "var(--texto-suave)", margin: "var(--esp-2) 0 var(--esp-5)" }}>Orçamento estimado do organizador: {moeda(evento.orcamento)}</p>
+
+                  <Btn tamanho="lg" icone={aberto ? Send : Lock} onClick={() => setConfirmando(true)} disabled={!podeEnviar} style={{ width: "100%" }}>
+                    Enviar proposta
+                  </Btn>
+                  {aberto && !podeEnviar && (
+                    <p className="tt-pendencia" style={{ marginTop: "var(--esp-3)" }}>
+                      <Icone icone={CircleAlert} tamanho={16} />
+                      Preencha o preço de pelo menos um item
+                    </p>
+                  )}
+                </>
               )}
             </div>
           </section>
@@ -176,13 +291,19 @@ export default function EnviarProposta() {
         <ModalConfirmacao
           icone={Send}
           titulo="Confirmar envio"
-          descricao="Sua proposta será enviada ao organizador do evento para análise."
+          descricao={`Sua proposta para ${comPreco.length} ${comPreco.length === 1 ? "item" : "itens"} será enviada ao organizador do evento para análise. Depois de enviada, ela não pode ser alterada.`}
           rotuloValor="Valor total da proposta"
-          valor={moeda(total)}
+          valor={moeda(centavos(total))}
           rotuloCancelar="Revisar"
-          rotuloConfirmar="Enviar Proposta"
+          rotuloConfirmar={enviando ? "Enviando..." : "Enviar Proposta"}
           iconeConfirmar={Check}
-          onCancelar={() => setConfirmando(false)}
+          carregando={enviando}
+          erro={erroEnvio}
+          onCancelar={() => {
+            if (enviando) return;
+            setConfirmando(false);
+            setErroEnvio("");
+          }}
           onConfirmar={enviar}
         />
       )}
