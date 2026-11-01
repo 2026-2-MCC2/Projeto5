@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { ArrowRight, LayoutDashboard, LoaderCircle, Lock, Mail, ShieldCheck, Ticket } from "lucide-react";
+import { LayoutDashboard, Lock, Mail, ShieldCheck, Ticket } from "lucide-react";
 import RightPanel from "../components/RightPanel";
-import { BotaoGoogle, BotaoMostrarSenha, CabecalhoAcesso, CampoAcesso, DivisorOu, TelaAcesso } from "../components/Acesso";
-import { Aviso, Icone } from "../components/ui";
+import { AvisoAcesso, BotaoGoogle, BotaoMostrarSenha, CabecalhoAcesso, CampoAcesso, ConteudoBotao, DivisorOu, TelaAcesso } from "../components/Acesso";
 
 const features = [
   { icon: LayoutDashboard, title: "Gerencie seus eventos", desc: "Organize informações, lotes e vendas em um único lugar." },
   { icon: Ticket, title: "Ingressos digitais", desc: "Acesse e acompanhe seus ingressos com segurança." },
   { icon: ShieldCheck, title: "Segurança em cada etapa", desc: "Sua conta e seus dados protegidos durante toda a experiência." },
 ];
+
+// Mesmo formato de e-mail que a API aceita (src/backend/src/services/authService.js).
+const EMAIL_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function Login() {
   const { login } = useAuth();
@@ -20,6 +22,13 @@ export default function Login() {
   const [showPass, setShowPass] = useState(false);
   const [erro, setErro] = useState("");
   const [entrando, setEntrando] = useState(false);
+
+  // Só visual: quais campos já foram visitados e se a pessoa já tentou enviar.
+  // Os avisos de cada campo aparecem a partir daí, para não acusar erro antes de digitar.
+  const [tocados, setTocados] = useState({});
+  const [tentou, setTentou] = useState(false);
+  const mostrar = (campo) => tentou || tocados[campo];
+  const tocar = (campo) => () => setTocados((t) => ({ ...t, [campo]: true }));
 
   async function handleLogin(e) {
     e.preventDefault();
@@ -33,6 +42,17 @@ export default function Login() {
       setEntrando(false);
     }
   }
+
+  // O navegador continua bloqueando o envio com campo inválido (required / type="email");
+  // aqui só trocamos o balão padrão dele pelas mensagens embaixo dos campos.
+  function aoInvalido(e) {
+    e.preventDefault();
+    setTentou(true);
+    e.currentTarget.querySelector(":invalid")?.focus();
+  }
+
+  const erroEmail = !mostrar("email") ? "" : !email.trim() ? "Informe seu e-mail." : !EMAIL_VALIDO.test(email.trim()) ? "Digite um e-mail válido, como nome@empresa.com." : "";
+  const erroSenha = mostrar("senha") && !pass ? "Informe sua senha." : "";
 
   return (
     <TelaAcesso
@@ -53,41 +73,59 @@ export default function Login() {
         Entre para acessar seu painel, acompanhar seus ingressos, eventos e todas as funcionalidades do TrocaTicket.
       </CabecalhoAcesso>
 
-      <form onSubmit={handleLogin} className="tt-acesso__form">
-        <CampoAcesso
-          rotulo="E-mail"
-          icone={Mail}
-          type="email"
-          autoComplete="email"
-          placeholder="seu@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+      <form
+        onSubmit={(e) => {
+          setTentou(true);
+          handleLogin(e);
+        }}
+        onInvalidCapture={aoInvalido}
+        className="tt-acesso__form"
+      >
+        {erro && (
+          <AvisoAcesso key={erro} titulo="Não foi possível entrar">
+            {erro}
+          </AvisoAcesso>
+        )}
 
-        <CampoAcesso
-          rotulo="Senha"
-          icone={Lock}
-          type={showPass ? "text" : "password"}
-          autoComplete="current-password"
-          placeholder="Digite sua senha"
-          value={pass}
-          onChange={(e) => setPass(e.target.value)}
-          required
-          extra={
-            <button type="button" className="tt-acesso__link" style={{ fontSize: "var(--tam-xs)" }}>
-              Esqueceu sua senha?
-            </button>
-          }
-          acao={<BotaoMostrarSenha visivel={showPass} onClick={() => setShowPass(!showPass)} />}
-        />
+        <fieldset className="tt-acesso__travado" disabled={entrando}>
+          <CampoAcesso
+            rotulo="E-mail"
+            icone={Mail}
+            type="email"
+            autoComplete="email"
+            placeholder="seu@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onBlur={tocar("email")}
+            required
+            estado={erroEmail ? "erro" : undefined}
+            mensagem={erroEmail}
+          />
 
-        {erro && <Aviso variante="erro">{erro}</Aviso>}
+          <CampoAcesso
+            rotulo="Senha"
+            icone={Lock}
+            type={showPass ? "text" : "password"}
+            autoComplete="current-password"
+            placeholder="Digite sua senha"
+            value={pass}
+            onChange={(e) => setPass(e.target.value)}
+            onBlur={tocar("senha")}
+            required
+            estado={erroSenha ? "erro" : undefined}
+            mensagem={erroSenha}
+            extra={
+              <button type="button" className="tt-acesso__link" style={{ fontSize: "var(--tam-xs)" }}>
+                Esqueceu sua senha?
+              </button>
+            }
+            acao={<BotaoMostrarSenha visivel={showPass} onClick={() => setShowPass(!showPass)} />}
+          />
 
-        <button type="submit" className="tt-btn tt-btn--primary tt-btn--lg tt-acesso__largo" disabled={entrando} aria-busy={entrando || undefined} style={{ marginTop: "var(--esp-2)" }}>
-          {entrando ? "Entrando..." : "Entrar"}
-          <Icone icone={entrando ? LoaderCircle : ArrowRight} className={entrando ? "tt-girando" : undefined} />
-        </button>
+          <button type="submit" className="tt-btn tt-btn--primary tt-btn--lg tt-acesso__largo" aria-busy={entrando || undefined} style={{ marginTop: "var(--esp-2)" }}>
+            <ConteudoBotao carregando={entrando} rotulo="Entrar" rotuloCarregando="Entrando..." />
+          </button>
+        </fieldset>
       </form>
 
       <DivisorOu />

@@ -175,48 +175,297 @@
   gap: var(--esp-4);
 }
 
-/* Seletor de perfil: controle segmentado */
-.tt-acesso__perfis {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--esp-1);
-  padding: var(--esp-1);
-  border: 1px solid var(--borda);
-  border-radius: var(--raio-md);
-  background: var(--superficie-3);
+/* ── Validação visual dos campos ── */
+.tt-acesso__entrada--erro .tt-campo,
+.tt-acesso__entrada--erro .tt-campo:hover:not(:focus) {
+  border-color: var(--vermelho);
 }
 
-.tt-acesso__perfis button {
-  min-height: 36px;
-  padding: 0 var(--esp-2);
-  border: 1px solid transparent;
-  border-radius: var(--raio-sm);
-  background: none;
+.tt-acesso__entrada--erro .tt-campo:focus {
+  box-shadow: 0 0 0 3px var(--vermelho-borda);
+}
+
+.tt-acesso__entrada--erro .tt-acesso__icone {
+  color: var(--vermelho-texto);
+}
+
+.tt-acesso__entrada--ok .tt-campo:not(:focus) {
+  border-color: var(--verde-borda);
+}
+
+.tt-acesso__entrada--erro .tt-campo,
+.tt-acesso__entrada--ok .tt-campo {
+  padding-right: 44px;
+}
+
+.tt-acesso__status {
+  position: absolute;
+  right: var(--esp-3);
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.tt-acesso__entrada--erro .tt-acesso__status { color: var(--vermelho-texto); }
+.tt-acesso__entrada--ok .tt-acesso__status { color: var(--verde-texto); }
+
+.tt-acesso__mensagem {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 6px 0 0;
+  font-size: var(--tam-sm);
+  line-height: var(--linha-media);
   color: var(--texto-suave);
+}
+
+.tt-acesso__mensagem svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.tt-acesso__mensagem--erro { color: var(--vermelho-texto); font-weight: var(--peso-medio); }
+.tt-acesso__mensagem--ok { color: var(--verde-texto); }
+
+/* ── Escolha de perfil: cartões com rádio ── */
+.tt-acesso__perfis {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.tt-acesso__perfis legend {
+  margin-bottom: 6px;
+  padding: 0;
   font-size: var(--tam-sm);
   font-weight: var(--peso-medio);
+  color: var(--texto-2);
+}
+
+.tt-acesso__perfis-grade {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--esp-3);
+}
+
+.tt-acesso__perfil {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-3);
+  padding: var(--esp-4);
+  border: 1.5px solid var(--borda-2);
+  border-radius: var(--raio-lg);
+  background: var(--superficie);
   cursor: pointer;
   transition: var(--transicao-cor);
 }
 
-.tt-acesso__perfis button:hover:not([aria-checked="true"]) {
-  color: var(--texto);
+.tt-acesso__perfil:hover:not(.tt-acesso__perfil--ativo) {
+  border-color: var(--texto-fraco);
 }
 
-.tt-acesso__perfis button[aria-checked="true"] {
-  background: var(--superficie);
-  border-color: var(--borda);
-  color: var(--texto);
-  font-weight: var(--peso-semi);
-  box-shadow: var(--sombra-1);
+/* O rádio fica invisível mas continua acessível (Tab + setas do teclado) */
+.tt-acesso__perfil input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
 }
 
-.tt-acesso__grupo-rotulo {
+.tt-acesso__perfil:has(input:focus-visible) {
+  outline: 2px solid var(--anel-foco);
+  outline-offset: 2px;
+}
+
+.tt-acesso__perfil-icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--raio-md);
+  background: var(--superficie-3);
+  color: var(--texto-suave);
+  transition: var(--transicao-cor);
+}
+
+.tt-acesso__perfil-textos strong {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 2px;
+  font-size: var(--tam-md);
+  font-weight: var(--peso-semi);
+  color: var(--texto);
+}
+
+.tt-acesso__perfil-textos span {
+  display: block;
   font-size: var(--tam-sm);
-  font-weight: var(--peso-medio);
+  line-height: var(--linha-media);
+  color: var(--texto-suave);
+}
+
+.tt-acesso__perfil-marca {
+  position: absolute;
+  top: var(--esp-3);
+  right: var(--esp-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid var(--borda-2);
+  border-radius: 50%;
+  color: transparent;
+  transition: var(--transicao-cor);
+}
+
+.tt-acesso__perfil--ativo {
+  border-color: var(--azul);
+  background: var(--ativo-fundo);
+}
+
+.tt-acesso__perfil--ativo .tt-acesso__perfil-icone {
+  background: var(--azul);
+  color: #FFFFFF;
+}
+
+.tt-acesso__perfil--ativo .tt-acesso__perfil-marca {
+  border-color: var(--azul);
+  background: var(--azul);
+  color: #FFFFFF;
+}
+
+.tt-acesso__perfis:disabled .tt-acesso__perfil {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* ── Aviso de erro / sucesso do formulário ── */
+.tt-acesso__aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--esp-3);
+  padding: var(--esp-4);
+  border: 1px solid;
+  border-left-width: 4px;
+  border-radius: var(--raio-md);
+}
+
+.tt-acesso__aviso svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.tt-acesso__aviso strong {
+  display: block;
+  margin-bottom: 2px;
+  font-size: var(--tam-base);
+  font-weight: var(--peso-semi);
+}
+
+.tt-acesso__aviso p {
+  margin: 0;
+  font-size: var(--tam-base);
+  line-height: var(--linha-normal);
+}
+
+.tt-acesso__aviso--erro {
+  background: var(--erro-fundo);
+  border-color: var(--erro-borda);
+  border-left-color: var(--vermelho);
+  color: var(--erro-texto);
+}
+
+.tt-acesso__aviso--sucesso {
+  background: var(--sucesso-fundo);
+  border-color: var(--ok-borda);
+  border-left-color: var(--verde);
+  color: var(--ok-texto);
+}
+
+/* Erro novo: um balanço curto chama a atenção para a mensagem */
+@media (prefers-reduced-motion: no-preference) {
+  .tt-acesso__aviso--erro {
+    animation: tt-balancar 360ms var(--curva);
+  }
+}
+
+@keyframes tt-balancar {
+  0%, 100% { transform: none; }
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-3px); }
+}
+
+/* ── Conta criada ── */
+.tt-acesso__sucesso {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: var(--esp-8);
+  border: 1px solid var(--ok-borda);
+  border-radius: var(--raio-xl);
+  background: var(--superficie);
+}
+
+.tt-acesso__sucesso-icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: var(--esp-5);
+  border-radius: 50%;
+  background: var(--verde-suave);
+  color: var(--verde-texto);
+}
+
+.tt-acesso__sucesso h2 {
+  margin: 0 0 var(--esp-2);
+  font-size: var(--tam-2xl);
+  font-weight: var(--peso-extra);
+  letter-spacing: -0.02em;
+}
+
+.tt-acesso__sucesso p {
+  margin: 0 0 var(--esp-6);
+  font-size: var(--tam-md);
+  line-height: var(--linha-normal);
   color: var(--texto-2);
+}
+
+.tt-acesso__sucesso-barra {
+  width: 100%;
+  height: 4px;
+  margin-bottom: var(--esp-2);
+  border-radius: var(--raio-pilula);
+  background: var(--superficie-3);
+  overflow: hidden;
+}
+
+/* Enche em 2,5 s: o mesmo tempo que a página espera antes de ir para o login */
+.tt-acesso__sucesso-barra span {
+  display: block;
+  height: 100%;
+  background: var(--verde);
+  transform-origin: left;
+  animation: tt-encher 2.5s linear both;
+}
+
+@keyframes tt-encher {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+.tt-acesso__sucesso-rodape {
+  font-size: var(--tam-sm);
+  color: var(--texto-suave);
+}
+
+/* Campos travados enquanto envia */
+.tt-acesso__form fieldset.tt-acesso__travado {
+  display: contents;
 }
 
 /* Aceite dos termos */
@@ -269,6 +518,11 @@
   font-weight: var(--peso-medio);
 }
 
+.tt-acesso__termos--erro input:not(:checked) {
+  border-color: var(--vermelho);
+  box-shadow: 0 0 0 3px var(--vermelho-suave);
+}
+
 .tt-acesso__largo {
   width: 100%;
 }
@@ -304,7 +558,6 @@
 .tt-acesso__marca:focus-visible,
 .tt-acesso__link:focus-visible,
 .tt-acesso__olho:focus-visible,
-.tt-acesso__perfis button:focus-visible,
 .tt-acesso__termos input:focus-visible {
   outline: 2px solid var(--anel-foco);
   outline-offset: 2px;
@@ -324,6 +577,19 @@
 
   .tt-acesso__atalho span {
     display: none;
+  }
+
+  .tt-acesso__perfil {
+    padding: var(--esp-3);
+  }
+
+  .tt-acesso__perfil-marca {
+    top: var(--esp-2);
+    right: var(--esp-2);
+  }
+
+  .tt-acesso__sucesso {
+    padding: var(--esp-6);
   }
 
   .tt-acesso__principal {
