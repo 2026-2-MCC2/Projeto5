@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registrar } from "../services/authService";
-import { ArrowRight, CalendarPlus, Eye, EyeOff, Lock, ShieldCheck, Ticket } from "lucide-react";
+import { ArrowRight, CalendarPlus, Eye, EyeOff, LoaderCircle, Lock, ShieldCheck, Ticket } from "lucide-react";
 import RightPanel from "../components/RightPanel";
 import { Icone, MarcaLogo, TextoComIcone } from "../components/ui";
 // login adm: admin@trocaticket.com - admin123
@@ -78,8 +78,9 @@ export default function CriarConta() {
   const [aceito, setAceito] = useState(false);
   const [erro, setErro] = useState("");
   const [sucesso, setSucesso] = useState("");
+  const [enviando, setEnviando] = useState(false);
 
-  function handleRegister(e) {
+  async function handleRegister(e) {
     e.preventDefault();
     setErro("");
 
@@ -87,12 +88,15 @@ export default function CriarConta() {
     if (pass !== conf) return setErro("As senhas não coincidem.");
     if (!aceito) return setErro("Aceite os Termos de Uso e a Política de Privacidade para continuar.");
 
+    setEnviando(true);
     try {
-      registrar({ nome, email, senha: pass, perfil });
+      await registrar({ nome, email, senha: pass, perfil });
       setSucesso("Conta criada! Aguarde a aprovação do administrador para entrar.");
       setTimeout(() => navigate("/login"), 2500);
     } catch (err) {
       setErro(err.message);
+    } finally {
+      setEnviando(false);
     }
   }
 
@@ -285,11 +289,12 @@ export default function CriarConta() {
             {/* Botão criar conta */}
             <button
               type="submit"
-              disabled={!!sucesso}
-              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", padding: "13px", borderRadius: "10px", background: "var(--destaque)", border: "none", color: "var(--destaque-texto)", fontSize: "0.9375rem", fontWeight: 700, fontFamily: "Outfit", cursor: sucesso ? "default" : "pointer", marginBottom: "1.125rem", opacity: sucesso ? 0.6 : 1, transition: "opacity 0.15s" }}
+              disabled={!!sucesso || enviando}
+              aria-busy={enviando || undefined}
+              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", padding: "13px", borderRadius: "10px", background: "var(--destaque)", border: "none", color: "var(--destaque-texto)", fontSize: "0.9375rem", fontWeight: 700, fontFamily: "Outfit", cursor: enviando ? "progress" : sucesso ? "default" : "pointer", marginBottom: "1.125rem", opacity: sucesso ? 0.6 : enviando ? 0.75 : 1, transition: "opacity 0.15s" }}
             >
-              Criar conta
-              <Icone icone={ArrowRight} />
+              {enviando ? "Criando conta..." : "Criar conta"}
+              <Icone icone={enviando ? LoaderCircle : ArrowRight} className={enviando ? "tt-girando" : undefined} />
             </button>
           </form>
 

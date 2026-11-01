@@ -141,3 +141,20 @@
   .area-logada {
     transition: background-color 0.2s ease, color 0.2s ease;
   }
+
+  /* Ícone girando nos estados de carregando (botões e telas) */
+  @keyframes tt-girar {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .tt-girando {
+    animation: tt-girar 0.8s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tt-girando {
+      animation-duration: 2.4s;
+    }
+  }

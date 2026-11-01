@@ -34,6 +34,7 @@ CREATE TABLE eventos (
   organizador_id  INT UNSIGNED   NOT NULL,
   nome            VARCHAR(150)   NOT NULL,
   descricao       TEXT           NULL,
+  categoria       VARCHAR(40)    NULL,  -- ex.: 'Corporativo' (lista em front/src/data/categorias.js)
   data_inicio     DATETIME       NOT NULL,
   data_fim        DATETIME       NOT NULL,
   local           VARCHAR(200)   NOT NULL,

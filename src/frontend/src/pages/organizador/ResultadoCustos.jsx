@@ -3,7 +3,8 @@ import { Navigate, useNavigate, useParams } from "react-router-dom";
 import NaoEncontrado from "../NaoEncontrado";
 import { ArrowLeft, FileDown, Flag } from "lucide-react";
 import { Card, CabecalhoCard, Btn, BarraRotulada, Indicador, ModalConfirmacao, TituloPagina, Tabela, Linha, Celula, Valor } from "../../components/ui";
-import { buscarEvento, finalizarEvento, propostasSelecionadas, somaEstimado } from "../../services/organizadorService";
+// Ainda sem API de propostas: usa os dados de exemplo do localStorage.
+import { buscarEvento, finalizarEvento, propostasSelecionadas, somaEstimado } from "../../services/mock/organizadorMock";
 import { moeda } from "../../utils/formatar";
 
 const colunas = ["Categoria", "Fornecedor Selecionado", "Estimado", "Acordado", "Economia"];

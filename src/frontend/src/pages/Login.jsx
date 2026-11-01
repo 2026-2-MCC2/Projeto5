@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { ArrowRight, Eye, EyeOff, LayoutDashboard, Lock, ShieldCheck, Ticket } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, LayoutDashboard, LoaderCircle, Lock, ShieldCheck, Ticket } from "lucide-react";
 import RightPanel from "../components/RightPanel";
 import { Icone, MarcaLogo, TextoComIcone } from "../components/ui";
 
@@ -47,15 +47,18 @@ export default function Login() {
   const [pass, setPass] = useState("");
   const [showPass, setShowPass] = useState(false);
   const [erro, setErro] = useState("");
+  const [entrando, setEntrando] = useState(false);
 
-  function handleLogin(e) {
+  async function handleLogin(e) {
     e.preventDefault();
     setErro("");
+    setEntrando(true);
     try {
-      const usuario = login(email, pass);
+      const usuario = await login(email, pass);
       navigate(`/${usuario.perfil}`); // organizador, fornecedor ou admin
     } catch (err) {
       setErro(err.message);
+      setEntrando(false);
     }
   }
 
@@ -183,12 +186,14 @@ export default function Login() {
             {/* Botão entrar */}
             <button
               type="submit"
-              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", padding: "13px", borderRadius: "10px", background: "var(--destaque)", border: "none", color: "var(--destaque-texto)", fontSize: "0.9375rem", fontWeight: 700, fontFamily: "Outfit", cursor: "pointer", marginBottom: "1.25rem", transition: "opacity 0.15s" }}
-              onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.88")}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+              disabled={entrando}
+              aria-busy={entrando || undefined}
+              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", padding: "13px", borderRadius: "10px", background: "var(--destaque)", border: "none", color: "var(--destaque-texto)", fontSize: "0.9375rem", fontWeight: 700, fontFamily: "Outfit", cursor: entrando ? "progress" : "pointer", opacity: entrando ? 0.75 : 1, marginBottom: "1.25rem", transition: "opacity 0.15s" }}
+              onMouseEnter={(e) => !entrando && (e.currentTarget.style.opacity = "0.88")}
+              onMouseLeave={(e) => !entrando && (e.currentTarget.style.opacity = "1")}
             >
-              Entrar
-              <Icone icone={ArrowRight} />
+              {entrando ? "Entrando..." : "Entrar"}
+              <Icone icone={entrando ? LoaderCircle : ArrowRight} className={entrando ? "tt-girando" : undefined} />
             </button>
           </form>
 

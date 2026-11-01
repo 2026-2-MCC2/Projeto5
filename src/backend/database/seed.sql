@@ -19,15 +19,15 @@ INSERT INTO usuarios (id, nome, email, senha_hash, perfil, status, motivo_rejeic
   (7, 'Segura Tudo Ltda',         'comercial@seguratudo.com',    '$2a$10$K46psQQuErDCZoAeRhbLp.Y5la.5jUhPIgZvJAv1Ylet9hTUt9H9i', 'fornecedor',  'rejeitado', 'CNPJ informado não confere com a razão social.');
 
 -- ── Eventos (todos da organizadora Mariana) ────────────────────────────────
-INSERT INTO eventos (id, organizador_id, nome, descricao, data_inicio, data_fim, local, publico_minimo, publico_maximo, margem_lucro, status) VALUES
+INSERT INTO eventos (id, organizador_id, nome, descricao, categoria, data_inicio, data_fim, local, publico_minimo, publico_maximo, margem_lucro, status) VALUES
   (1, 2, 'Festival Gastronômico SP',
-      'Festival ao ar livre com chefs convidados, food trucks e shows.',
+      'Festival ao ar livre com chefs convidados, food trucks e shows.', 'Festival & Show',
       '2026-12-12 11:00:00', '2026-12-13 22:00:00', 'Parque Ibirapuera, São Paulo - SP', 300, 500, 0.25, 'em_andamento'),
   (2, 2, 'Congresso Tech Brasil',
-      'Dois dias de palestras e workshops sobre tecnologia e inovação.',
+      'Dois dias de palestras e workshops sobre tecnologia e inovação.', 'Corporativo',
       '2027-03-20 08:00:00', '2027-03-21 18:00:00', 'Expo Center Norte, São Paulo - SP', 800, 1200, 0.30, 'aguardando_data'),
   (3, 2, 'Formatura Engenharia FECAP 2026',
-      NULL,
+      NULL, 'Formatura',
       '2027-01-30 20:00:00', '2027-01-31 04:00:00', 'Espaço Villa Noir, São Paulo - SP', 150, 250, 0.15, 'rascunho');
 
 -- ── Itens de custo ─────────────────────────────────────────────────────────

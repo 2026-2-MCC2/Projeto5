@@ -2,8 +2,9 @@ import { useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { Activity, Building2, CalendarPlus, CircleCheck, ClipboardList, Clock, FileDown } from "lucide-react";
 import { Card, Btn, CabecalhoModal, Icone, Chip, ListaDetalhes, Modal, StatusBadge, TituloPagina, Tabela, Linha, Celula } from "../../components/ui";
-import { listarEventos } from "../../services/organizadorService";
-import { listarUsuarios } from "../../services/authService";
+// Ainda sem API para os indicadores do admin: usa os dados de exemplo do localStorage.
+import { listarEventos } from "../../services/mock/organizadorMock";
+import { listarUsuarios } from "../../services/mock/usuariosMock";
 import { dataCurta, dentroDosUltimos, moeda, tempoDesde } from "../../utils/formatar";
 
 const POR_PAGINA = 5;

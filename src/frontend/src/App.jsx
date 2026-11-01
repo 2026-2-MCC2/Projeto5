@@ -9,6 +9,7 @@ import Organizador from "./pages/Organizador";
 import MeusEventos from "./pages/organizador/MeusEventos";
 import CriarEvento from "./pages/organizador/CriarEvento";
 import DetalhesEvento from "./pages/organizador/DetalhesEvento";
+import EditarEvento from "./pages/organizador/EditarEvento";
 import Propostas from "./pages/organizador/Propostas";
 import ResultadoCustos from "./pages/organizador/ResultadoCustos";
 import Fornecedor from "./pages/Fornecedor";
@@ -41,6 +42,7 @@ export default function App() {
             <Route index element={<MeusEventos />} />
             <Route path="eventos/novo" element={<CriarEvento />} />
             <Route path="eventos/:id" element={<DetalhesEvento />} />
+            <Route path="eventos/:id/editar" element={<EditarEvento />} />
             <Route path="eventos/:id/propostas" element={<Propostas />} />
             <Route path="eventos/:id/resultado" element={<ResultadoCustos />} />
           </Route>

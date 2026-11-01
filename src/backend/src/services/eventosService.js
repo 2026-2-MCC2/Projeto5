@@ -1,11 +1,21 @@
 import pool from "../config/db.js";
 import HttpError from "../utils/HttpError.js";
 import { exigirObjeto, inteiroPositivo, texto, validarId, vazio } from "../utils/validacao.js";
+import emTransacao from "../utils/transacao.js";
+import * as itensService from "./itensService.js";
 
 export const STATUS_EVENTO = ["rascunho", "aguardando_data", "em_andamento", "concluido", "cancelado"];
 
-const COLUNAS = `id, organizador_id, nome, descricao, data_inicio, data_fim, local,
-  publico_minimo, publico_maximo, margem_lucro, status, criado_em`;
+// Mesma lista de front/src/data/categorias.js (CATEGORIAS_EVENTO).
+export const CATEGORIAS_EVENTO = ["Corporativo", "Festival & Show", "Casamento", "Formatura", "Social", "Esportivo"];
+
+// orcamento = soma dos valores estimados dos itens; total_propostas = propostas recebidas em todos os itens.
+const SELECT_EVENTOS = `
+  SELECT e.id, e.organizador_id, e.nome, e.descricao, e.categoria, e.data_inicio, e.data_fim, e.local,
+         e.publico_minimo, e.publico_maximo, e.margem_lucro, e.status, e.criado_em,
+         (SELECT COALESCE(SUM(i.valor_estimado), 0) FROM itens_custo i WHERE i.evento_id = e.id) AS orcamento,
+         (SELECT COUNT(*) FROM propostas p JOIN itens_custo i ON i.id = p.item_id WHERE i.evento_id = e.id) AS total_propostas
+  FROM eventos e`;
 
 // ── Validação ──────────────────────────────────────────────────────────────
 
@@ -35,7 +45,11 @@ function validarEvento(dados) {
     nome: texto(dados, "nome", "nome", { obrigatorio: true, max: 150 }, erros),
     descricao: texto(dados, "descricao", "descrição", { obrigatorio: false }, erros),
     local: texto(dados, "local", "local", { obrigatorio: true, max: 200 }, erros),
+    categoria: texto(dados, "categoria", "categoria", { obrigatorio: false }, erros),
   };
+  if (evento.categoria && !CATEGORIAS_EVENTO.includes(evento.categoria)) {
+    erros.push(`Categoria inválida. Use: ${CATEGORIAS_EVENTO.join(", ")}.`);
+  }
 
   for (const [campo, rotulo] of [["data_inicio", "data de início"], ["data_fim", "data de fim"]]) {
     if (vazio(dados[campo])) {
@@ -85,7 +99,7 @@ function validarEvento(dados) {
 }
 
 // Só o organizador dono pode mexer no evento.
-async function garantirDono(organizadorId, eventoId) {
+export async function garantirDono(organizadorId, eventoId) {
   const [linhas] = await pool.query("SELECT organizador_id FROM eventos WHERE id = ?", [eventoId]);
   if (!linhas[0]) throw HttpError.notFound("Evento não encontrado.");
   if (linhas[0].organizador_id !== organizadorId) {
@@ -100,31 +114,39 @@ export async function listar({ organizador_id, status } = {}) {
   const valores = [];
 
   if (!vazio(organizador_id)) {
-    filtros.push("organizador_id = ?");
+    filtros.push("e.organizador_id = ?");
     valores.push(validarId(organizador_id, "organizador_id"));
   }
   if (!vazio(status)) {
     if (!STATUS_EVENTO.includes(status)) throw HttpError.badRequest(`Status inválido. Use: ${STATUS_EVENTO.join(", ")}.`);
-    filtros.push("status = ?");
+    filtros.push("e.status = ?");
     valores.push(status);
   }
 
   const where = filtros.length ? `WHERE ${filtros.join(" AND ")}` : "";
-  const [linhas] = await pool.query(`SELECT ${COLUNAS} FROM eventos ${where} ORDER BY data_inicio`, valores);
+  const [linhas] = await pool.query(`${SELECT_EVENTOS} ${where} ORDER BY e.data_inicio`, valores);
   return linhas;
 }
 
 export async function buscarPorId(id) {
-  const [linhas] = await pool.query(`SELECT ${COLUNAS} FROM eventos WHERE id = ?`, [validarId(id)]);
+  const [linhas] = await pool.query(`${SELECT_EVENTOS} WHERE e.id = ?`, [validarId(id)]);
   if (!linhas[0]) throw HttpError.notFound("Evento não encontrado.");
   return linhas[0];
 }
 
 // O dono é sempre quem está logado (vem do token); organizador_id no corpo é ignorado.
+// `itens` é opcional: permite criar o evento já com a composição de custos, tudo ou nada.
 export async function criar(organizadorId, dados) {
   const evento = validarEvento(dados);
-  const [resultado] = await pool.query("INSERT INTO eventos SET ?", [{ ...evento, organizador_id: organizadorId }]);
-  return buscarPorId(resultado.insertId);
+  const itens = dados.itens === undefined ? [] : itensService.validarItens(dados.itens);
+  if (itens.some((i) => i.id !== null)) throw HttpError.badRequest("Itens de um evento novo não podem ter id.");
+
+  const id = await emTransacao(async (conexao) => {
+    const [resultado] = await conexao.query("INSERT INTO eventos SET ?", [{ ...evento, organizador_id: organizadorId }]);
+    await itensService.sincronizar(conexao, resultado.insertId, itens);
+    return resultado.insertId;
+  });
+  return buscarPorId(id);
 }
 
 // PUT substitui o evento inteiro: os campos obrigatórios precisam vir de novo.

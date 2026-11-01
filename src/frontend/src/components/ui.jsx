@@ -1,5 +1,5 @@
 // Componentes visuais reaproveitados nas telas (fornecedor, organizador, admin, login e landing).
-import { Search, Star, Ticket, X } from "lucide-react";
+import { CircleAlert, CircleCheck, LoaderCircle, Search, Star, Ticket, X } from "lucide-react";
 
 const AZUL = "#2563EB";
 const VERDE = "#059669";
@@ -220,16 +220,19 @@ const tamanhosBotao = {
 const tamanhoIconeBotao = { sm: 14, md: 16, lg: 18 };
 
 // `icone` aparece antes do texto e `iconeDepois` depois (ex.: seta de avançar).
-export function Btn({ children, onClick, variante = "primary", tamanho = "md", disabled = false, icone, iconeDepois, style }) {
+// Com `carregando`, o botão fica desativado e o ícone vira um indicador girando.
+export function Btn({ children, onClick, variante = "primary", tamanho = "md", disabled = false, carregando = false, icone, iconeDepois, style }) {
+  const desativado = disabled || carregando;
   return (
     <button
       type="button"
       className="tt-interativo"
       onClick={onClick}
-      disabled={disabled}
+      disabled={desativado}
+      aria-busy={carregando || undefined}
       style={{
-        cursor: disabled ? "not-allowed" : "pointer",
-        opacity: disabled ? 0.4 : 1,
+        cursor: carregando ? "progress" : disabled ? "not-allowed" : "pointer",
+        opacity: carregando ? 0.75 : disabled ? 0.4 : 1,
         fontFamily: "Outfit, sans-serif",
         transition: "all 0.15s ease",
         display: "inline-flex",
@@ -242,7 +245,11 @@ export function Btn({ children, onClick, variante = "primary", tamanho = "md", d
         ...style,
       }}
     >
-      {icone && <Icone icone={icone} tamanho={tamanhoIconeBotao[tamanho]} />}
+      {carregando ? (
+        <Icone icone={LoaderCircle} tamanho={tamanhoIconeBotao[tamanho]} className="tt-girando" />
+      ) : (
+        icone && <Icone icone={icone} tamanho={tamanhoIconeBotao[tamanho]} />
+      )}
       {children}
       {iconeDepois && <Icone icone={iconeDepois} tamanho={tamanhoIconeBotao[tamanho]} />}
     </button>
@@ -272,12 +279,13 @@ export function Input({ destacado = false, style, ...props }) {
   return <input {...props} {...bordaAoFocar(destacado)} style={{ ...estiloCampo, border: `1px solid ${destacado ? AZUL : BORDA}`, ...style }} />;
 }
 
+// `opcoes`: lista de textos, ou de { valor, rotulo } quando o valor salvo é diferente do texto mostrado.
 export function Select({ opcoes, style, ...props }) {
   return (
     <select {...props} {...bordaAoFocar(false)} style={{ ...estiloCampo, border: `1px solid ${BORDA}`, ...style }}>
       {opcoes.map((o) => (
-        <option key={o} value={o}>
-          {o}
+        <option key={o.valor ?? o} value={o.valor ?? o}>
+          {o.rotulo ?? o}
         </option>
       ))}
     </select>
@@ -326,6 +334,34 @@ export function Vazio({ icone, titulo, texto }) {
   );
 }
 
+const estilosAviso = {
+  erro: { background: "var(--erro-fundo)", border: "1px solid var(--erro-borda)", color: "var(--erro-texto)", icone: CircleAlert },
+  sucesso: { background: "var(--sucesso-fundo)", border: "1px solid var(--ok-borda)", color: "var(--ok-texto)", icone: CircleCheck },
+};
+
+// Faixa de mensagem (erro ou sucesso), no mesmo estilo do erro do Login.
+// Com `onFechar`, mostra um X para a pessoa dispensar a mensagem.
+export function Aviso({ variante = "erro", children, onFechar, style }) {
+  const { icone, ...cores } = estilosAviso[variante];
+  return (
+    <div role={variante === "erro" ? "alert" : "status"} style={{ display: "flex", alignItems: "flex-start", gap: "10px", padding: "10px 14px", borderRadius: "9px", fontSize: "0.8125rem", lineHeight: 1.5, ...cores, ...style }}>
+      <Icone icone={icone} tamanho={16} style={{ flexShrink: 0, marginTop: "2px" }} />
+      <div style={{ flex: 1 }}>{children}</div>
+      {onFechar && <BotaoIcone icone={X} rotulo="Fechar mensagem" onClick={onFechar} cor="currentColor" tamanho={14} />}
+    </div>
+  );
+}
+
+// Estado de carregando de uma tela ou card.
+export function Carregando({ texto = "Carregando..." }) {
+  return (
+    <div role="status" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", padding: "3rem", color: "var(--texto-fraco)", fontSize: "0.875rem" }}>
+      <Icone icone={LoaderCircle} tamanho={20} className="tt-girando" />
+      {texto}
+    </div>
+  );
+}
+
 export function Modal({ children, onClose }) {
   return (
     <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(17,24,39,0.5)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: "1rem" }}>
@@ -348,9 +384,11 @@ export function CabecalhoModal({ children, onFechar }) {
 
 // Modal de confirmação com ícone, texto, um valor em destaque (opcional) e dois botões.
 // `variante` define a cor do ícone (mesmas variantes do Badge).
-export function ModalConfirmacao({ icone, variante, titulo, descricao, rotuloValor, valor, rotuloCancelar = "Cancelar", rotuloConfirmar, iconeConfirmar, onCancelar, onConfirmar }) {
+// `varianteConfirmar` muda o botão de confirmar (ex.: "danger" para excluir); `carregando` e `erro`
+// servem para ações que chamam a API.
+export function ModalConfirmacao({ icone, variante, titulo, descricao, rotuloValor, valor, rotuloCancelar = "Cancelar", rotuloConfirmar, iconeConfirmar, varianteConfirmar = "primary", carregando = false, erro, onCancelar, onConfirmar }) {
   return (
-    <Modal onClose={onCancelar}>
+    <Modal onClose={carregando ? undefined : onCancelar}>
       <div style={{ textAlign: "center" }}>
         <IconeDestaque icone={icone} variante={variante} />
         <h3 style={{ fontFamily: "Outfit", fontSize: "1.25rem", fontWeight: 700, color: "var(--texto)", marginBottom: "8px" }}>{titulo}</h3>
@@ -361,11 +399,16 @@ export function ModalConfirmacao({ icone, variante, titulo, descricao, rotuloVal
             <Valor peso={700}>{valor}</Valor>
           </div>
         )}
+        {erro && (
+          <Aviso variante="erro" style={{ marginBottom: "1rem", textAlign: "left" }}>
+            {erro}
+          </Aviso>
+        )}
         <div style={{ display: "flex", gap: "10px" }}>
-          <Btn variante="ghost" style={{ flex: 1 }} onClick={onCancelar}>
+          <Btn variante="ghost" style={{ flex: 1 }} onClick={onCancelar} disabled={carregando}>
             {rotuloCancelar}
           </Btn>
-          <Btn style={{ flex: 1 }} onClick={onConfirmar} icone={iconeConfirmar}>
+          <Btn variante={varianteConfirmar} style={{ flex: 1 }} onClick={onConfirmar} icone={iconeConfirmar} carregando={carregando}>
             {rotuloConfirmar}
           </Btn>
         </div>

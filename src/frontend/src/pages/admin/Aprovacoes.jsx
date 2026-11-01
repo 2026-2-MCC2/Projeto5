@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { CircleCheck } from "lucide-react";
-import { Card, Badge, Btn, CabecalhoModal, Chip, Contador, ListaDetalhes, Modal, ModalConfirmacao, TextArea, TituloPagina, Vazio } from "../../components/ui";
+import { CircleCheck, RefreshCw } from "lucide-react";
+import { Aviso, Card, Badge, Btn, CabecalhoModal, Carregando, Chip, Contador, ListaDetalhes, Modal, ModalConfirmacao, TextArea, TituloPagina, Vazio } from "../../components/ui";
 import { aprovarUsuario, rejeitarUsuario } from "../../services/authService";
 import { ROTULO_PERFIL } from "../../data/perfis";
 import { tempoDesde } from "../../utils/formatar";
@@ -26,31 +26,49 @@ function detalhes(u) {
 }
 
 export default function Aprovacoes() {
-  const { pendentes, recarregarPendentes } = useOutletContext();
+  const { pendentes, carregandoPendentes, erroPendentes, recarregarPendentes } = useOutletContext();
   const [aba, setAba] = useState(abas[0]);
   const [vendo, setVendo] = useState(null);
   const [aprovando, setAprovando] = useState(null);
   const [rejeitando, setRejeitando] = useState(null);
   const [motivo, setMotivo] = useState("");
+  const [enviando, setEnviando] = useState(false);
+  const [erro, setErro] = useState("");
+  const [sucesso, setSucesso] = useState("");
 
   const doPerfil = (perfil) => pendentes.filter((u) => !perfil || u.perfil === perfil);
   const visiveis = doPerfil(aba.perfil);
 
-  function aprovar() {
-    aprovarUsuario(aprovando.id);
-    setAprovando(null);
-    recarregarPendentes();
+  // Chama a API e, se der certo, fecha o modal, mostra a mensagem e atualiza a lista.
+  async function enviar(acao, mensagem, fechar) {
+    setErro("");
+    setSucesso("");
+    setEnviando(true);
+    try {
+      await acao();
+      fechar();
+      setSucesso(mensagem);
+      await recarregarPendentes();
+    } catch (err) {
+      setErro(err.message);
+    } finally {
+      setEnviando(false);
+    }
   }
 
-  function rejeitar() {
-    rejeitarUsuario(rejeitando.id, motivo.trim());
-    fecharRejeicao();
-    recarregarPendentes();
-  }
+  const aprovar = () => enviar(() => aprovarUsuario(aprovando.id), `${aprovando.nome} foi aprovado e já pode entrar.`, () => setAprovando(null));
+  const rejeitar = () => enviar(() => rejeitarUsuario(rejeitando.id, motivo.trim()), `O cadastro de ${rejeitando.nome} foi rejeitado.`, fecharRejeicao);
 
   function fecharRejeicao() {
     setRejeitando(null);
     setMotivo("");
+    setErro("");
+  }
+
+  function fecharAprovacao() {
+    if (enviando) return;
+    setAprovando(null);
+    setErro("");
   }
 
   return (
@@ -63,6 +81,24 @@ export default function Aprovacoes() {
         ))}
       </div>
 
+      {sucesso && (
+        <Aviso variante="sucesso" onFechar={() => setSucesso("")} style={{ marginBottom: "1.25rem" }}>
+          {sucesso}
+        </Aviso>
+      )}
+
+      {carregandoPendentes ? (
+        <Carregando texto="Carregando cadastros pendentes..." />
+      ) : erroPendentes ? (
+        <Aviso variante="erro">
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
+            <span>{erroPendentes}</span>
+            <Btn variante="danger" tamanho="sm" icone={RefreshCw} onClick={recarregarPendentes}>
+              Tentar de novo
+            </Btn>
+          </div>
+        </Aviso>
+      ) : (
       <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         {visiveis.map((u) => (
           <Card key={u.id} style={{ padding: "1.5rem" }}>
@@ -92,6 +128,7 @@ export default function Aprovacoes() {
 
         {visiveis.length === 0 && <Vazio icone={CircleCheck} titulo="Nenhuma aprovação pendente" texto="Todas as solicitações desta categoria foram processadas" />}
       </div>
+      )}
 
       {vendo && (
         <Modal onClose={() => setVendo(null)}>
@@ -112,21 +149,27 @@ export default function Aprovacoes() {
       )}
 
       {rejeitando && (
-        <Modal onClose={fecharRejeicao}>
+        <Modal onClose={enviando ? undefined : fecharRejeicao}>
           <h3 style={{ fontFamily: "Outfit", fontSize: "1.125rem", fontWeight: 700, color: "var(--texto)", marginBottom: "8px" }}>Rejeitar: {rejeitando.nome}</h3>
           <p style={{ fontSize: "0.875rem", color: "var(--texto-suave)", marginBottom: "16px" }}>Informe o motivo da rejeição. O solicitante verá esse motivo ao tentar entrar.</p>
           <TextArea
             placeholder="Ex: Documentação incompleta, CNPJ inválido, categoria não suportada..."
             value={motivo}
             onChange={(e) => setMotivo(e.target.value)}
+            maxLength={500}
             style={{ marginBottom: "16px" }}
           />
+          {erro && (
+            <Aviso variante="erro" style={{ marginBottom: "16px" }}>
+              {erro}
+            </Aviso>
+          )}
           <div style={{ display: "flex", gap: "10px" }}>
-            <Btn variante="ghost" style={{ flex: 1 }} onClick={fecharRejeicao}>
+            <Btn variante="ghost" style={{ flex: 1 }} onClick={fecharRejeicao} disabled={enviando}>
               Cancelar
             </Btn>
-            <Btn variante="danger" style={{ flex: 1 }} onClick={rejeitar} disabled={!motivo.trim()}>
-              Confirmar Rejeição
+            <Btn variante="danger" style={{ flex: 1 }} onClick={rejeitar} disabled={!motivo.trim()} carregando={enviando}>
+              {enviando ? "Rejeitando..." : "Confirmar Rejeição"}
             </Btn>
           </div>
         </Modal>
@@ -142,8 +185,10 @@ export default function Aprovacoes() {
               <strong style={{ color: "var(--texto)" }}>{aprovando.nome}</strong> será aprovado e terá acesso completo à plataforma.
             </>
           }
-          rotuloConfirmar="Confirmar Aprovação"
-          onCancelar={() => setAprovando(null)}
+          rotuloConfirmar={enviando ? "Aprovando..." : "Confirmar Aprovação"}
+          carregando={enviando}
+          erro={erro}
+          onCancelar={fecharAprovacao}
           onConfirmar={aprovar}
         />
       )}

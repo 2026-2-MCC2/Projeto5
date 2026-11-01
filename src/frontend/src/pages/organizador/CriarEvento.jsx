@@ -1,35 +1,31 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
 import { ArrowLeft, ArrowRight, Check, ClipboardList, Rocket, X } from "lucide-react";
-import { Card, CabecalhoCard, Btn, Campo, Chip, Icone, IconeDestaque, Input, TextoComIcone, TituloPagina } from "../../components/ui";
+import { Aviso, Card, CabecalhoCard, Btn, Chip, Icone, IconeDestaque, TextoComIcone, TituloPagina } from "../../components/ui";
 import EditorItens from "../../components/EditorItens";
-import { CATEGORIAS_EVENTO, CATEGORIAS_FORNECEDOR } from "../../data/categorias";
+import FormularioEvento, { TituloSecao } from "../../components/FormularioEvento";
+import { eventoDoFormulario, formularioVazio, problemasDoFormulario } from "../../utils/formularioEvento";
+import { CATEGORIAS_FORNECEDOR } from "../../data/categorias";
 import { criarEvento, novoItem } from "../../services/organizadorService";
 
 const passos = ["Informações Básicas", "Composição de Custos", "Fornecedores", "Publicar"];
 
-const estiloCampoBranco = { background: "var(--superficie)", padding: "10px 13px", borderRadius: "8px" };
-
-function TituloSecao({ children }) {
-  return <h3 style={{ fontFamily: "Outfit", fontSize: "1.0625rem", fontWeight: 700, color: "var(--texto)", marginBottom: "1.25rem" }}>{children}</h3>;
-}
-
 export default function CriarEvento() {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const [passo, setPasso] = useState(0);
-  const [nome, setNome] = useState("");
-  const [data, setData] = useState("");
-  const [convidados, setConvidados] = useState("");
-  const [local, setLocal] = useState("");
-  const [categoria, setCategoria] = useState(null);
+  const [formulario, setFormulario] = useState(formularioVazio);
   const [fornecedores, setFornecedores] = useState([]);
   const [itens, setItens] = useState([]);
+  const [salvando, setSalvando] = useState(null); // status sendo salvo ("rascunho" ou "em_andamento")
+  const [erro, setErro] = useState("");
+
+  const problemas = problemasDoFormulario(formulario);
+  // Para salvar (até como rascunho) a API exige os dados básicos; a categoria só é exigida para publicar.
+  const podeSalvar = problemas.length === 0;
 
   // Etapas que precisam estar completas para publicar (Fornecedores é opcional).
   const etapaCompleta = [
-    Boolean(nome && data && categoria),
+    podeSalvar && Boolean(formulario.categoria),
     itens.length > 0 && itens.every((i) => i.descricao && i.estimado > 0),
     true,
   ];
@@ -47,10 +43,21 @@ export default function CriarEvento() {
     setPasso(destino);
   }
 
-  function salvar(status) {
-    criarEvento({ nome, data, local, convidados: Number(convidados) || 0, categoria, itens, status, organizador: user.nome });
-    navigate("/organizador");
+  async function salvar(status) {
+    setErro("");
+    setSalvando(status);
+    try {
+      const evento = await criarEvento({ ...eventoDoFormulario(formulario), status }, itens);
+      const mensagem = status === "rascunho" ? "Evento salvo como rascunho." : "Evento publicado com sucesso!";
+      navigate(`/organizador/eventos/${evento.id}`, { state: { sucesso: mensagem } });
+    } catch (err) {
+      setErro(err.message);
+      setSalvando(null);
+    }
   }
+
+  // Mensagem do botão desativado de "Salvar como Rascunho".
+  const dicaRascunho = podeSalvar ? undefined : problemas[0];
 
   return (
     <>
@@ -100,45 +107,7 @@ export default function CriarEvento() {
 
       {passo === 0 && (
         <div style={{ display: "grid", gap: "1.25rem" }}>
-          <Card style={{ padding: "1.5rem" }}>
-            <TituloSecao>Informações Básicas</TituloSecao>
-            <div style={{ display: "grid", gap: "14px" }}>
-              <Campo rotulo="Nome do Evento *">
-                <Input placeholder="Ex: Festival Gastronômico SP 2025" value={nome} onChange={(e) => setNome(e.target.value)} style={estiloCampoBranco} />
-              </Campo>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
-                <Campo rotulo="Data do Evento *">
-                  <Input type="date" value={data} onChange={(e) => setData(e.target.value)} style={estiloCampoBranco} />
-                </Campo>
-                <Campo rotulo="Nº de Convidados">
-                  <Input type="number" min="0" placeholder="Ex: 500" value={convidados} onChange={(e) => setConvidados(e.target.value)} style={estiloCampoBranco} />
-                </Campo>
-              </div>
-              <Campo rotulo="Local do Evento">
-                <Input placeholder="Ex: Parque Ibirapuera, São Paulo" value={local} onChange={(e) => setLocal(e.target.value)} style={estiloCampoBranco} />
-              </Campo>
-            </div>
-          </Card>
-
-          <Card style={{ padding: "1.5rem" }}>
-            <TituloSecao>Categoria do Evento *</TituloSecao>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "10px" }}>
-              {CATEGORIAS_EVENTO.map((c) => {
-                const ativa = categoria === c.rotulo;
-                return (
-                  <button
-                    key={c.rotulo}
-                    type="button"
-                    onClick={() => setCategoria(c.rotulo)}
-                    style={{ padding: "16px 10px", borderRadius: "10px", textAlign: "center", background: ativa ? "var(--ativo-fundo)" : "var(--superficie-2)", border: `2px solid ${ativa ? "#2563EB" : "var(--borda)"}`, color: ativa ? "var(--ativo-texto)" : "var(--texto-suave)", cursor: "pointer", transition: "all 0.15s" }}
-                  >
-                    <Icone icone={c.icone} tamanho={24} style={{ marginBottom: "6px" }} />
-                    <div style={{ fontSize: "0.8125rem", fontWeight: 600 }}>{c.rotulo}</div>
-                  </button>
-                );
-              })}
-            </div>
-          </Card>
+          <FormularioEvento valores={formulario} onChange={setFormulario} />
 
           <Card style={{ padding: "1.5rem" }}>
             <TituloSecao>Fornecedores que Pretende Orçar</TituloSecao>
@@ -188,7 +157,7 @@ export default function CriarEvento() {
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                 {pendencias.map((i) => (
                   <Btn key={i} variante="danger" iconeDepois={ArrowRight} onClick={() => irPara(i)}>
-                    {i === 0 ? "Informações Básicas: preencha nome, data e categoria" : "Composição de Custos: cada item precisa de descrição e custo"}
+                    {i === 0 ? `Informações Básicas: ${problemas[0] ?? "escolha a categoria do evento"}` : "Composição de Custos: cada item precisa de descrição e custo"}
                   </Btn>
                 ))}
               </div>
@@ -198,21 +167,34 @@ export default function CriarEvento() {
               Seu evento será visível para os fornecedores selecionados, que poderão enviar propostas comerciais.
             </p>
           )}
+          {erro && (
+            <Aviso variante="erro" onFechar={() => setErro("")} style={{ maxWidth: "460px", margin: "0 auto 1.25rem", textAlign: "left" }}>
+              {erro}
+            </Aviso>
+          )}
           <div style={{ display: "flex", justifyContent: "center", gap: "12px" }}>
-            <Btn variante="secondary" onClick={() => salvar("Rascunho")} disabled={!nome || !data}>
-              Salvar como Rascunho
+            <Btn variante="secondary" onClick={() => salvar("rascunho")} disabled={!podeSalvar || salvando !== null} carregando={salvando === "rascunho"}>
+              {salvando === "rascunho" ? "Salvando..." : "Salvar como Rascunho"}
             </Btn>
-            <Btn onClick={() => salvar("Em andamento")} disabled={pendencias.length > 0} icone={Rocket}>
-              Publicar Evento
+            <Btn onClick={() => salvar("em_andamento")} disabled={pendencias.length > 0 || salvando !== null} carregando={salvando === "em_andamento"} icone={Rocket}>
+              {salvando === "em_andamento" ? "Publicando..." : "Publicar Evento"}
             </Btn>
           </div>
         </Card>
       )}
 
+      {erro && passo !== 3 && (
+        <Aviso variante="erro" onFechar={() => setErro("")} style={{ marginTop: "1.5rem" }}>
+          {erro}
+        </Aviso>
+      )}
+
       <div style={{ display: "flex", justifyContent: "space-between", marginTop: "2rem", flexWrap: "wrap", gap: "12px" }}>
-        <Btn variante="ghost" onClick={() => salvar("Rascunho")} disabled={!nome || !data}>
-          Salvar como Rascunho
-        </Btn>
+        <span title={dicaRascunho}>
+          <Btn variante="ghost" onClick={() => salvar("rascunho")} disabled={!podeSalvar || salvando !== null} carregando={salvando === "rascunho"}>
+            {salvando === "rascunho" ? "Salvando..." : "Salvar como Rascunho"}
+          </Btn>
+        </span>
         <div style={{ display: "flex", gap: "10px" }}>
           {passo > 0 && (
             <Btn variante="secondary" icone={ArrowLeft} onClick={() => setPasso(passo - 1)}>

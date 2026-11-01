@@ -2,10 +2,12 @@ const MESES = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "O
 
 const doisDigitos = (n) => String(n).padStart(2, "0");
 
-// As datas ficam salvas como "AAAA-MM-DD" para evitar problemas de fuso horário.
+// As datas ficam salvas como "AAAA-MM-DD" (ou "AAAA-MM-DD HH:MM:SS", vindo da API)
+// e são lidas como texto para evitar problemas de fuso horário.
 function partes(iso) {
-  const [ano, mes, dia] = iso.split("-").map(Number);
-  return { ano, mes, dia };
+  const [ano, mes, dia] = iso.slice(0, 10).split("-").map(Number);
+  const [hora = 0, min = 0] = (iso.slice(11, 16) || "").split(":").map(Number);
+  return { ano, mes, dia, hora, min };
 }
 
 export const moeda = (valor) => `R$ ${valor.toLocaleString("pt-BR")}`;
@@ -17,6 +19,25 @@ export function dataCurta(iso) {
   const { ano, mes, dia } = partes(iso);
   return `${doisDigitos(dia)} ${MESES[mes - 1]} ${ano}`;
 }
+
+// "2026-12-12 11:00:00" -> "12 Dez 2026, 11:00"
+export function dataHora(iso) {
+  const { hora, min } = partes(iso);
+  return `${dataCurta(iso)}, ${doisDigitos(hora)}:${doisDigitos(min)}`;
+}
+
+// Início e fim de um evento: "12 Dez 2026, 11:00 – 22:00" no mesmo dia, ou as duas datas completas.
+export function periodo(inicio, fim) {
+  if (!fim) return dataHora(inicio);
+  if (inicio.slice(0, 10) === fim.slice(0, 10)) return `${dataHora(inicio)} – ${fim.slice(11, 16)}`;
+  return `${dataHora(inicio)} – ${dataHora(fim)}`;
+}
+
+// "2026-12-12 11:00:00" (API) <-> "2026-12-12T11:00" (campo datetime-local)
+export const paraCampoDataHora = (iso) => (iso ? iso.slice(0, 16).replace(" ", "T") : "");
+
+// 0.25 -> "25%"
+export const porcentagem = (fracao) => `${Math.round(fracao * 100)}%`;
 
 // "2024-12-01" -> "Dez 2024"
 export function mesAno(iso) {

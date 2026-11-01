@@ -3,7 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import NaoEncontrado from "../NaoEncontrado";
 import { ArrowRight, ArrowUpDown, Check, FileDown, Star } from "lucide-react";
 import { Card, Badge, Btn, CabecalhoModal, Chip, Estrelas, Icone, Modal, TextoComIcone, TituloPagina, Valor } from "../../components/ui";
-import { buscarEvento, salvarSelecao } from "../../services/organizadorService";
+// Ainda sem API de propostas: usa os dados de exemplo do localStorage.
+import { buscarEvento, salvarSelecao } from "../../services/mock/organizadorMock";
 import { CATEGORIAS_FORNECEDOR } from "../../data/categorias";
 import { moeda } from "../../utils/formatar";
 
