@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import NaoEncontrado from "../NaoEncontrado";
 import { Check, Send } from "lucide-react";
 import {
   Card,
@@ -31,7 +32,7 @@ export default function EnviarProposta() {
   const [observacoes, setObservacoes] = useState("");
   const [confirmando, setConfirmando] = useState(false);
 
-  if (!evento) return <Navigate to="/fornecedor" replace />;
+  if (!evento) return <NaoEncontrado dentroDoLayout titulo="Evento não encontrado" texto="Este evento não existe ou foi excluído." voltarPara="/fornecedor" rotuloVoltar="Ver oportunidades" />;
 
   const total = evento.itens.reduce((soma, item, i) => soma + precos[i] * item.quantidade, 0);
   const podeEnviar = precos.every((p) => p > 0);

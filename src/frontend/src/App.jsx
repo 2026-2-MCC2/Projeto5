@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import BotaoTema from "./components/BotaoTema";
@@ -19,6 +19,7 @@ import Reputacao from "./pages/fornecedor/Reputacao";
 import Admin from "./pages/Admin";
 import Dashboard from "./pages/admin/Dashboard";
 import Aprovacoes from "./pages/admin/Aprovacoes";
+import NaoEncontrado from "./pages/NaoEncontrado";
 
 export default function App() {
   return (
@@ -68,7 +69,7 @@ export default function App() {
             <Route path="aprovacoes" element={<Aprovacoes />} />
           </Route>
 
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NaoEncontrado />} />
         </Routes>
         <BotaoTema />
       </BrowserRouter>

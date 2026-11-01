@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import NaoEncontrado from "../NaoEncontrado";
 import { ArrowRight, ArrowUpDown, Check, FileDown, Star } from "lucide-react";
 import { Card, Badge, Btn, CabecalhoModal, Chip, Estrelas, Icone, Modal, TextoComIcone, TituloPagina, Valor } from "../../components/ui";
 import { buscarEvento, salvarSelecao } from "../../services/organizadorService";
@@ -26,7 +27,7 @@ export default function Propostas() {
   const [selecionadas, setSelecionadas] = useState(() => evento?.selecionadas ?? []);
   const [aberta, setAberta] = useState(null);
 
-  if (!evento) return <Navigate to="/organizador" replace />;
+  if (!evento) return <NaoEncontrado dentroDoLayout titulo="Evento não encontrado" texto="Este evento não existe ou foi excluído." voltarPara="/organizador" rotuloVoltar="Ver meus eventos" />;
 
   const visiveis = evento.propostas.filter((p) => filtro === TODAS || p.categoria === filtro).sort(ordenacoes[ordem]);
   const total = evento.propostas.filter((p) => selecionadas.includes(p.id)).reduce((soma, p) => soma + p.valor, 0);

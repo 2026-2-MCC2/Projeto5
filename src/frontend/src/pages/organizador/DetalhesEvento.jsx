@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import NaoEncontrado from "../NaoEncontrado";
 import { ArrowRight, Calendar, Check, MapPin, Pencil, Receipt, Users } from "lucide-react";
 import { Card, CardTitulo, CabecalhoCard, Btn, Indicador, ListaInfo, StatusBadge, TextoComIcone, TituloPagina, Tabela, Linha, Celula, RodapeCard, Valor, Vazio } from "../../components/ui";
 import EditorItens from "../../components/EditorItens";
@@ -14,7 +15,7 @@ export default function DetalhesEvento() {
   const [evento, setEvento] = useState(() => buscarEvento(Number(id)));
   const [itensEditados, setItensEditados] = useState(null);
 
-  if (!evento) return <Navigate to="/organizador" replace />;
+  if (!evento) return <NaoEncontrado dentroDoLayout titulo="Evento não encontrado" texto="Este evento não existe ou foi excluído." voltarPara="/organizador" rotuloVoltar="Ver meus eventos" />;
 
   const editando = itensEditados !== null;
   const itens = editando ? itensEditados : evento.itens;

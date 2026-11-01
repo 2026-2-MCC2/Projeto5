@@ -1,0 +1,365 @@
+{
+  "info": {
+    "name": "TrocaTicket API",
+    "description": "Requisições da API do TrocaTicket.\n\nComo usar:\n1. Suba a API (`npm run dev` em src/backend).\n2. Rode **Auth → Login (organizador)**: o token é salvo sozinho em `{{token}}` e usado em todas as rotas protegidas.\n3. Rode as pastas na ordem (ou a coleção inteira pelo Collection Runner).\n\nVariáveis da coleção:\n- `baseUrl`: endereço da API (padrão http://localhost:3001/api)\n- `token`: preenchido pelo login\n- `eventoId`: preenchido ao criar um evento\n\nUsuários do seed.sql: organizadora mariana@eventosmc.com.br / senha123; admin admin@trocaticket.com / admin123.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3001/api", "type": "string" },
+    { "key": "token", "value": "", "type": "string" },
+    { "key": "eventoId", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Registrar",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                  "pm.test('Usuário criado como pendente', () => {",
+                  "  const { usuario } = pm.response.json();",
+                  "  pm.expect(usuario.status).to.eql('pendente');",
+                  "  pm.expect(usuario).to.not.have.property('senha_hash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Fornecedor de Teste\",\n  \"email\": \"fornecedor{{$timestamp}}@teste.com\",\n  \"senha\": \"senha123\",\n  \"perfil\": \"fornecedor\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/auth/registrar", "host": ["{{baseUrl}}"], "path": ["auth", "registrar"] },
+            "description": "Cria um organizador ou fornecedor com status 'pendente'. Ele só consegue fazer login depois que o admin aprovar.\n\nO e-mail usa {{$timestamp}} para não repetir a cada execução."
+          }
+        },
+        {
+          "name": "Login (organizador)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "",
+                  "const corpo = pm.response.json();",
+                  "pm.test('Retorna token e usuário organizador', () => {",
+                  "  pm.expect(corpo.token).to.be.a('string').and.not.empty;",
+                  "  pm.expect(corpo.usuario.perfil).to.eql('organizador');",
+                  "});",
+                  "",
+                  "// Salva o token para as próximas requisições (Authorization: Bearer {{token}})",
+                  "if (corpo.token) pm.collectionVariables.set('token', corpo.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"mariana@eventosmc.com.br\",\n  \"senha\": \"senha123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] },
+            "description": "Faz login e guarda o JWT na variável {{token}} da coleção."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Eventos",
+      "item": [
+        {
+          "name": "Criar evento",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+                  "",
+                  "const evento = pm.response.json();",
+                  "pm.test('Evento criado com os dados enviados', () => {",
+                  "  pm.expect(evento.id).to.be.a('number');",
+                  "  pm.expect(evento.nome).to.eql('Show de Teste Postman');",
+                  "  pm.expect(evento.status).to.eql('rascunho');",
+                  "});",
+                  "",
+                  "// Guarda o id para buscar, editar e excluir depois",
+                  "if (evento.id) pm.collectionVariables.set('eventoId', evento.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Show de Teste Postman\",\n  \"descricao\": \"Evento criado pela coleção do Postman.\",\n  \"data_inicio\": \"2027-05-01 20:00\",\n  \"data_fim\": \"2027-05-02 02:00\",\n  \"local\": \"Arena Teste, São Paulo - SP\",\n  \"publico_minimo\": 100,\n  \"publico_maximo\": 300,\n  \"margem_lucro\": 0.2\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/eventos", "host": ["{{baseUrl}}"], "path": ["eventos"] },
+            "description": "Só organizador. O dono do evento é quem está logado (vem do token)."
+          }
+        },
+        {
+          "name": "Listar eventos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Retorna uma lista que inclui o evento criado', () => {",
+                  "  const ids = pm.response.json().map(e => e.id);",
+                  "  pm.expect(ids).to.include(Number(pm.collectionVariables.get('eventoId')));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/eventos",
+              "host": ["{{baseUrl}}"],
+              "path": ["eventos"],
+              "query": [
+                { "key": "status", "value": "rascunho", "description": "Opcional: rascunho, aguardando_data, em_andamento, concluido, cancelado", "disabled": true },
+                { "key": "organizador_id", "value": "2", "description": "Opcional: só os eventos desse organizador", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Buscar evento por id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('É o evento pedido', () => {",
+                  "  pm.expect(pm.response.json().id).to.eql(Number(pm.collectionVariables.get('eventoId')));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/eventos/{{eventoId}}", "host": ["{{baseUrl}}"], "path": ["eventos", "{{eventoId}}"] }
+          }
+        },
+        {
+          "name": "Atualizar evento",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Dados foram alterados', () => {",
+                  "  const evento = pm.response.json();",
+                  "  pm.expect(evento.nome).to.eql('Show de Teste Postman (editado)');",
+                  "  pm.expect(evento.margem_lucro).to.eql(0.35);",
+                  "  pm.expect(evento.status).to.eql('aguardando_data');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Show de Teste Postman (editado)\",\n  \"descricao\": \"Evento editado pela coleção do Postman.\",\n  \"data_inicio\": \"2027-05-01 20:00\",\n  \"data_fim\": \"2027-05-02 03:00\",\n  \"local\": \"Arena Teste, São Paulo - SP\",\n  \"publico_minimo\": 150,\n  \"publico_maximo\": 300,\n  \"margem_lucro\": 0.35,\n  \"status\": \"aguardando_data\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/eventos/{{eventoId}}", "host": ["{{baseUrl}}"], "path": ["eventos", "{{eventoId}}"] },
+            "description": "PUT substitui o evento inteiro: os campos obrigatórios precisam vir de novo. Só o organizador dono pode editar."
+          }
+        },
+        {
+          "name": "Excluir evento",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 204 No Content', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/eventos/{{eventoId}}", "host": ["{{baseUrl}}"], "path": ["eventos", "{{eventoId}}"] },
+            "description": "Só o organizador dono pode excluir. Itens de custo e propostas do evento são apagados junto."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Erros esperados",
+      "item": [
+        {
+          "name": "Criar evento sem campos obrigatórios → 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));",
+                  "pm.test('Mensagem cita os campos que faltam', () => {",
+                  "  const { erro } = pm.response.json();",
+                  "  pm.expect(erro).to.include('nome');",
+                  "  pm.expect(erro).to.include('local');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } },
+            "url": { "raw": "{{baseUrl}}/eventos", "host": ["{{baseUrl}}"], "path": ["eventos"] }
+          }
+        },
+        {
+          "name": "Criar evento com público mínimo > máximo → 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 400 Bad Request', () => pm.response.to.have.status(400));",
+                  "pm.test('Explica os valores inválidos', () => {",
+                  "  const { erro } = pm.response.json();",
+                  "  pm.expect(erro).to.include('público mínimo');",
+                  "  pm.expect(erro).to.include('margem de lucro');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Evento inválido\",\n  \"data_inicio\": \"2027-05-01 20:00\",\n  \"data_fim\": \"2027-05-02 02:00\",\n  \"local\": \"Arena Teste\",\n  \"publico_minimo\": 500,\n  \"publico_maximo\": 100,\n  \"margem_lucro\": 1.5\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/eventos", "host": ["{{baseUrl}}"], "path": ["eventos"] }
+          }
+        },
+        {
+          "name": "Buscar evento inexistente → 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 404 Not Found', () => pm.response.to.have.status(404));",
+                  "pm.test('Mensagem de evento não encontrado', () => {",
+                  "  pm.expect(pm.response.json().erro).to.eql('Evento não encontrado.');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/eventos/999999", "host": ["{{baseUrl}}"], "path": ["eventos", "999999"] }
+          }
+        },
+        {
+          "name": "Listar eventos sem token → 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401 Unauthorized', () => pm.response.to.have.status(401));",
+                  "pm.test('Pede para fazer login', () => {",
+                  "  pm.expect(pm.response.json().erro).to.include('login');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/eventos", "host": ["{{baseUrl}}"], "path": ["eventos"] }
+          }
+        },
+        {
+          "name": "Login com senha errada → 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 401 Unauthorized', () => pm.response.to.have.status(401));",
+                  "pm.test('Mensagem genérica', () => {",
+                  "  pm.expect(pm.response.json().erro).to.eql('E-mail ou senha incorretos.');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"mariana@eventosmc.com.br\",\n  \"senha\": \"senha-errada\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        }
+      ]
+    }
+  ]
+}

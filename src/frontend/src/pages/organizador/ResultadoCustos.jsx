@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
+import NaoEncontrado from "../NaoEncontrado";
 import { ArrowLeft, FileDown, Flag } from "lucide-react";
 import { Card, CabecalhoCard, Btn, BarraRotulada, Indicador, ModalConfirmacao, TituloPagina, Tabela, Linha, Celula, Valor } from "../../components/ui";
 import { buscarEvento, finalizarEvento, propostasSelecionadas, somaEstimado } from "../../services/organizadorService";
@@ -24,7 +25,7 @@ export default function ResultadoCustos() {
   const [confirmando, setConfirmando] = useState(false);
   const evento = buscarEvento(Number(id));
 
-  if (!evento) return <Navigate to="/organizador" replace />;
+  if (!evento) return <NaoEncontrado dentroDoLayout titulo="Evento não encontrado" texto="Este evento não existe ou foi excluído." voltarPara="/organizador" rotuloVoltar="Ver meus eventos" />;
 
   const linhas = propostasSelecionadas(evento).map((p) => {
     const estimado = somaEstimado(evento.itens.filter((i) => i.categoria === p.categoria));
