@@ -124,6 +124,8 @@ Projeto5/
 
 <b>src</b>: código-fonte do projeto. Detalhes da API em [`src/backend/README.md`](src/backend/README.md).
 
+<b>Banco de dados</b>: diagrama, tabelas, campos, tipos e relacionamentos em [`src/backend/database/README.md`](src/backend/database/README.md).
+
 ## 💻 Configuração para Desenvolvimento
 
 ### Pré-requisitos
