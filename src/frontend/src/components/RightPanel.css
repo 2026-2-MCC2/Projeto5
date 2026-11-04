@@ -212,6 +212,25 @@
   }
 }
 
+/* Telas mais baixas (janela de notebook com a barra do navegador): some o texto do canhoto e sobe menos */
+@media (max-height: 800px) {
+  .tt-painel {
+    padding-bottom: 56px;
+  }
+
+  .tt-painel__canhoto .tt-picote,
+  .tt-painel__canhoto p {
+    display: none;
+  }
+}
+
+/* Telas muito baixas: tira também o subtítulo */
+@media (max-height: 560px) {
+  .tt-painel__sub {
+    display: none;
+  }
+}
+
 @media (max-width: 959px) {
   .tt-painel {
     display: none;

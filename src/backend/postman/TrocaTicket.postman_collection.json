@@ -9,7 +9,7 @@
     "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
   },
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:3001/api", "type": "string" },
+    { "key": "baseUrl", "value": "https://projeto5-production.up.railway.app/api", "type": "string" },
     { "key": "token", "value": "", "type": "string" },
     { "key": "eventoId", "value": "", "type": "string" },
     { "key": "tokenFornecedor", "value": "", "type": "string" },
