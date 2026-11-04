@@ -1,4 +1,4 @@
-// Peças de painel gerencial (dashboard do admin, propostas e reputação do fornecedor).
+// Peças de painel gerencial (dashboard do admin e propostas do fornecedor).
 // Regras de gráfico: marcas finas, uma cor para magnitude (azul), cores de status só com ícone + rótulo,
 // texto sempre nas cores de texto (nunca na cor da barra), dica no mouse/teclado e uma tabela para leitores de tela.
 import { Card, Icone } from "./ui";

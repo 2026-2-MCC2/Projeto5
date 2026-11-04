@@ -1,7 +1,7 @@
 // Componentes visuais reaproveitados nas telas (fornecedor, organizador, admin, login e landing).
 // Os estilos ficam em ui.css e usam os tokens de index.css. `style` continua funcionando em todos
 // para ajustes pontuais das telas.
-import { CircleAlert, CircleCheck, LoaderCircle, RefreshCw, Search, Star, Ticket, X } from "lucide-react";
+import { CircleAlert, CircleCheck, LoaderCircle, RefreshCw, Search, Ticket, X } from "lucide-react";
 import "./ui.css";
 
 // Junta classes ignorando as vazias: classes("a", cond && "b") -> "a b"
@@ -362,20 +362,6 @@ export function ModalConfirmacao({ icone, variante, titulo, descricao, rotuloVal
         </div>
       </div>
     </Modal>
-  );
-}
-
-// Nota de 0 a 5: estrelas cheias até a nota e só o contorno no resto.
-export function Estrelas({ nota }) {
-  const cheias = Math.round(nota);
-  const texto = nota.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 }); // 4.6 -> "4,6"
-  return (
-    <span role="img" aria-label={`Nota ${texto} de 5`} className="tt-estrelas">
-      {[1, 2, 3, 4, 5].map((n) => (
-        <Icone key={n} icone={Star} tamanho={14} fill={n <= cheias ? "currentColor" : "none"} />
-      ))}
-      <span className="tt-estrelas__nota">{texto}</span>
-    </span>
   );
 }
 

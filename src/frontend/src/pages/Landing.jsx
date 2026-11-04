@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, BadgeCheck, CalendarDays, Check, ClipboardList, FileText, Menu, Scale, Star, TrendingDown, Users, X } from "lucide-react";
-import { Badge, Estrelas, Icone, MarcaLogo, Picote } from "../components/ui";
+import { ArrowRight, BadgeCheck, CalendarDays, Check, ClipboardList, FileText, Menu, Scale, Send, TrendingDown, Users, X } from "lucide-react";
+import { Badge, Icone, MarcaLogo, Picote } from "../components/ui";
 import fotoShow from "../assets/troca_ticket.jpg";
 import logotipo from "../assets/logotipo_troca_ticket.png";
 import "./Landing.css";
@@ -23,9 +23,9 @@ const itensExemplo = [
 ];
 
 const propostasExemplo = [
-  { fornecedor: "Sabor & Cia Buffet", valor: "R$ 12.880", nota: 4.8, melhor: true },
-  { fornecedor: "Casa Nobre Eventos", valor: "R$ 13.450", nota: 4.6 },
-  { fornecedor: "Delícias SP", valor: "R$ 14.200", nota: 4.2 },
+  { fornecedor: "Sabor & Cia Buffet", valor: "R$ 12.880", melhor: true },
+  { fornecedor: "Casa Nobre Eventos", valor: "R$ 13.450" },
+  { fornecedor: "Delícias SP", valor: "R$ 14.200" },
 ];
 
 const passos = [
@@ -48,14 +48,14 @@ const passos = [
 
 const beneficiosOrganizador = [
   { icone: ClipboardList, titulo: "Orçamento organizado", texto: "Todos os itens do evento numa lista só, com estimado e acordado lado a lado." },
-  { icone: Scale, titulo: "Comparação justa", texto: "Propostas do mesmo item uma ao lado da outra, com a nota de cada fornecedor." },
+  { icone: Scale, titulo: "Comparação justa", texto: "Propostas do mesmo item uma ao lado da outra, para comparar valores e condições." },
   { icone: TrendingDown, titulo: "Economia visível", texto: "O resultado mostra o total acordado e a diferença para o que você estimou." },
 ];
 
 const beneficiosFornecedor = [
   { icone: CalendarDays, titulo: "Oportunidades abertas", texto: "Eventos em cotação com os itens que você fornece, prontos para receber proposta." },
   { icone: FileText, titulo: "Propostas acompanhadas", texto: "Veja quais propostas estão em análise, foram selecionadas ou recusadas." },
-  { icone: Star, titulo: "Reputação que conta", texto: "As avaliações dos organizadores formam sua nota e ajudam a ganhar os próximos eventos." },
+  { icone: Send, titulo: "Cotação por item", texto: "Envie preço só para os itens que você fornece, com descrição e validade." },
 ];
 
 // Canhoto do acordo fechado: o "ticket" que dá nome ao produto.
@@ -116,10 +116,7 @@ function IlustracaoPasso({ indice }) {
       <ul className="tt-mini tt-mini--propostas">
         {propostasExemplo.map((p) => (
           <li key={p.fornecedor} className={p.melhor ? "tt-mini__melhor" : undefined}>
-            <div>
-              <strong>{p.fornecedor}</strong>
-              <Estrelas nota={p.nota} />
-            </div>
+            <strong>{p.fornecedor}</strong>
             <span className="tt-ticket__valor">{p.valor}</span>
           </li>
         ))}

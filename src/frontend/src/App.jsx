@@ -18,7 +18,6 @@ import Fornecedor from "./pages/Fornecedor";
 import Oportunidades from "./pages/fornecedor/Oportunidades";
 import EnviarProposta from "./pages/fornecedor/EnviarProposta";
 import MinhasPropostas from "./pages/fornecedor/MinhasPropostas";
-import Reputacao from "./pages/fornecedor/Reputacao";
 import Admin from "./pages/Admin";
 import Dashboard from "./pages/admin/Dashboard";
 import Aprovacoes from "./pages/admin/Aprovacoes";
@@ -61,7 +60,6 @@ export default function App() {
             <Route index element={<Oportunidades />} />
             <Route path="eventos/:id" element={<EnviarProposta />} />
             <Route path="propostas" element={<MinhasPropostas />} />
-            <Route path="reputacao" element={<Reputacao />} />
           </Route>
           <Route
             path="/admin"

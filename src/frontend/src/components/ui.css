@@ -663,22 +663,6 @@ select.tt-campo {
 
 .tt-confirmacao__acoes .tt-btn { flex: 1; }
 
-/* ── Estrelas ── */
-.tt-estrelas {
-  display: inline-flex;
-  align-items: center;
-  gap: 1px;
-  color: var(--ambar);
-  white-space: nowrap;
-}
-
-.tt-estrelas__nota {
-  margin-left: 6px;
-  font-size: var(--tam-sm);
-  font-weight: var(--peso-semi);
-  color: var(--texto-suave);
-}
-
 @media (max-width: 640px) {
   .tt-modal { padding: var(--esp-6); }
   .tt-card-cabecalho { padding: var(--esp-4); }

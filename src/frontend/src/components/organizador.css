@@ -762,35 +762,6 @@
   margin-bottom: var(--esp-6);
 }
 
-/* Layout com a coluna estreita à esquerda (reputação do fornecedor) */
-.tt-coluna-esquerda {
-  display: grid;
-  grid-template-columns: 340px minmax(0, 1fr);
-  gap: var(--esp-6);
-  align-items: start;
-}
-
-/* Número de destaque da página (nota média): o único número grande da tela */
-.tt-nota-media {
-  display: flex;
-  align-items: baseline;
-  gap: var(--esp-2);
-  margin: var(--esp-1) 0 var(--esp-2);
-}
-
-.tt-nota-media strong {
-  font-size: var(--tam-6xl);
-  font-weight: var(--peso-extra);
-  line-height: 1;
-  letter-spacing: -0.04em;
-  color: var(--texto);
-}
-
-.tt-nota-media span {
-  font-size: var(--tam-lg);
-  color: var(--texto-suave);
-}
-
 /* Coluna lateral que acompanha a rolagem (resumo da proposta) */
 .tt-lateral-fixa {
   position: sticky;
@@ -834,10 +805,6 @@
 
   .tt-lateral-fixa {
     position: static;
-  }
-
-  .tt-coluna-esquerda {
-    grid-template-columns: 1fr;
   }
 
   .tt-barra-selecao {
