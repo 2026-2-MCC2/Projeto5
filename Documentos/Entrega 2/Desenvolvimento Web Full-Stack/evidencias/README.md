@@ -7,10 +7,6 @@ Prints que comprovam o CRUD de eventos integrado (front → API → MySQL) e o t
 1. Suba a API (`cd src/backend` → `npm run dev`) e o front (`cd src/frontend` → `npm run dev`). O passo a passo está no [README principal](../../../../README.md#-configuração-para-desenvolvimento).
 2. Para começar com os dados de exemplo, rode `npm run db:recriar` em `src/backend`.
 3. Entre como a organizadora **mariana@eventosmc.com.br** / **senha123**.
-4. Dicas para os prints:
-   - deixe a barra de endereço do navegador aparecendo, porque ela mostra a rota (`/organizador/eventos/...`);
-   - quando o print for do Postman, mostre o método, a URL, o status (ex.: `201 Created`) e o corpo da resposta;
-   - quando for do banco, use o MySQL Workbench com o resultado do `SELECT` visível.
 
 ---
 
