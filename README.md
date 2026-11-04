@@ -175,7 +175,7 @@ Criadas pelo `seed.sql`:
 | Perfil | E-mail | Senha |
 |---|---|---|
 | **Admin** | `admin@trocaticket.com` | `admin123` |
-| Organizador | `mariana@eventosmc.com.br` | `senha123` |
+| Organizador | `mariana@eventosmc.com.br` | `senha1234` |
 | Fornecedor | `contato@saboresdobrasil.com` | `senha123` |
 
 A lista completa, com usuários pendentes e rejeitados para testar os bloqueios de login, está em [`src/backend/README.md`](src/backend/README.md#credenciais-de-teste).
