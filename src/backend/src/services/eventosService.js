@@ -23,6 +23,13 @@ const SELECT_EVENTOS = `
 // categorias_itens chega do MySQL como "A|B"; a API devolve como lista.
 const formatar = (linha) => ({ ...linha, categorias_itens: linha.categorias_itens ? linha.categorias_itens.split("|") : [] });
 
+// O fornecedor não vê quantas propostas o evento já recebeu.
+function paraPerfil(evento, usuario) {
+  if (usuario?.perfil !== "fornecedor") return evento;
+  const { total_propostas, ...resto } = evento;
+  return resto;
+}
+
 // ── Validação ──────────────────────────────────────────────────────────────
 
 // Aceita "2026-12-12", "2026-12-12 11:00", "2026-12-12T11:00:00" etc.
@@ -113,11 +120,36 @@ export async function garantirDono(organizadorId, eventoId) {
   }
 }
 
+// Quem pode ver um evento: o admin vê todos, o organizador só os próprios e o fornecedor
+// os abertos para cotação ou aqueles em que já enviou proposta. Para os demais, o evento
+// "não existe" (404), para não revelar rascunhos de outras pessoas.
+async function garantirVisivel(usuario, evento) {
+  if (usuario.perfil === "admin") return;
+  if (usuario.perfil === "organizador" && evento.organizador_id === usuario.id) return;
+  if (usuario.perfil === "fornecedor") {
+    if (evento.status === "em_andamento") return;
+    const [linhas] = await pool.query(
+      "SELECT 1 FROM propostas p JOIN itens_custo i ON i.id = p.item_id WHERE i.evento_id = ? AND p.fornecedor_id = ? LIMIT 1",
+      [evento.id, usuario.id],
+    );
+    if (linhas.length) return;
+  }
+  throw HttpError.notFound("Evento não encontrado.");
+}
+
 // ── CRUD ───────────────────────────────────────────────────────────────────
 
-export async function listar({ organizador_id, status } = {}) {
+// Os filtros da URL só reduzem o que o perfil já pode ver.
+export async function listar(usuario, { organizador_id, status } = {}) {
   const filtros = [];
   const valores = [];
+
+  if (usuario.perfil === "organizador") {
+    filtros.push("e.organizador_id = ?");
+    valores.push(usuario.id);
+  } else if (usuario.perfil === "fornecedor") {
+    filtros.push("e.status = 'em_andamento'");
+  }
 
   if (!vazio(organizador_id)) {
     filtros.push("e.organizador_id = ?");
@@ -131,13 +163,15 @@ export async function listar({ organizador_id, status } = {}) {
 
   const where = filtros.length ? `WHERE ${filtros.join(" AND ")}` : "";
   const [linhas] = await pool.query(`${SELECT_EVENTOS} ${where} ORDER BY e.data_inicio`, valores);
-  return linhas.map(formatar);
+  return linhas.map((linha) => paraPerfil(formatar(linha), usuario));
 }
 
-export async function buscarPorId(id) {
+// Sem `usuario`, é uso interno da API (depois de criar ou alterar) e não confere a visibilidade.
+export async function buscarPorId(id, usuario) {
   const [linhas] = await pool.query(`${SELECT_EVENTOS} WHERE e.id = ?`, [validarId(id)]);
   if (!linhas[0]) throw HttpError.notFound("Evento não encontrado.");
-  return formatar(linhas[0]);
+  if (usuario) await garantirVisivel(usuario, linhas[0]);
+  return paraPerfil(formatar(linhas[0]), usuario);
 }
 
 // O dono é sempre quem está logado (vem do token); organizador_id no corpo é ignorado.

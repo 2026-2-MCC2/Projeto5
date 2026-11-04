@@ -4,8 +4,9 @@ import emTransacao from "../utils/transacao.js";
 import { validarId } from "../utils/validacao.js";
 
 export async function listar(req, res) {
-  const evento = await eventosService.buscarPorId(req.params.id); // 404 se o evento não existir
-  res.json(await itensService.listar(evento.id));
+  const evento = await eventosService.buscarPorId(req.params.id, req.usuario); // 404 se não existir ou o perfil não puder ver
+  const itens = await itensService.listar(evento.id);
+  res.json(req.usuario.perfil === "fornecedor" ? itens.map(itensService.paraFornecedor) : itens);
 }
 
 // Substitui a composição de custos inteira pela lista enviada (ver itensService.sincronizar).

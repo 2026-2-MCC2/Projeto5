@@ -15,6 +15,9 @@ const SELECT_ITENS = `
   WHERE i.evento_id = ?
   ORDER BY i.id`;
 
+// O que o fornecedor pode ver de um item: sem o valor fechado nem a quantidade de propostas dos concorrentes.
+export const paraFornecedor = ({ valor_acordado, total_propostas, ...item }) => item;
+
 const numero = (valor) => typeof valor === "number" && Number.isFinite(valor);
 
 // Valida a lista inteira; as mensagens dizem o número do item ("Item 2: ...").

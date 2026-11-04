@@ -5,12 +5,12 @@ import * as eventosService from "../services/eventosService.js";
 // req.usuario vem do middleware autenticar.
 
 export async function listar(req, res) {
-  const eventos = await eventosService.listar(req.query);
+  const eventos = await eventosService.listar(req.usuario, req.query);
   res.json(eventos);
 }
 
 export async function buscarPorId(req, res) {
-  const evento = await eventosService.buscarPorId(req.params.id);
+  const evento = await eventosService.buscarPorId(req.params.id, req.usuario);
   res.json(evento);
 }
 

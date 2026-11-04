@@ -127,13 +127,15 @@ Rotas protegidas exigem o cabeçalho `Authorization: Bearer <token>`, com o toke
 
 | Método | Rota | Acesso | Descrição |
 |---|---|---|---|
-| GET | `/eventos` | logado | Lista eventos. Filtros opcionais: `?organizador_id=2&status=rascunho` |
-| GET | `/eventos/:id` | logado | Um evento (inclui `orcamento`, `total_propostas`, `organizador_nome` e `categorias_itens`) |
+| GET | `/eventos` | logado | Lista os eventos que o perfil pode ver. Filtros opcionais: `?organizador_id=2&status=rascunho` |
+| GET | `/eventos/:id` | logado | Um evento (inclui `orcamento`, `total_propostas`, `organizador_nome` e `categorias_itens`). Sem permissão para ver → 404 |
 | POST | `/eventos` | organizador | Cria evento do organizador logado. Pode incluir `itens: [...]` |
 | PUT | `/eventos/:id` | organizador dono | Substitui o evento inteiro (mande todos os campos) |
 | DELETE | `/eventos/:id` | organizador dono | Exclui o evento, com seus itens e propostas |
 | GET | `/eventos/:id/itens` | logado | Itens de custo do evento (`valor_acordado` = proposta selecionada) |
 | PUT | `/eventos/:id/itens` | organizador dono | Substitui a lista de itens: `{ "itens": [...] }` |
+
+**Quem vê cada evento:** o admin vê todos, o organizador só os próprios e o fornecedor só os `em_andamento`. O fornecedor também abre, por id, um evento em que já enviou proposta, mesmo depois de finalizado. Para o fornecedor, as respostas não trazem `total_propostas` nem `valor_acordado`.
 
 **Campos de um evento:** `nome`\*, `descricao`, `categoria` (`Corporativo`, `Festival & Show`, `Casamento`, `Formatura`, `Social`, `Esportivo`), `data_inicio`\* e `data_fim`\* (`AAAA-MM-DD HH:MM`), `local`\*, `publico_minimo`\* e `publico_maximo`\* (inteiros, mínimo ≤ máximo), `margem_lucro` (de 0 a 0.99; `0.25` = 25%), `status` (`rascunho`, `aguardando_data`, `em_andamento`, `concluido`, `cancelado`). \* obrigatório.
 
