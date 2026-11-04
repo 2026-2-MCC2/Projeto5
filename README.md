@@ -174,7 +174,7 @@ Criadas pelo `seed.sql`:
 
 | Perfil | E-mail | Senha |
 |---|---|---|
-| **Admin** | `admin@trocaticket.com` | `admin123` |
+| **Admin** | `admin@trocaticket.com`
 | Organizador | `mariana@eventosmc.com.br` | `senha1234` |
 | Fornecedor | `contato@saboresdobrasil.com` | `senha123` |
 
