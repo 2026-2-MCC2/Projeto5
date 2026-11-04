@@ -43,6 +43,50 @@ O TrocaTicket é uma plataforma voltada para o planejamento e organização de e
 Os fornecedores aprovados podem visualizar os eventos disponíveis e enviar propostas para os itens de custo. A partir das propostas recebidas, o organizador pode comparar as opções, selecionar as propostas e consolidar os custos do evento. Com essas informações, a plataforma também permite calcular o ticket estimado de acordo com o custo total, público e margem de lucro.
 <br><br>
 
+## 🌐 Aplicação publicada
+
+| | Endereço | Hospedagem |
+|---|---|---|
+| **Site** | <https://projeto5-flame.vercel.app> | Vercel |
+| **API** | <https://projeto5-production.up.railway.app/api> | Railway |
+| **Banco de dados** | MySQL acessado só pela API | Railway |
+
+Para conferir se a API está no ar, abra <https://projeto5-production.up.railway.app/api/saude>. As contas de teste estão em [Credenciais de teste](#credenciais-de-teste).
+
+## 🎟️ Cálculo do ticket
+
+O ticket estimado usa o custo consolidado do evento, o público e a margem de lucro definida pelo organizador. Cada evento tem um único tipo de ingresso.
+
+**Custo consolidado:** soma de todos os itens do evento, usando o valor acordado quando há proposta selecionada e o valor estimado nos demais.
+
+**Fórmulas**, com a margem definida sobre a receita (preço de venda):
+
+```
+Ticket de equilíbrio = Custo consolidado ÷ Público
+Ticket-alvo          = Custo consolidado ÷ [Público × (1 − Margem)]
+```
+
+Na tela, o ticket de equilíbrio aparece como **Custo por pessoa** e o ticket-alvo como o preço **por ingresso**.
+
+**Exemplo** (Festival Gastronômico do seed, com custo consolidado de R$ 98.750 e margem de 25%):
+
+| Cenário | Público | Ticket de equilíbrio | Ticket-alvo |
+|---|---|---|---|
+| Público mínimo | 300 | R$ 329,17 | R$ 438,89 |
+| Público máximo | 500 | R$ 197,50 | R$ 263,33 |
+
+**Hipóteses adotadas:**
+
+- O custo consolidado é o mesmo nos dois cenários de público: nenhum custo varia com a quantidade de pessoas.
+- Custos fiscais, operacionais e variáveis são informados pelo organizador como valor estimado e não recebem propostas de fornecedores.
+- Impostos, como o ISS, são valores fixos informados pelo organizador e não são recalculados a partir da receita.
+- Um item de fornecedor sem proposta selecionada entra no custo pelo valor estimado.
+- Todos os ingressos do cenário são vendidos: a receita prevista é igual nos dois cenários, porque o preço se ajusta ao público.
+
+**Validações:** o custo e o público precisam ser maiores que zero, e a margem fica entre 0 e 99%, para o divisor nunca ser zero. Sem custos cadastrados, o ticket não é calculado.
+
+**Arredondamento:** o cálculo usa a precisão completa, e o valor é arredondado para 2 casas decimais só na exibição.
+
 ## 🛠 Estrutura de pastas
 
 ```
@@ -136,7 +180,7 @@ A lista completa, com usuários pendentes e rejeitados para testar os bloqueios 
 
 ### Endpoints da API
 
-Base: `http://localhost:3001/api`. As rotas marcadas com 🔒 exigem `Authorization: Bearer <token>`.
+Base local: `http://localhost:3001/api`. Base publicada: `https://projeto5-production.up.railway.app/api`. As rotas marcadas com 🔒 exigem `Authorization: Bearer <token>`.
 
 | Método | Rota | Descrição |
 |---|---|---|
@@ -145,6 +189,7 @@ Base: `http://localhost:3001/api`. As rotas marcadas com 🔒 exigem `Authorizat
 | POST | `/auth/login` | Login; devolve o token JWT |
 | GET | `/auth/eu` 🔒 | Usuário logado |
 | GET | `/admin/pendentes` 🔒 | Cadastros pendentes (admin) |
+| GET | `/admin/usuarios` 🔒 | Organizadores e fornecedores (admin) |
 | PATCH | `/admin/usuarios/:id/aprovar` 🔒 | Aprovar cadastro (admin) |
 | PATCH | `/admin/usuarios/:id/rejeitar` 🔒 | Rejeitar cadastro com motivo (admin) |
 | GET | `/eventos` 🔒 | Listar eventos |
@@ -154,8 +199,13 @@ Base: `http://localhost:3001/api`. As rotas marcadas com 🔒 exigem `Authorizat
 | DELETE | `/eventos/:id` 🔒 | Excluir evento (organizador dono) |
 | GET | `/eventos/:id/itens` 🔒 | Itens de custo do evento |
 | PUT | `/eventos/:id/itens` 🔒 | Salvar itens de custo (organizador dono) |
+| POST | `/eventos/:id/propostas` 🔒 | Enviar proposta para itens do evento (fornecedor) |
+| GET | `/eventos/:id/propostas` 🔒 | Propostas recebidas pelo evento (organizador dono) |
+| PUT | `/eventos/:id/selecao` 🔒 | Selecionar propostas (organizador dono) |
+| POST | `/eventos/:id/finalizar` 🔒 | Fechar a composição de custos (organizador dono) |
+| GET | `/propostas/minhas` 🔒 | Propostas do fornecedor logado |
 
-Os campos de cada rota e os códigos de erro (400, 401, 403, 404, 409, 500) estão em [`src/backend/README.md`](src/backend/README.md#endpoints). Para testar no Postman, importe `src/backend/postman/TrocaTicket.postman_collection.json`.
+Os campos de cada rota e os códigos de erro (400, 401, 403, 404, 409, 500) estão em [`src/backend/README.md`](src/backend/README.md#endpoints). Para testar no Postman, importe `src/backend/postman/TrocaTicket.postman_collection.json`. A coleção aponta para a API publicada; para testar localmente, troque a variável `baseUrl` por `http://localhost:3001/api`.
 
 ## 📋 Licença/License
 Utilize o link <https://chooser-beta.creativecommons.org/> para fazer uma licença CC BY 4.0.
