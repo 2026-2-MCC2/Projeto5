@@ -13,6 +13,10 @@ export function novoItem(categoria) {
 
 export const somaEstimado = (itens) => itens.reduce((soma, i) => soma + i.estimado, 0);
 
+// Custo usado no ticket: valor acordado onde há proposta escolhida e o estimado no resto
+// (itens ainda sem proposta e custos fiscais, operacionais e variáveis).
+export const custoConsolidado = (itens) => itens.reduce((soma, i) => soma + (i.acordado ?? i.estimado), 0);
+
 // API -> tela
 const doItemApi = (i) => ({
   id: i.id,

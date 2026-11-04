@@ -5,7 +5,7 @@ import { ArrowRight, Calendar, Check, MapPin, Pencil, Receipt, Trash2, Users } f
 import { Aviso, Card, CardTitulo, CabecalhoCard, Btn, Esqueleto, ErroCarregar, Indicador, ListaInfo, ModalConfirmacao, TextoComIcone, TituloPagina, Tabela, Linha, Celula, RodapeCard, Valor, Vazio } from "../../components/ui";
 import { EsqueletoTicket, SeloStatus, TicketCenarios } from "../../components/organizador";
 import EditorItens from "../../components/EditorItens";
-import { buscarEvento, excluirEvento, salvarItens, somaEstimado } from "../../services/organizadorService";
+import { buscarEvento, custoConsolidado, excluirEvento, salvarItens, somaEstimado } from "../../services/organizadorService";
 import { dataCurta, dataHora, moeda, periodo, porcentagem } from "../../utils/formatar";
 
 const colunas = ["Descrição", "Qtd.", "Unidade", "Custo Estimado", "Valor Acordado"];
@@ -110,8 +110,7 @@ export default function DetalhesEvento() {
   const estimadoComAcordo = somaEstimado(comAcordo);
   const removidosComPropostas = editando ? evento.itens.filter((i) => i.totalPropostas > 0 && !itensEditados.some((e) => e.id === i.id)) : [];
 
-  // Custo usado no ticket: valor acordado onde já há proposta escolhida e o estimado no resto.
-  const custoPrevisto = totalEstimado - estimadoComAcordo + totalAcordado;
+  const custoPrevisto = custoConsolidado(itens);
   const tudoAcordado = itens.length > 0 && comAcordo.length === itens.length;
 
   async function salvar() {

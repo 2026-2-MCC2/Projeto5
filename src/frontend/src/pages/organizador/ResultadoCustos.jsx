@@ -5,10 +5,13 @@ import { ArrowLeft, FileDown, Flag } from "lucide-react";
 import { Card, CabecalhoCard, Btn, BarraRotulada, Esqueleto, ErroCarregar, Indicador, ModalConfirmacao, TituloPagina, Tabela, Linha, Celula, Valor } from "../../components/ui";
 import { EsqueletoTicket, SeloStatus, TicketCenarios } from "../../components/organizador";
 import "../../components/organizador.css";
-import { buscarEvento, finalizarEvento, listarPropostas } from "../../services/organizadorService";
+import { buscarEvento, custoConsolidado, finalizarEvento, listarPropostas, somaEstimado } from "../../services/organizadorService";
 import { moeda } from "../../utils/formatar";
 
 const colunas = ["Item", "Fornecedor Escolhido", "Estimado", "Acordado", "Economia"];
+const colunasOutros = ["Item", "Tipo", "Custo Estimado"];
+
+const ROTULO_TIPO = { fornecedor: "Sem proposta escolhida", fiscal: "Fiscal", operacional: "Operacional", variavel: "Variável" };
 
 // Economia positiva = gastou menos que o estimado.
 function ValorEconomia({ valor, peso = 400 }) {
@@ -85,7 +88,10 @@ export default function ResultadoCustos() {
   const totalEstimado = linhas.reduce((soma, l) => soma + l.estimado, 0);
   const totalAcordado = linhas.reduce((soma, l) => soma + l.acordado, 0);
   const totalEconomia = totalEstimado - totalAcordado;
-  const semProposta = evento.itens.length - linhas.length;
+  // Tudo o que entra no ticket além das propostas escolhidas.
+  const outrosCustos = evento.itens.filter((i) => i.acordado === null);
+  const totalOutros = somaEstimado(outrosCustos);
+  const custoTotal = custoConsolidado(evento.itens);
 
   async function finalizar() {
     setErroFinalizar("");
@@ -111,19 +117,14 @@ export default function ResultadoCustos() {
         </Btn>
       </TituloPagina>
 
-      {semProposta > 0 && (
-        <Card variante="info" style={{ padding: "var(--esp-3) var(--esp-4)", marginBottom: "var(--esp-5)", fontSize: "var(--tam-base)", color: "var(--ativo-texto)" }}>
-          {semProposta === 1 ? "1 item do evento ainda não tem proposta escolhida" : `${semProposta} itens do evento ainda não têm proposta escolhida`} e não entra nesta conta.
-        </Card>
-      )}
-
       <div style={{ marginBottom: "var(--esp-6)" }}>
         <TicketCenarios
-          custo={totalAcordado}
-          rotuloCusto="Total acordado"
+          custo={custoTotal}
+          rotuloCusto="Custo consolidado"
           publicoMinimo={evento.publico_minimo}
           publicoMaximo={evento.publico_maximo}
           margem={evento.margem_lucro}
+          nota={outrosCustos.length > 0 ? `Soma ${moeda(totalAcordado)} acordados com ${moeda(totalOutros)} de outros custos do evento, pelo valor estimado.` : undefined}
         />
       </div>
 
@@ -186,6 +187,40 @@ export default function ResultadoCustos() {
           ))}
         </Tabela>
       </Card>
+
+      {outrosCustos.length > 0 && (
+        <Card style={{ overflow: "hidden", marginBottom: "var(--esp-6)" }}>
+          <CabecalhoCard titulo="Outros custos considerados" sub="Entram no ticket pelo valor estimado." />
+          <Tabela
+            colunas={colunasOutros}
+            rodape={
+              <tr style={{ background: "var(--superficie-2)", borderTop: "2px solid var(--borda)" }}>
+                <Celula colSpan={2} style={{ fontWeight: 700, color: "var(--texto)" }}>
+                  Total
+                </Celula>
+                <Celula>
+                  <Valor tamanho="var(--tam-md)" peso={700}>
+                    {moeda(totalOutros)}
+                  </Valor>
+                </Celula>
+              </tr>
+            }
+          >
+            {outrosCustos.map((item, i) => (
+              <Linha key={item.id} ultima={i === outrosCustos.length - 1}>
+                <Celula style={{ fontWeight: 600, color: "var(--texto)" }}>
+                  {item.descricao}
+                  <span style={{ display: "block", fontSize: "var(--tam-xs)", fontWeight: 400, color: "var(--texto-suave)" }}>{item.categoria}</span>
+                </Celula>
+                <Celula style={{ color: "var(--texto-2)" }}>{ROTULO_TIPO[item.tipo] ?? item.tipo}</Celula>
+                <Celula>
+                  <Valor>{moeda(item.estimado)}</Valor>
+                </Celula>
+              </Linha>
+            ))}
+          </Tabela>
+        </Card>
+      )}
 
       <Card style={{ padding: "var(--esp-6)", marginBottom: "var(--esp-8)" }}>
         <h3 style={{ fontSize: "var(--tam-md)", fontWeight: 700, color: "var(--texto)", marginBottom: "var(--esp-4)" }}>Distribuição do orçamento</h3>
