@@ -11,5 +11,7 @@ router.get("/pendentes", adminController.listarPendentes);
 router.get("/usuarios", adminController.listarUsuarios);
 router.patch("/usuarios/:id/aprovar", adminController.aprovar);
 router.patch("/usuarios/:id/rejeitar", adminController.rejeitar); // corpo: { "motivo": "..." }
+router.get("/redefinicoes", adminController.listarRedefinicoes);
+router.post("/redefinicoes/:id/codigo", adminController.gerarCodigoRedefinicao);
 
 export default router;

@@ -45,7 +45,7 @@ node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
 
 O banco é criado por dois arquivos em [`database/`](database):
 
-- [`schema.sql`](database/schema.sql): cria o banco `trocaticket` e as tabelas `usuarios`, `eventos`, `itens_custo` e `propostas`, com chaves estrangeiras e `CHECK`s;
+- [`schema.sql`](database/schema.sql): cria o banco `trocaticket` e as tabelas `usuarios`, `eventos`, `itens_custo`, `propostas` e `redefinicoes_senha`, com chaves estrangeiras e `CHECK`s;
 - [`seed.sql`](database/seed.sql): insere dados de exemplo (usuários, 3 eventos, itens de custo e propostas).
 
 **Jeito mais fácil** (usa os dados do `.env`, não precisa do `mysql` no terminal):
@@ -66,6 +66,8 @@ Ou no MySQL Workbench: abra cada arquivo em **File → Open SQL Script** e execu
 
 > **Banco criado antes de existir a coluna `categoria` em `eventos`?** Rode uma vez a migração
 > [`database/migracoes/001_categoria_eventos.sql`](database/migracoes/001_categoria_eventos.sql) (ou `npm run db:recriar`, que apaga os dados).
+
+> **Banco criado antes de existir a tabela `redefinicoes_senha`?** Rode `npm run db:migrar -- 002_redefinicoes_senha.sql`, que não apaga dados.
 
 ## 4. Rodar a API
 
@@ -112,6 +114,8 @@ Rotas protegidas exigem o cabeçalho `Authorization: Bearer <token>`, com o toke
 |---|---|---|---|
 | POST | `/auth/registrar` | público | Cadastra organizador ou fornecedor com status `pendente`. Corpo: `nome`, `email`, `senha` (mín. 6), `perfil` (`organizador` ou `fornecedor`) |
 | POST | `/auth/login` | público | Corpo: `email`, `senha`. Devolve `{ token, usuario }`. Bloqueia cadastros pendentes ou rejeitados (403) |
+| POST | `/auth/esqueci-senha` | público | Corpo: `email`. Registra um pedido de redefinição. A resposta é sempre a mesma, para não revelar quais e-mails existem. Só contas aprovadas, sem o admin |
+| POST | `/auth/redefinir-senha` | público | Corpo: `email`, `codigo`, `senha`. Troca a senha com o código gerado pelo admin. Código errado, expirado ou já usado → 400 |
 | GET | `/auth/eu` | logado | Dados de quem está logado |
 
 ### Admin
@@ -122,6 +126,8 @@ Rotas protegidas exigem o cabeçalho `Authorization: Bearer <token>`, com o toke
 | GET | `/admin/usuarios` | admin | Organizadores e fornecedores, com perfil, status e data de cadastro |
 | PATCH | `/admin/usuarios/:id/aprovar` | admin | Aprova o usuário |
 | PATCH | `/admin/usuarios/:id/rejeitar` | admin | Rejeita o usuário. Corpo: `{ "motivo": "..." }` (obrigatório) |
+| GET | `/admin/redefinicoes` | admin | Pedidos de redefinição de senha em aberto |
+| POST | `/admin/redefinicoes/:id/codigo` | admin | Gera o código de um pedido e o devolve uma única vez. Vale 30 minutos, serve uma vez e é bloqueado depois de 5 tentativas erradas. Gerar de novo substitui o anterior |
 
 ### Eventos
 
@@ -180,6 +186,7 @@ src/backend/
 │   ├── schema.sql          # cria o banco e as tabelas
 │   ├── seed.sql            # dados de exemplo
 │   ├── setup.js            # usado por npm run db:criar / db:recriar
+│   ├── migrar.js           # usado por npm run db:migrar
 │   └── migracoes/          # alterações para bancos já existentes
 ├── postman/                # coleção do Postman
 ├── src/

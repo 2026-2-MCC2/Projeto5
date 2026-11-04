@@ -1,4 +1,5 @@
 import * as authService from "../services/authService.js";
+import * as redefinicoesService from "../services/redefinicoesService.js";
 
 export async function registrar(req, res) {
   const usuario = await authService.registrar(req.body);
@@ -10,6 +11,14 @@ export async function registrar(req, res) {
 
 export async function login(req, res) {
   res.json(await authService.login(req.body));
+}
+
+export async function esqueciSenha(req, res) {
+  res.json(await redefinicoesService.solicitar(req.body));
+}
+
+export async function redefinirSenha(req, res) {
+  res.json(await redefinicoesService.redefinir(req.body));
 }
 
 // Quem está logado (útil para o front restaurar a sessão a partir do token salvo).

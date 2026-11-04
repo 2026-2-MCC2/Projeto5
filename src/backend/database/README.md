@@ -1,6 +1,6 @@
 # TrocaTicket — Banco de dados
 
-Banco relacional em **MySQL 8.0.16 ou mais novo**, com tabelas InnoDB e caracteres `utf8mb4`. Ele guarda os usuários da plataforma, os eventos, os itens de custo de cada evento e as propostas dos fornecedores.
+Banco relacional em **MySQL 8.0.16 ou mais novo**, com tabelas InnoDB e caracteres `utf8mb4`. Ele guarda os usuários da plataforma, os eventos, os itens de custo de cada evento, as propostas dos fornecedores e os pedidos de redefinição de senha.
 
 | Arquivo | Para que serve |
 |---|---|
@@ -8,6 +8,7 @@ Banco relacional em **MySQL 8.0.16 ou mais novo**, com tabelas InnoDB e caracter
 | [`seed.sql`](seed.sql) | Insere os dados de exemplo |
 | [`setup.js`](setup.js) | Roda os dois scripts acima (`npm run db:criar` e `npm run db:recriar`) |
 | [`migracoes/`](migracoes) | Alterações para bancos criados antes de uma mudança no schema |
+| [`migrar.js`](migrar.js) | Aplica uma migração sem apagar dados (`npm run db:migrar -- arquivo.sql`) |
 
 As instruções de execução estão no [README da API](../README.md#3-criar-o-banco-de-dados).
 
@@ -19,6 +20,8 @@ erDiagram
     eventos ||--o{ itens_custo : "possui"
     itens_custo ||--o{ propostas : "recebe"
     usuarios ||--o{ propostas : "envia"
+    usuarios ||--o{ redefinicoes_senha : "pede"
+    usuarios |o--o{ redefinicoes_senha : "gera codigo"
 
     usuarios {
         int id PK
@@ -66,6 +69,17 @@ erDiagram
         enum status
         datetime criado_em
     }
+    redefinicoes_senha {
+        int id PK
+        int usuario_id FK
+        char codigo_hash
+        datetime codigo_expira_em
+        tinyint tentativas
+        int gerado_por FK
+        datetime solicitado_em
+        datetime gerado_em
+        datetime usado_em
+    }
 ```
 
 Cardinalidades:
@@ -74,6 +88,8 @@ Cardinalidades:
 - Um evento tem zero ou mais itens de custo, e cada item pertence a um único evento.
 - Um item recebe zero ou mais propostas, e cada proposta é para um único item.
 - Um usuário fornecedor envia zero ou mais propostas, e cada proposta é de um único fornecedor.
+- Um usuário faz zero ou mais pedidos de redefinição de senha, e cada pedido é de um único usuário.
+- Um administrador gera códigos para zero ou mais pedidos, e cada pedido tem no máximo um administrador.
 
 ## Tabelas
 
@@ -145,6 +161,22 @@ Cada linha é a proposta de um fornecedor para um item de custo.
 | `status` | `ENUM('em_analise', 'selecionada', 'recusada')` | não | `em_analise` | Situação da proposta |
 | `criado_em` | `DATETIME` | não | data atual | Data do envio |
 
+### `redefinicoes_senha`
+
+Pedidos de redefinição de senha. O usuário pede, o administrador gera um código e o usuário o usa para criar a senha nova. Ficam guardados como registro de quem pediu e de quem autorizou.
+
+| Campo | Tipo | Nulo | Padrão | Descrição |
+|---|---|---|---|---|
+| `id` | `INT UNSIGNED` | não | auto incremento | Chave primária |
+| `usuario_id` | `INT UNSIGNED` | não | | Chave estrangeira para `usuarios`: quem pediu |
+| `codigo_hash` | `CHAR(60)` | sim | | Hash bcrypt do código, nunca o código em texto puro |
+| `codigo_expira_em` | `DATETIME` | sim | | Até quando o código vale |
+| `tentativas` | `TINYINT UNSIGNED` | não | `0` | Códigos errados informados |
+| `gerado_por` | `INT UNSIGNED` | sim | | Chave estrangeira para `usuarios`: administrador que gerou o código |
+| `solicitado_em` | `DATETIME` | não | data atual | Data do pedido |
+| `gerado_em` | `DATETIME` | sim | | Data em que o código foi gerado |
+| `usado_em` | `DATETIME` | sim | | Data em que a senha foi trocada |
+
 ## Chaves estrangeiras
 
 | Tabela | Campo | Referência | Ao apagar | Ao atualizar |
@@ -153,6 +185,8 @@ Cada linha é a proposta de um fornecedor para um item de custo.
 | `itens_custo` | `evento_id` | `eventos.id` | `CASCADE` | `CASCADE` |
 | `propostas` | `item_id` | `itens_custo.id` | `CASCADE` | `CASCADE` |
 | `propostas` | `fornecedor_id` | `usuarios.id` | `RESTRICT` | `CASCADE` |
+| `redefinicoes_senha` | `usuario_id` | `usuarios.id` | `CASCADE` | `CASCADE` |
+| `redefinicoes_senha` | `gerado_por` | `usuarios.id` | `SET NULL` | `CASCADE` |
 
 Na prática, apagar um evento apaga os itens e as propostas dele, e não é possível apagar um usuário que tenha eventos ou propostas. Assim, nenhum registro fica órfão.
 
@@ -191,6 +225,7 @@ Além das chaves primárias e únicas:
 | `idx_itens_custo_evento` | `itens_custo` | `evento_id` | Itens de um evento |
 | `idx_propostas_fornecedor` | `propostas` | `fornecedor_id` | Propostas de um fornecedor |
 | `idx_propostas_status` | `propostas` | `status` | Propostas por situação |
+| `idx_redefinicoes_usado` | `redefinicoes_senha` | `usado_em` | Pedidos ainda em aberto |
 
 ## Dados de exemplo
 

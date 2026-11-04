@@ -527,23 +527,6 @@
   width: 100%;
 }
 
-.tt-acesso__divisor {
-  display: flex;
-  align-items: center;
-  gap: var(--esp-3);
-  margin: var(--esp-6) 0;
-  font-size: var(--tam-xs);
-  color: var(--texto-suave);
-}
-
-.tt-acesso__divisor::before,
-.tt-acesso__divisor::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: var(--borda);
-}
-
 .tt-acesso__rodape {
   display: flex;
   align-items: center;

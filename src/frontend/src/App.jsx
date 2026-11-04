@@ -5,6 +5,8 @@ import BotaoTema from "./components/BotaoTema";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import CriarConta from "./pages/CriarConta";
+import EsqueciSenha from "./pages/EsqueciSenha";
+import RedefinirSenha from "./pages/RedefinirSenha";
 import Organizador from "./pages/Organizador";
 import MeusEventos from "./pages/organizador/MeusEventos";
 import CriarEvento from "./pages/organizador/CriarEvento";
@@ -30,6 +32,8 @@ export default function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/criar-conta" element={<CriarConta />} />
+          <Route path="/esqueci-senha" element={<EsqueciSenha />} />
+          <Route path="/redefinir-senha" element={<RedefinirSenha />} />
 
           <Route
             path="/organizador"

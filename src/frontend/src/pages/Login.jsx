@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import { LayoutDashboard, Lock, Mail, ShieldCheck, Ticket } from "lucide-react";
 import RightPanel from "../components/RightPanel";
-import { AvisoAcesso, BotaoGoogle, BotaoMostrarSenha, CabecalhoAcesso, CampoAcesso, ConteudoBotao, DivisorOu, TelaAcesso } from "../components/Acesso";
+import { AvisoAcesso, BotaoMostrarSenha, CabecalhoAcesso, CampoAcesso, ConteudoBotao, TelaAcesso } from "../components/Acesso";
 
 const features = [
   { icon: LayoutDashboard, title: "Gerencie seus eventos", desc: "Organize informações, lotes e vendas em um único lugar." },
@@ -115,7 +115,7 @@ export default function Login() {
             estado={erroSenha ? "erro" : undefined}
             mensagem={erroSenha}
             extra={
-              <button type="button" className="tt-acesso__link" style={{ fontSize: "var(--tam-xs)" }}>
+              <button type="button" className="tt-acesso__link" style={{ fontSize: "var(--tam-xs)" }} onClick={() => navigate("/esqueci-senha")}>
                 Esqueceu sua senha?
               </button>
             }
@@ -127,10 +127,6 @@ export default function Login() {
           </button>
         </fieldset>
       </form>
-
-      <DivisorOu />
-
-      <BotaoGoogle>Entrar com Google</BotaoGoogle>
     </TelaAcesso>
   );
 }

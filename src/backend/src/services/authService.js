@@ -5,13 +5,21 @@ import env from "../config/env.js";
 import HttpError from "../utils/HttpError.js";
 import { exigirObjeto, texto, vazio } from "../utils/validacao.js";
 
-const CUSTO_BCRYPT = 10;
+export const CUSTO_BCRYPT = 10;
 const PERFIS_CADASTRO = ["organizador", "fornecedor"]; // admin não se cadastra pela API
-const EMAIL_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+export const EMAIL_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Usado quando o e-mail não existe, para o login levar o mesmo tempo
 // e não revelar quais e-mails estão cadastrados.
-const HASH_FALSO = bcrypt.hashSync("senha-que-nao-existe", CUSTO_BCRYPT);
+export const HASH_FALSO = bcrypt.hashSync("senha-que-nao-existe", CUSTO_BCRYPT);
+
+// Regras de senha do cadastro e da redefinição. Devolve a mensagem de erro, ou null se estiver certa.
+export function erroDaSenha(senha) {
+  if (vazio(senha)) return 'O campo "senha" é obrigatório.';
+  if (typeof senha !== "string" || senha.length < 6) return "A senha deve ter pelo menos 6 caracteres.";
+  if (senha.length > 72) return "A senha deve ter no máximo 72 caracteres."; // limite do bcrypt
+  return null;
+}
 
 // Dados do usuário que podem ir para o front (nunca o senha_hash).
 export const publico = ({ id, nome, email, perfil, status }) => ({ id, nome, email, perfil, status });
@@ -25,9 +33,8 @@ export async function registrar(dados) {
   if (email && !EMAIL_VALIDO.test(email)) erros.push("Informe um e-mail válido.");
 
   const { senha, perfil } = dados;
-  if (vazio(senha)) erros.push('O campo "senha" é obrigatório.');
-  else if (typeof senha !== "string" || senha.length < 6) erros.push("A senha deve ter pelo menos 6 caracteres.");
-  else if (senha.length > 72) erros.push("A senha deve ter no máximo 72 caracteres."); // limite do bcrypt
+  const erroSenha = erroDaSenha(senha);
+  if (erroSenha) erros.push(erroSenha);
 
   if (vazio(perfil)) erros.push('O campo "perfil" é obrigatório.');
   else if (!PERFIS_CADASTRO.includes(perfil)) erros.push('O perfil deve ser "organizador" ou "fornecedor".');

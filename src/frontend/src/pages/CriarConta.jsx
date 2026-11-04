@@ -6,12 +6,10 @@ import RightPanel from "../components/RightPanel";
 import { Icone } from "../components/ui";
 import {
   AvisoAcesso,
-  BotaoGoogle,
   BotaoMostrarSenha,
   CabecalhoAcesso,
   CampoAcesso,
   ConteudoBotao,
-  DivisorOu,
   EscolhaPerfil,
   SucessoAcesso,
   TelaAcesso,
@@ -241,10 +239,6 @@ export default function CriarConta() {
               </button>
             </fieldset>
           </form>
-
-          <DivisorOu />
-
-          <BotaoGoogle>Criar conta com Google</BotaoGoogle>
         </>
       )}
     </TelaAcesso>

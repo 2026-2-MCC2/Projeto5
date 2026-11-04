@@ -189,11 +189,15 @@ Base local: `http://localhost:3001/api`. Base publicada: `https://projeto5-produ
 | GET | `/saude` | Confere se a API está no ar |
 | POST | `/auth/registrar` | Cadastro de organizador ou fornecedor (fica pendente) |
 | POST | `/auth/login` | Login; devolve o token JWT |
+| POST | `/auth/esqueci-senha` | Pedir a redefinição de senha |
+| POST | `/auth/redefinir-senha` | Trocar a senha com o código do admin |
 | GET | `/auth/eu` 🔒 | Usuário logado |
 | GET | `/admin/pendentes` 🔒 | Cadastros pendentes (admin) |
 | GET | `/admin/usuarios` 🔒 | Organizadores e fornecedores (admin) |
 | PATCH | `/admin/usuarios/:id/aprovar` 🔒 | Aprovar cadastro (admin) |
 | PATCH | `/admin/usuarios/:id/rejeitar` 🔒 | Rejeitar cadastro com motivo (admin) |
+| GET | `/admin/redefinicoes` 🔒 | Pedidos de redefinição de senha (admin) |
+| POST | `/admin/redefinicoes/:id/codigo` 🔒 | Gerar código de redefinição (admin) |
 | GET | `/eventos` 🔒 | Listar eventos |
 | GET | `/eventos/:id` 🔒 | Ver um evento |
 | POST | `/eventos` 🔒 | Criar evento (organizador) |

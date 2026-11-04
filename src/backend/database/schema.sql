@@ -102,3 +102,25 @@ CREATE TABLE propostas (
 
 CREATE INDEX idx_propostas_fornecedor ON propostas (fornecedor_id);
 CREATE INDEX idx_propostas_status     ON propostas (status);
+
+-- ── Pedidos de redefinição de senha ────────────────────────────────────────
+-- O usuário pede, o admin gera um código e o usuário o usa para criar a senha nova.
+-- Mesma tabela da migração 002: mantenha as duas iguais.
+CREATE TABLE redefinicoes_senha (
+  id                INT UNSIGNED      NOT NULL AUTO_INCREMENT,
+  usuario_id        INT UNSIGNED      NOT NULL,
+  codigo_hash       CHAR(60)          NULL,               -- hash bcrypt: o código nunca fica em texto puro
+  codigo_expira_em  DATETIME          NULL,
+  tentativas        TINYINT UNSIGNED  NOT NULL DEFAULT 0, -- códigos errados informados
+  gerado_por        INT UNSIGNED      NULL,               -- admin que gerou o código
+  solicitado_em     DATETIME          NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  gerado_em         DATETIME          NULL,
+  usado_em          DATETIME          NULL,
+
+  CONSTRAINT pk_redefinicoes_senha PRIMARY KEY (id),
+  CONSTRAINT fk_redefinicoes_usuario FOREIGN KEY (usuario_id)
+    REFERENCES usuarios (id) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_redefinicoes_admin FOREIGN KEY (gerado_por)
+    REFERENCES usuarios (id) ON DELETE SET NULL ON UPDATE CASCADE,
+  INDEX idx_redefinicoes_usado (usado_em)
+) ENGINE = InnoDB;

@@ -28,6 +28,15 @@ export async function entrar(email, senha) {
   return usuario;
 }
 
+// Redefinição de senha: o pedido vai para o admin, que gera o código usado em redefinirSenha.
+export function solicitarRedefinicao(email) {
+  return api.post("/auth/esqueci-senha", { email });
+}
+
+export function redefinirSenha({ email, codigo, senha }) {
+  return api.post("/auth/redefinir-senha", { email, codigo, senha });
+}
+
 export function sair() {
   salvarToken(null);
   salvarSessao(null);

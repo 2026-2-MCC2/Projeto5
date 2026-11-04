@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { Briefcase, CalendarDays, CircleCheck, Clock, Mail } from "lucide-react";
 import { Aviso, Card, Badge, Btn, CabecalhoModal, Chip, Contador, Esqueleto, ErroCarregar, ListaDetalhes, Modal, ModalConfirmacao, TextArea, TextoComIcone, TituloPagina, Vazio } from "../../components/ui";
+import RedefinicoesSenha from "../../components/RedefinicoesSenha";
 import "../../components/organizador.css";
 import "./Aprovacoes.css";
 import { aprovarUsuario, rejeitarUsuario } from "../../services/authService";
@@ -170,6 +171,8 @@ export default function Aprovacoes() {
           ))}
         </div>
       )}
+
+      <RedefinicoesSenha />
 
       {vendo && (
         <Modal onClose={() => setVendo(null)}>

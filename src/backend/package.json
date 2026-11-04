@@ -9,7 +9,8 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "db:criar": "node database/setup.js",
-    "db:recriar": "node database/setup.js --recriar"
+    "db:recriar": "node database/setup.js --recriar",
+    "db:migrar": "node database/migrar.js"
   },
   "engines": {
     "node": ">=20"
