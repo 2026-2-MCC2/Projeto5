@@ -91,10 +91,17 @@ export async function enviar(fornecedorId, eventoId, dados) {
     await eventoAberto(id, conexao);
 
     const ids = envio.itens.map((i) => i.item_id);
-    const [itensEvento] = await conexao.query("SELECT id, descricao FROM itens_custo WHERE evento_id = ? AND id IN (?)", [id, ids]);
+    const [itensEvento] = await conexao.query("SELECT id, descricao, tipo FROM itens_custo WHERE evento_id = ? AND id IN (?)", [id, ids]);
     const porId = new Map(itensEvento.map((i) => [i.id, i]));
     const fora = ids.filter((itemId) => !porId.has(itemId));
     if (fora.length) throw HttpError.badRequest(`Item ${fora.join(", ")} não pertence a este evento.`);
+
+    // Custos fiscais, operacionais e variáveis não vêm de fornecedores.
+    const naoCotaveis = itensEvento.filter((i) => i.tipo !== "fornecedor");
+    if (naoCotaveis.length) {
+      const nomes = naoCotaveis.map((i) => `"${i.descricao}"`).join(", ");
+      throw HttpError.badRequest(`Estes itens não recebem propostas de fornecedores: ${nomes}.`);
+    }
 
     const [repetidas] = await conexao.query("SELECT item_id FROM propostas WHERE fornecedor_id = ? AND item_id IN (?)", [fornecedorId, ids]);
     if (repetidas.length) {

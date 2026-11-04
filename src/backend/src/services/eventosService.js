@@ -16,7 +16,7 @@ const SELECT_EVENTOS = `
          e.publico_minimo, e.publico_maximo, e.margem_lucro, e.status, e.criado_em,
          (SELECT COALESCE(SUM(i.valor_estimado), 0) FROM itens_custo i WHERE i.evento_id = e.id) AS orcamento,
          (SELECT COUNT(*) FROM propostas p JOIN itens_custo i ON i.id = p.item_id WHERE i.evento_id = e.id) AS total_propostas,
-         (SELECT GROUP_CONCAT(DISTINCT i.categoria ORDER BY i.categoria SEPARATOR '|') FROM itens_custo i WHERE i.evento_id = e.id) AS categorias_itens
+         (SELECT GROUP_CONCAT(DISTINCT i.categoria ORDER BY i.categoria SEPARATOR '|') FROM itens_custo i WHERE i.evento_id = e.id AND i.tipo = 'fornecedor') AS categorias_itens
   FROM eventos e
   JOIN usuarios u ON u.id = e.organizador_id`;
 

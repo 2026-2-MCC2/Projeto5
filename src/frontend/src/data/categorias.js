@@ -10,6 +10,9 @@ export const CATEGORIAS_FORNECEDOR = [
   "Transporte & Logística",
 ];
 
+// Categorias de um item de custo: os serviços acima e os custos que não vêm de fornecedores.
+export const CATEGORIAS_ITEM = [...CATEGORIAS_FORNECEDOR, "Impostos & Taxas", "Operacional", "Outros"];
+
 // Tipos de evento que o organizador pode criar.
 export const CATEGORIAS_EVENTO = [
   { rotulo: "Corporativo", icone: Building2 },

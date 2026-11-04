@@ -6,9 +6,10 @@ import { Aviso, Card, CardTitulo, CabecalhoCard, Btn, Esqueleto, ErroCarregar, I
 import { EsqueletoTicket, SeloStatus, TicketCenarios } from "../../components/organizador";
 import EditorItens from "../../components/EditorItens";
 import { buscarEvento, custoConsolidado, excluirEvento, salvarItens, somaEstimado } from "../../services/organizadorService";
+import { ROTULO_TIPO_CUSTO } from "../../data/tiposCusto";
 import { dataCurta, dataHora, moeda, periodo, porcentagem } from "../../utils/formatar";
 
-const colunas = ["Descrição", "Qtd.", "Unidade", "Custo Estimado", "Valor Acordado"];
+const colunas = ["Descrição", "Tipo", "Qtd.", "Unidade", "Custo Estimado", "Valor Acordado"];
 
 const publico = (ev) => `${ev.publico_minimo.toLocaleString("pt-BR")}–${ev.publico_maximo.toLocaleString("pt-BR")} pessoas`;
 
@@ -257,6 +258,7 @@ export default function DetalhesEvento() {
                   {itens.map((item, i) => (
                     <Linha key={item.id} ultima={i === itens.length - 1}>
                       <Celula style={{ color: "var(--texto)", fontWeight: 500 }}>{item.descricao}</Celula>
+                      <Celula style={{ color: "var(--texto-suave)" }}>{ROTULO_TIPO_CUSTO[item.tipo] ?? item.tipo}</Celula>
                       <Celula>
                         <Valor cor="var(--texto-suave)" peso={400}>
                           {item.quantidade}

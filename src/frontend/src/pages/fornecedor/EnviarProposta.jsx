@@ -9,6 +9,7 @@ import {
   CardTitulo,
   CabecalhoCard,
   Btn,
+  Campo,
   Esqueleto,
   ErroCarregar,
   Icone,
@@ -28,9 +29,11 @@ import {
 import { EsqueletoTicket } from "../../components/organizador";
 import "../../components/organizador.css";
 import { buscarEvento, enviarProposta, listarPropostas } from "../../services/fornecedorService";
-import { dataCurta, moeda } from "../../utils/formatar";
+import { dataCurta, diasAFrenteIso, hojeIso, moeda } from "../../utils/formatar";
 
-const colunas = ["Descrição", "Qtd. Solicitada", "Unidade", "Preço Ofertado (unit.)", "Subtotal"];
+const DIAS_VALIDADE_PADRAO = 30;
+
+const colunas =["Descrição", "Qtd. Solicitada", "Unidade", "Preço Ofertado (unit.)", "Subtotal"];
 
 // Status da proposta (API) → rótulo usado pelo StatusBadge.
 const ROTULO_STATUS_PROPOSTA = { em_analise: "Em análise", selecionada: "Aprovada", recusada: "Rejeitada" };
@@ -64,6 +67,8 @@ export default function EnviarProposta() {
   const [erroCarregar, setErroCarregar] = useState("");
   const [tentativa, setTentativa] = useState(0);
   const [precos, setPrecos] = useState({}); // item_id -> preço unitário digitado
+  const [descricao, setDescricao] = useState("");
+  const [validade, setValidade] = useState(() => diasAFrenteIso(DIAS_VALIDADE_PADRAO));
   const [observacoes, setObservacoes] = useState("");
   const [confirmando, setConfirmando] = useState(false);
   const [enviando, setEnviando] = useState(false);
@@ -105,10 +110,22 @@ export default function EnviarProposta() {
 
   const aberto = evento.status === "em_andamento";
   const enviadaPorItem = new Map(enviadas.map((p) => [p.item_id, p]));
-  const pendentes = evento.itens.filter((i) => !enviadaPorItem.has(i.id));
+  // Custos fiscais, operacionais e variáveis não são cotados por fornecedores.
+  const cotaveis = evento.itens.filter((i) => i.tipo === "fornecedor");
+  const pendentes = cotaveis.filter((i) => !enviadaPorItem.has(i.id));
   const comPreco = pendentes.filter((i) => precos[i.id] > 0);
   const total = comPreco.reduce((soma, i) => soma + precos[i.id] * i.quantidade, 0);
-  const podeEnviar = aberto && comPreco.length > 0;
+  const validadeOk = Boolean(validade) && validade >= hojeIso();
+  // O que ainda impede o envio, na ordem em que aparece na tela.
+  const pendencia =
+    comPreco.length === 0
+      ? "Preencha o preço de pelo menos um item"
+      : !descricao.trim()
+        ? "Descreva o que a proposta inclui"
+        : !validadeOk
+          ? "Informe uma validade a partir de hoje"
+          : "";
+  const podeEnviar = aberto && !pendencia;
 
   function alterarPreco(itemId, valor) {
     setPrecos({ ...precos, [itemId]: valor === "" ? 0 : Number(valor) });
@@ -120,6 +137,8 @@ export default function EnviarProposta() {
     try {
       await enviarProposta(evento.id, {
         itens: comPreco.map((i) => ({ item_id: i.id, valor: centavos(precos[i.id] * i.quantidade) })),
+        descricao,
+        validade,
         observacoes,
       });
       navigate("/fornecedor/propostas", { state: { sucesso: `Proposta enviada para "${evento.nome}".` } });
@@ -178,11 +197,11 @@ export default function EnviarProposta() {
             </CabecalhoCard>
 
             <Tabela colunas={colunas}>
-              {evento.itens.map((item, i) => {
+              {cotaveis.map((item, i) => {
                 const enviada = enviadaPorItem.get(item.id);
                 const preco = precos[item.id] ?? 0;
                 return (
-                  <Linha key={item.id} ultima={i === evento.itens.length - 1}>
+                  <Linha key={item.id} ultima={i === cotaveis.length - 1}>
                     <Celula style={{ color: "var(--texto)", fontWeight: 500 }}>
                       {item.descricao}
                       <span style={{ display: "block", fontSize: "var(--tam-xs)", color: "var(--texto-suave)", fontWeight: 400 }}>{item.categoria}</span>
@@ -229,13 +248,18 @@ export default function EnviarProposta() {
 
           {pendentes.length > 0 && aberto && (
             <Card style={{ padding: "var(--esp-5) var(--esp-6)" }}>
-              <CardTitulo>Observações (opcional)</CardTitulo>
-              <TextArea
-                placeholder="Adicione informações adicionais, condições especiais, validade da proposta, etc."
-                value={observacoes}
-                maxLength={2000}
-                onChange={(e) => setObservacoes(e.target.value)}
-              />
+              <CardTitulo>Detalhes da proposta</CardTitulo>
+              <div style={{ display: "grid", gap: "var(--esp-4)" }}>
+                <Campo rotulo="Descrição *">
+                  <TextArea rows={3} placeholder="O que a proposta inclui: serviços, equipe, materiais..." value={descricao} maxLength={2000} onChange={(e) => setDescricao(e.target.value)} />
+                </Campo>
+                <Campo rotulo="Válida até *">
+                  <Input type="date" min={hojeIso()} value={validade} onChange={(e) => setValidade(e.target.value)} style={{ maxWidth: "220px" }} />
+                </Campo>
+                <Campo rotulo="Observações (opcional)">
+                  <TextArea rows={3} placeholder="Condições especiais, prazos, formas de pagamento..." value={observacoes} maxLength={2000} onChange={(e) => setObservacoes(e.target.value)} />
+                </Campo>
+              </div>
             </Card>
           )}
         </div>
@@ -253,7 +277,9 @@ export default function EnviarProposta() {
             </div>
             <Picote />
             <div style={{ padding: "var(--esp-5) var(--esp-6)" }}>
-              {pendentes.length === 0 ? (
+              {cotaveis.length === 0 ? (
+                <p style={{ fontSize: "var(--tam-base)", color: "var(--texto-suave)" }}>Este evento não tem itens abertos para cotação.</p>
+              ) : pendentes.length === 0 ? (
                 <p style={{ display: "flex", gap: "var(--esp-2)", color: "var(--verde-texto)", fontSize: "var(--tam-base)" }}>
                   <Icone icone={Check} tamanho={18} />
                   Você já enviou proposta para todos os itens deste evento.
@@ -272,7 +298,7 @@ export default function EnviarProposta() {
                   {aberto && !podeEnviar && (
                     <p className="tt-pendencia" style={{ marginTop: "var(--esp-3)" }}>
                       <Icone icone={CircleAlert} tamanho={16} />
-                      Preencha o preço de pelo menos um item
+                      {pendencia}
                     </p>
                   )}
                 </>

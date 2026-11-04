@@ -21,8 +21,9 @@ export function listarPropostas() {
 }
 
 // `itens`: [{ item_id, valor }] — valor total ofertado para o item (preço unitário × quantidade).
-export function enviarProposta(eventoId, { itens, observacoes }) {
-  return api.post(`/eventos/${eventoId}/propostas`, { itens, observacoes: observacoes?.trim() || undefined });
+// `validade`: "AAAA-MM-DD".
+export function enviarProposta(eventoId, { itens, descricao, validade, observacoes }) {
+  return api.post(`/eventos/${eventoId}/propostas`, { itens, descricao: descricao.trim(), validade, observacoes: observacoes?.trim() || undefined });
 }
 
 // ── Dados de exemplo (sem API ainda) ──────────────────────────────────────

@@ -45,10 +45,14 @@ export function mesAno(iso) {
   return `${MESES[mes - 1]} ${ano}`;
 }
 
-export function hojeIso() {
-  const hoje = new Date();
-  return `${hoje.getFullYear()}-${doisDigitos(hoje.getMonth() + 1)}-${doisDigitos(hoje.getDate())}`;
+// Data de daqui a `dias` dias, como "AAAA-MM-DD" no horário local.
+export function diasAFrenteIso(dias) {
+  const data = new Date();
+  data.setDate(data.getDate() + dias);
+  return `${data.getFullYear()}-${doisDigitos(data.getMonth() + 1)}-${doisDigitos(data.getDate())}`;
 }
+
+export const hojeIso = () => diasAFrenteIso(0);
 
 const UM_DIA = 24 * 60 * 60 * 1000;
 

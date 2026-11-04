@@ -141,7 +141,7 @@ Rotas protegidas exigem o cabeçalho `Authorization: Bearer <token>`, com o toke
 
 ### Propostas
 
-Cada proposta é de um fornecedor para **um item** de custo. Status: `em_analise` → `selecionada` (escolhida pelo organizador) ou `recusada` (ao finalizar). Só eventos `em_andamento` (publicados) recebem propostas e podem ter a escolha alterada.
+Cada proposta é de um fornecedor para **um item** de custo. Status: `em_analise` → `selecionada` (escolhida pelo organizador) ou `recusada` (ao finalizar). Só eventos `em_andamento` (publicados) recebem propostas e podem ter a escolha alterada. Só itens do tipo `fornecedor` recebem propostas (os demais → 400).
 
 | Método | Rota | Acesso | Descrição |
 |---|---|---|---|

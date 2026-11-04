@@ -1,6 +1,7 @@
 import { Plus, Trash2 } from "lucide-react";
 import { BotaoIcone, Btn, Input, Select, Tabela, Linha, Celula, RodapeCard, Valor } from "./ui";
-import { CATEGORIAS_FORNECEDOR } from "../data/categorias";
+import { CATEGORIAS_ITEM } from "../data/categorias";
+import { TIPOS_CUSTO } from "../data/tiposCusto";
 import { novoItem, somaEstimado } from "../services/organizadorService";
 import { moeda } from "../utils/formatar";
 
@@ -11,7 +12,7 @@ const estiloCelula = { padding: "10px 6px" };
 // Tabela editável dos itens de custo de um evento.
 // Com `comAcordado`, mostra também a coluna do valor acordado com o fornecedor.
 export default function EditorItens({ itens, onChange, comAcordado = false }) {
-  const colunas = ["Descrição", "Qtd.", "Unidade", "Categoria", "Custo Estimado", ...(comAcordado ? ["Valor Acordado"] : []), ""];
+  const colunas = ["Descrição", "Qtd.", "Unidade", "Categoria", "Tipo", "Custo Estimado", ...(comAcordado ? ["Valor Acordado"] : []), ""];
 
   function alterar(id, campo, valor) {
     onChange(itens.map((item) => (item.id === id ? { ...item, [campo]: valor } : item)));
@@ -34,7 +35,10 @@ export default function EditorItens({ itens, onChange, comAcordado = false }) {
               <Input value={item.unidade} onChange={(e) => alterar(item.id, "unidade", e.target.value)} style={{ ...estiloCampoTabela, width: "95px" }} />
             </Celula>
             <Celula style={estiloCelula}>
-              <Select opcoes={CATEGORIAS_FORNECEDOR} value={item.categoria} onChange={(e) => alterar(item.id, "categoria", e.target.value)} style={{ ...estiloCampoTabela, minWidth: "170px" }} />
+              <Select opcoes={CATEGORIAS_ITEM} aria-label={`Categoria de ${item.descricao || "item novo"}`} value={item.categoria} onChange={(e) => alterar(item.id, "categoria", e.target.value)} style={{ ...estiloCampoTabela, minWidth: "170px" }} />
+            </Celula>
+            <Celula style={estiloCelula}>
+              <Select opcoes={TIPOS_CUSTO} aria-label={`Tipo de ${item.descricao || "item novo"}`} value={item.tipo} onChange={(e) => alterar(item.id, "tipo", e.target.value)} style={{ ...estiloCampoTabela, minWidth: "120px" }} />
             </Celula>
             <Celula style={estiloCelula}>
               <Input type="number" min="0" placeholder="0" value={item.estimado || ""} onChange={(e) => alterar(item.id, "estimado", numero(e.target.value))} style={{ ...estiloNumero, width: "105px" }} />
@@ -60,7 +64,7 @@ export default function EditorItens({ itens, onChange, comAcordado = false }) {
       </Tabela>
 
       <RodapeCard>
-        <Btn variante="ghost" tamanho="sm" icone={Plus} onClick={() => onChange([...itens, novoItem(CATEGORIAS_FORNECEDOR[0])])}>
+        <Btn variante="ghost" tamanho="sm" icone={Plus} onClick={() => onChange([...itens, novoItem(CATEGORIAS_ITEM[0])])}>
           Adicionar Item
         </Btn>
         <div>
