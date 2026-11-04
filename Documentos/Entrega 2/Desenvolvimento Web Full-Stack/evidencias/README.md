@@ -1,7 +1,6 @@
 # Evidências — Entrega 2 (Desenvolvimento Web Full-Stack)
 
 Prints que comprovam o CRUD de eventos integrado (front → API → MySQL) e o tratamento de erros.
-Salve cada imagem **nesta pasta** com o nome sugerido e marque ☐ → ☑ quando tirar. Assim fica fácil ver o que falta.
 
 ## Antes de começar
 
