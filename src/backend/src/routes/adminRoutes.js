@@ -8,6 +8,7 @@ const router = Router();
 router.use(autenticar, permitirPerfis("admin"));
 
 router.get("/pendentes", adminController.listarPendentes);
+router.get("/usuarios", adminController.listarUsuarios);
 router.patch("/usuarios/:id/aprovar", adminController.aprovar);
 router.patch("/usuarios/:id/rejeitar", adminController.rejeitar); // corpo: { "motivo": "..." }
 

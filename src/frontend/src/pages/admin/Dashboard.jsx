@@ -1,19 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { Activity, Ban, Building2, CalendarClock, CalendarPlus, CircleCheck, ClipboardList, FileDown, FilePen, Inbox, UserCheck, Wallet } from "lucide-react";
-import { Card, Btn, CabecalhoModal, Chip, ListaDetalhes, Modal, StatusBadge, TituloPagina, Tabela, Linha, Celula, Vazio } from "../../components/ui";
+import { Card, Btn, CabecalhoModal, Chip, ErroCarregar, Esqueleto, ListaDetalhes, Modal, StatusBadge, TituloPagina, Tabela, Linha, Celula, Vazio } from "../../components/ui";
 import { CartaoGrafico, GraficoBarras, GraficoColunas, Kpi } from "../../components/painel";
 import "../../components/organizador.css";
-// Ainda sem API para os indicadores do admin: usa os dados de exemplo do localStorage.
-import { listarEventos } from "../../services/mock/organizadorMock";
-import { listarUsuarios } from "../../services/mock/usuariosMock";
+import { listarEventos, listarUsuarios } from "../../services/adminService";
 import { dataCurta, dentroDosUltimos, mesAno, moeda, tempoDesde } from "../../utils/formatar";
 
 const POR_PAGINA = 5;
 
 const diasDesdeInicioDoAno = () => Math.ceil((Date.now() - new Date(new Date().getFullYear(), 0, 1)) / (24 * 60 * 60 * 1000));
 
-// Cada período filtra pela data de cadastro. Itens de exemplo, sem data de cadastro, só entram em "Histórico".
+// Cada período filtra pela data de cadastro.
 const periodos = {
   "7 dias": () => 7,
   "30 dias": () => 30,
@@ -67,12 +65,59 @@ export default function Dashboard() {
   const [aba, setAba] = useState(ABA_EVENTOS);
   const [pagina, setPagina] = useState(1);
   const [vendo, setVendo] = useState(null);
+  const [todosEventos, setTodosEventos] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState("");
+  const [tentativa, setTentativa] = useState(0);
+
+  useEffect(() => {
+    let ativo = true;
+    Promise.all([listarEventos(), listarUsuarios()])
+      .then(([listaEventos, listaUsuarios]) => {
+        if (!ativo) return;
+        setTodosEventos(listaEventos);
+        setUsuarios(listaUsuarios);
+      })
+      .catch((err) => ativo && setErro(err.message))
+      .finally(() => ativo && setCarregando(false));
+    return () => {
+      ativo = false;
+    };
+  }, [tentativa]);
+
+  if (carregando)
+    return (
+      <div role="status" aria-label="Carregando o painel">
+        <Esqueleto largura="min(360px, 80%)" altura="32px" style={{ marginBottom: "var(--esp-8)" }} />
+        <div className="tt-grade-kpi">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <Card key={i} style={{ padding: "var(--esp-5)" }}>
+              <Esqueleto largura="60%" style={{ marginBottom: 12 }} />
+              <Esqueleto largura="40%" altura="28px" />
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  if (erro)
+    return (
+      <ErroCarregar
+        titulo="Não foi possível carregar o painel"
+        mensagem={erro}
+        onTentar={() => {
+          setCarregando(true);
+          setErro("");
+          setTentativa((n) => n + 1);
+        }}
+      />
+    );
 
   const dias = periodos[periodo]();
-  const eventos = listarEventos().filter((e) => dentroDosUltimos(e.criadoEm, dias));
-  const fornecedores = listarUsuarios().filter((u) => u.perfil === "fornecedor" && u.aprovado && dentroDosUltimos(u.criadoEm, dias));
+  const eventos = todosEventos.filter((e) => dentroDosUltimos(e.criadoEm, dias));
+  const fornecedores = usuarios.filter((u) => u.perfil === "fornecedor" && u.status === "aprovado" && dentroDosUltimos(u.criadoEm, dias));
   const comStatus = (status) => eventos.filter((e) => e.status === status).length;
-  const comPropostas = eventos.filter((e) => e.propostas.length > 0).length;
+  const comPropostas = eventos.filter((e) => e.totalPropostas > 0).length;
   const orcamentoTotal = eventos.reduce((soma, e) => soma + (e.orcamento || 0), 0);
 
   // ── Dados dos gráficos ──
@@ -184,7 +229,7 @@ export default function Dashboard() {
                 <Celula style={{ fontWeight: 600, color: "var(--texto)" }}>{ev.nome}</Celula>
                 <Celula style={{ color: "var(--texto-2)" }}>{ev.organizador ?? "—"}</Celula>
                 <Celula style={{ color: "var(--texto-suave)" }}>{dataCurta(ev.data)}</Celula>
-                <Celula style={{ fontWeight: 700, color: ev.propostas.length ? "var(--azul-texto)" : "var(--texto-suave)", fontVariantNumeric: "tabular-nums" }}>{ev.propostas.length}</Celula>
+                <Celula style={{ fontWeight: 700, color: ev.totalPropostas ? "var(--azul-texto)" : "var(--texto-suave)", fontVariantNumeric: "tabular-nums" }}>{ev.totalPropostas}</Celula>
                 <Celula>
                   <StatusBadge status={ev.status} />
                 </Celula>
@@ -237,9 +282,9 @@ export default function Dashboard() {
               { rotulo: "Organizador", valor: vendo.organizador ?? "—" },
               { rotulo: "Data", valor: dataCurta(vendo.data) },
               { rotulo: "Local", valor: vendo.local || "—" },
-              { rotulo: "Categoria", valor: vendo.categoria },
+              { rotulo: "Categoria", valor: vendo.categoria || "—" },
               { rotulo: "Orçamento", valor: moeda(vendo.orcamento) },
-              { rotulo: "Propostas", valor: `${vendo.propostas.length} recebidas` },
+              { rotulo: "Propostas", valor: `${vendo.totalPropostas} recebidas` },
               { rotulo: "Status", valor: vendo.status },
             ]}
           />

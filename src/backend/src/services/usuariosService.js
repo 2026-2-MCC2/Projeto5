@@ -11,6 +11,14 @@ export async function listarPendentes() {
   return linhas;
 }
 
+// Organizadores e fornecedores, para os indicadores do painel do admin (nunca o senha_hash).
+export async function listarUsuarios() {
+  const [linhas] = await pool.query(
+    "SELECT id, nome, email, perfil, status, criado_em FROM usuarios WHERE perfil <> 'admin' ORDER BY criado_em DESC, id DESC",
+  );
+  return linhas;
+}
+
 async function buscarParaModerar(id) {
   const [linhas] = await pool.query("SELECT id, nome, email, perfil, status FROM usuarios WHERE id = ?", [
     validarId(id),

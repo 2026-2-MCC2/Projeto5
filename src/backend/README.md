@@ -119,6 +119,7 @@ Rotas protegidas exigem o cabeçalho `Authorization: Bearer <token>`, com o toke
 | Método | Rota | Acesso | Descrição |
 |---|---|---|---|
 | GET | `/admin/pendentes` | admin | Cadastros aguardando aprovação |
+| GET | `/admin/usuarios` | admin | Organizadores e fornecedores, com perfil, status e data de cadastro |
 | PATCH | `/admin/usuarios/:id/aprovar` | admin | Aprova o usuário |
 | PATCH | `/admin/usuarios/:id/rejeitar` | admin | Rejeita o usuário. Corpo: `{ "motivo": "..." }` (obrigatório) |
 

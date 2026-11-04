@@ -15,7 +15,7 @@ function salvarSessao(usuario) {
 }
 
 // "2026-10-31 12:17:13" (MySQL) -> timestamp, usado por tempoDesde()
-const paraTimestamp = (datetime) => (datetime ? new Date(datetime.replace(" ", "T")).getTime() : undefined);
+export const paraTimestamp = (datetime) => (datetime ? new Date(datetime.replace(" ", "T")).getTime() : undefined);
 
 export async function registrar({ nome, email, senha, perfil }) {
   return api.post("/auth/registrar", { nome, email, senha, perfil });
