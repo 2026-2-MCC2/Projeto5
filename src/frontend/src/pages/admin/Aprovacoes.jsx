@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { Briefcase, CalendarDays, CircleCheck, Clock, Mail } from "lucide-react";
+import { Briefcase, Building2, CalendarDays, CircleCheck, Clock, Mail } from "lucide-react";
 import { Aviso, Card, Badge, Btn, CabecalhoModal, Chip, Contador, Esqueleto, ErroCarregar, ListaDetalhes, Modal, ModalConfirmacao, TextArea, TextoComIcone, TituloPagina, Vazio } from "../../components/ui";
 import RedefinicoesSenha from "../../components/RedefinicoesSenha";
 import "../../components/organizador.css";
@@ -8,6 +8,7 @@ import "./Aprovacoes.css";
 import { aprovarUsuario, rejeitarUsuario } from "../../services/authService";
 import { ROTULO_PERFIL } from "../../data/perfis";
 import { tempoDesde } from "../../utils/formatar";
+import { mascararCnpj } from "../../utils/cnpj";
 
 const abas = [
   { rotulo: "Todos", perfil: null },
@@ -19,6 +20,7 @@ const variantePerfil = { fornecedor: "info", organizador: "success" };
 const iconePerfil = { fornecedor: Briefcase, organizador: CalendarDays };
 
 const aguardando = (u) => (u.criadoEm ? tempoDesde(u.criadoEm) : "—");
+const cnpjDe = (u) => (u.cnpj ? mascararCnpj(u.cnpj) : "Não informado");
 
 // "Ana Paula Souza" -> "AS"
 function iniciais(nome = "") {
@@ -31,6 +33,7 @@ function detalhes(u) {
   return [
     { rotulo: "Nome", valor: u.nome },
     { rotulo: "E-mail", valor: u.email },
+    { rotulo: "CNPJ", valor: cnpjDe(u) },
     { rotulo: "Perfil", valor: ROTULO_PERFIL[u.perfil] },
     { rotulo: "Aguardando", valor: aguardando(u) },
   ];
@@ -149,6 +152,9 @@ export default function Aprovacoes() {
                   <div className="tt-cadastro__meta">
                     <TextoComIcone icone={Mail} tamanho={14}>
                       {u.email}
+                    </TextoComIcone>
+                    <TextoComIcone icone={Building2} tamanho={14}>
+                      {cnpjDe(u)}
                     </TextoComIcone>
                     <TextoComIcone icone={Clock} tamanho={14}>
                       Aguardando {aguardando(u)}

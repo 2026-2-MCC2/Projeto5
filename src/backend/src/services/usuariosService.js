@@ -6,7 +6,7 @@ import { exigirObjeto, texto, validarId } from "../utils/validacao.js";
 
 export async function listarPendentes() {
   const [linhas] = await pool.query(
-    "SELECT id, nome, email, perfil, status, criado_em FROM usuarios WHERE status = 'pendente' ORDER BY criado_em",
+    "SELECT id, nome, email, cnpj, perfil, status, criado_em FROM usuarios WHERE status = 'pendente' ORDER BY criado_em",
   );
   return linhas;
 }
@@ -14,7 +14,7 @@ export async function listarPendentes() {
 // Organizadores e fornecedores, para os indicadores do painel do admin (nunca o senha_hash).
 export async function listarUsuarios() {
   const [linhas] = await pool.query(
-    "SELECT id, nome, email, perfil, status, criado_em FROM usuarios WHERE perfil <> 'admin' ORDER BY criado_em DESC, id DESC",
+    "SELECT id, nome, email, cnpj, perfil, status, criado_em FROM usuarios WHERE perfil <> 'admin' ORDER BY criado_em DESC, id DESC",
   );
   return linhas;
 }

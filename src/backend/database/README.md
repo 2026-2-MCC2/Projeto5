@@ -27,6 +27,7 @@ erDiagram
         int id PK
         varchar nome
         varchar email UK
+        char cnpj UK
         char senha_hash
         enum perfil
         enum status
@@ -104,6 +105,7 @@ Administradores, organizadores e fornecedores, diferenciados pelo campo `perfil`
 | `id` | `INT UNSIGNED` | não | auto incremento | Chave primária |
 | `nome` | `VARCHAR(120)` | não | | Nome do usuário ou da empresa |
 | `email` | `VARCHAR(160)` | não | | Login, único no sistema |
+| `cnpj` | `CHAR(14)` | sim | | CNPJ da empresa, só os 14 dígitos e único. Obrigatório no cadastro (a API valida os dígitos verificadores); o admin fica sem |
 | `senha_hash` | `CHAR(60)` | não | | Hash bcrypt da senha, nunca a senha em texto puro |
 | `perfil` | `ENUM('admin', 'organizador', 'fornecedor')` | não | | Define o que o usuário pode fazer |
 | `status` | `ENUM('pendente', 'aprovado', 'rejeitado')` | não | `pendente` | Situação do cadastro |
@@ -237,7 +239,7 @@ O [modelo conceitual](../../../Documentos/Entrega%201/Projeto%20em%20Banco%20de%
 
 | Na modelagem | Na implementação |
 |---|---|
-| `Usuario` especializado em `Organizador`, `Fornecedor` e `Administrador` | Uma tabela `usuarios` com o campo `perfil`. Telefone, documento, CNPJ e razão social ainda não foram implementados |
+| `Usuario` especializado em `Organizador`, `Fornecedor` e `Administrador` | Uma tabela `usuarios` com o campo `perfil`. O CNPJ já é pedido no cadastro (coluna `cnpj`); telefone e razão social ainda não foram implementados |
 | `Categoria` e `Atua_em` | `categoria` é um campo de texto em `eventos` e `itens_custo`, e a área de atuação do fornecedor ainda não é registrada |
 | `Item_custo` e `Custo` separados | Uma tabela `itens_custo` com o campo `tipo`, que diferencia custos de fornecedor, fiscais, operacionais e variáveis |
 | `Simulacao` | Não é gravada: o ticket é calculado a partir dos dados do evento sempre que a tela é aberta |

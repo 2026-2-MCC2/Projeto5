@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registrar } from "../services/authService";
-import { Briefcase, CalendarDays, CalendarPlus, CircleAlert, Lock, Mail, ShieldCheck, Ticket, User } from "lucide-react";
+import { cnpjValido, mascararCnpj, somenteDigitos } from "../utils/cnpj";
+import { Briefcase, Building2, CalendarDays, CalendarPlus, CircleAlert, Lock, Mail, ShieldCheck, Ticket, User } from "lucide-react";
 import RightPanel from "../components/RightPanel";
 import { Icone } from "../components/ui";
 import {
@@ -36,6 +37,7 @@ export default function CriarConta() {
   const navigate = useNavigate();
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
+  const [cnpj, setCnpj] = useState(""); // guardado já com máscara
   const [pass, setPass] = useState("");
   const [conf, setConf] = useState("");
   const [showPass, setShowPass] = useState(false);
@@ -56,13 +58,14 @@ export default function CriarConta() {
     e.preventDefault();
     setErro("");
 
+    if (!cnpjValido(cnpj)) return setErro("Informe um CNPJ válido.");
     if (pass.length < 6) return setErro("A senha precisa ter no mínimo 6 caracteres.");
     if (pass !== conf) return setErro("As senhas não coincidem.");
     if (!aceito) return setErro("Aceite os Termos de Uso e a Política de Privacidade para continuar.");
 
     setEnviando(true);
     try {
-      await registrar({ nome, email, senha: pass, perfil });
+      await registrar({ nome, email, cnpj: somenteDigitos(cnpj), senha: pass, perfil });
       setSucesso("Conta criada! Aguarde a aprovação do administrador para entrar.");
       setTimeout(() => navigate("/login"), 2500);
     } catch (err) {
@@ -91,6 +94,17 @@ export default function CriarConta() {
       : !EMAIL_VALIDO.test(emailLimpo)
         ? { estado: "erro", mensagem: "Digite um e-mail válido, como nome@empresa.com." }
         : { estado: "ok" };
+
+  const digitosCnpj = somenteDigitos(cnpj).length;
+  const cnpjCampo = cnpjValido(cnpj)
+    ? { estado: "ok", mensagem: "CNPJ válido." }
+    : !mostrar("cnpj") && digitosCnpj < 14
+      ? {}
+      : !digitosCnpj
+        ? { estado: "erro", mensagem: "Informe o CNPJ da empresa." }
+        : digitosCnpj < 14
+          ? { estado: "erro", mensagem: `${faltam(14 - digitosCnpj).replace("caractere", "dígito")} para completar o CNPJ.` }
+          : { estado: "erro", mensagem: "CNPJ inválido. Confira os números digitados." };
 
   const senhaCampo =
     pass.length >= SENHA_MIN
@@ -178,6 +192,22 @@ export default function CriarConta() {
                 onBlur={tocar("email")}
                 required
                 {...emailCampo}
+              />
+
+              <CampoAcesso
+                rotulo="CNPJ"
+                icone={Building2}
+                type="text"
+                inputMode="numeric"
+                autoComplete="off"
+                placeholder="00.000.000/0000-00"
+                maxLength={18}
+                pattern="\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}"
+                value={cnpj}
+                onChange={(e) => setCnpj(mascararCnpj(e.target.value))}
+                onBlur={tocar("cnpj")}
+                required
+                {...cnpjCampo}
               />
 
               <div className="tt-acesso__dupla">

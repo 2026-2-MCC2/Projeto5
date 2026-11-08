@@ -9,14 +9,15 @@
 USE trocaticket;
 
 -- ── Usuários ───────────────────────────────────────────────────────────────
-INSERT INTO usuarios (id, nome, email, senha_hash, perfil, status, motivo_rejeicao) VALUES
-  (1, 'Administrador',            'admin@trocaticket.com',       '$2a$10$/kiEZimU49vAeOWKaJqXIOmHDjFzUmMkZUvFQN.yt6ablSHDA/ixy', 'admin',       'aprovado',  NULL),
-  (2, 'Mariana Costa',            'mariana@eventosmc.com.br',    '$2a$10$K46psQQuErDCZoAeRhbLp.Y5la.5jUhPIgZvJAv1Ylet9hTUt9H9i', 'organizador', 'aprovado',  NULL),
-  (3, 'Rafael Lima',              'rafael@lima-producoes.com',   '$2a$10$K46psQQuErDCZoAeRhbLp.Y5la.5jUhPIgZvJAv1Ylet9hTUt9H9i', 'organizador', 'pendente',  NULL),
-  (4, 'Sabores do Brasil Buffet', 'contato@saboresdobrasil.com', '$2a$10$K46psQQuErDCZoAeRhbLp.Y5la.5jUhPIgZvJAv1Ylet9hTUt9H9i', 'fornecedor',  'aprovado',  NULL),
-  (5, 'SomLuz Produções',         'orcamento@somluz.com.br',     '$2a$10$K46psQQuErDCZoAeRhbLp.Y5la.5jUhPIgZvJAv1Ylet9hTUt9H9i', 'fornecedor',  'aprovado',  NULL),
-  (6, 'Click Foto & Filme',       'click@fotofilme.com',         '$2a$10$K46psQQuErDCZoAeRhbLp.Y5la.5jUhPIgZvJAv1Ylet9hTUt9H9i', 'fornecedor',  'pendente',  NULL),
-  (7, 'Segura Tudo Ltda',         'comercial@seguratudo.com',    '$2a$10$K46psQQuErDCZoAeRhbLp.Y5la.5jUhPIgZvJAv1Ylet9hTUt9H9i', 'fornecedor',  'rejeitado', 'CNPJ informado não confere com a razão social.');
+-- CNPJs fictícios, mas com dígitos verificadores válidos (o admin não tem CNPJ).
+INSERT INTO usuarios (id, nome, email, cnpj, senha_hash, perfil, status, motivo_rejeicao) VALUES
+  (1, 'Administrador',            'admin@trocaticket.com',       NULL,             '$2a$10$/kiEZimU49vAeOWKaJqXIOmHDjFzUmMkZUvFQN.yt6ablSHDA/ixy', 'admin',       'aprovado',  NULL),
+  (2, 'Mariana Costa',            'mariana@eventosmc.com.br',    '11222333000181', '$2a$10$K46psQQuErDCZoAeRhbLp.Y5la.5jUhPIgZvJAv1Ylet9hTUt9H9i', 'organizador', 'aprovado',  NULL),
+  (3, 'Rafael Lima',              'rafael@lima-producoes.com',   '22333444000181', '$2a$10$K46psQQuErDCZoAeRhbLp.Y5la.5jUhPIgZvJAv1Ylet9hTUt9H9i', 'organizador', 'pendente',  NULL),
+  (4, 'Sabores do Brasil Buffet', 'contato@saboresdobrasil.com', '33444555000181', '$2a$10$K46psQQuErDCZoAeRhbLp.Y5la.5jUhPIgZvJAv1Ylet9hTUt9H9i', 'fornecedor',  'aprovado',  NULL),
+  (5, 'SomLuz Produções',         'orcamento@somluz.com.br',     '44555666000181', '$2a$10$K46psQQuErDCZoAeRhbLp.Y5la.5jUhPIgZvJAv1Ylet9hTUt9H9i', 'fornecedor',  'aprovado',  NULL),
+  (6, 'Click Foto & Filme',       'click@fotofilme.com',         '55666777000181', '$2a$10$K46psQQuErDCZoAeRhbLp.Y5la.5jUhPIgZvJAv1Ylet9hTUt9H9i', 'fornecedor',  'pendente',  NULL),
+  (7, 'Segura Tudo Ltda',         'comercial@seguratudo.com',    '66777888000181', '$2a$10$K46psQQuErDCZoAeRhbLp.Y5la.5jUhPIgZvJAv1Ylet9hTUt9H9i', 'fornecedor',  'rejeitado', 'CNPJ informado não confere com a razão social.');
 
 -- ── Eventos (todos da organizadora Mariana) ────────────────────────────────
 INSERT INTO eventos (id, organizador_id, nome, descricao, categoria, data_inicio, data_fim, local, publico_minimo, publico_maximo, margem_lucro, status) VALUES
