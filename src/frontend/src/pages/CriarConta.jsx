@@ -13,6 +13,7 @@ import {
   CampoAcesso,
   ConteudoBotao,
   EscolhaPerfil,
+  SeletorSegmentado,
   SucessoAcesso,
   TelaAcesso,
 } from "../components/Acesso";
@@ -31,8 +32,8 @@ const perfis = [
 
 // O organizador escolhe o documento; o fornecedor sempre usa CNPJ (a API exige).
 const documentos = [
-  { valor: "cnpj", icone: Building2, titulo: "CNPJ", texto: "Organizo eventos por uma empresa" },
-  { valor: "cpf", icone: IdCard, titulo: "CPF", texto: "Organizo eventos como pessoa física" },
+  { valor: "cnpj", icone: Building2, titulo: "CNPJ" },
+  { valor: "cpf", icone: IdCard, titulo: "CPF" },
 ];
 
 // Tamanho, máscara, validação e textos de cada documento.
@@ -200,10 +201,6 @@ export default function CriarConta() {
             <fieldset className="tt-acesso__travado" disabled={enviando}>
               <EscolhaPerfil rotulo="Como você vai usar o TrocaTicket?" opcoes={perfis} valor={perfil} onChange={trocarPerfil} />
 
-              {perfil === "organizador" && (
-                <EscolhaPerfil rotulo="Você vai se cadastrar com CNPJ ou CPF?" opcoes={documentos} valor={tipoDoc} onChange={trocarTipoDoc} />
-              )}
-
               <CampoAcesso
                 rotulo="Nome completo"
                 icone={User}
@@ -233,8 +230,12 @@ export default function CriarConta() {
               />
 
               <CampoAcesso
-                key={tipoDoc}
-                rotulo={rotuloDoc}
+                rotulo={perfil === "organizador" ? "Documento" : "CNPJ"}
+                extra={
+                  perfil === "organizador" && (
+                    <SeletorSegmentado rotulo="Tipo de documento" opcoes={documentos} valor={tipoDoc} onChange={trocarTipoDoc} />
+                  )
+                }
                 icone={tipoDoc === "cpf" ? IdCard : Building2}
                 type="text"
                 inputMode="numeric"

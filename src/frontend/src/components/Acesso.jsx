@@ -82,6 +82,24 @@ export function CampoAcesso({ rotulo, icone, extra, acao, estado, mensagem, ...p
   );
 }
 
+// Escolha curta entre poucas opções, em formato de pílula (ex.: CNPJ | CPF).
+// Rádios de verdade: Tab entra no grupo e as setas trocam a opção.
+// `opcoes`: lista de { valor, titulo, icone? }.
+export function SeletorSegmentado({ rotulo, opcoes, valor, onChange }) {
+  const nome = useId();
+  return (
+    <div className="tt-acesso__segmentos" role="radiogroup" aria-label={rotulo}>
+      {opcoes.map((o) => (
+        <label key={o.valor} className={`tt-acesso__segmento${valor === o.valor ? " tt-acesso__segmento--ativo" : ""}`}>
+          <input type="radio" name={nome} value={o.valor} checked={valor === o.valor} onChange={() => onChange(o.valor)} />
+          {o.icone && <Icone icone={o.icone} tamanho={14} />}
+          {o.titulo}
+        </label>
+      ))}
+    </div>
+  );
+}
+
 // Escolha de perfil em cartões grandes (rádios de verdade, acessíveis pelo teclado).
 // `opcoes`: lista de { valor, icone, titulo, texto }.
 export function EscolhaPerfil({ rotulo, opcoes, valor, onChange, desativado }) {
