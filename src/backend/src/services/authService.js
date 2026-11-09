@@ -4,6 +4,7 @@ import pool from "../config/db.js";
 import env from "../config/env.js";
 import HttpError from "../utils/HttpError.js";
 import { cnpjValido, somenteDigitos } from "../utils/cnpj.js";
+import { cpfValido } from "../utils/cpf.js";
 import { exigirObjeto, texto, vazio } from "../utils/validacao.js";
 
 export const CUSTO_BCRYPT = 10;
@@ -40,31 +41,51 @@ export async function registrar(dados) {
   if (vazio(perfil)) erros.push('O campo "perfil" é obrigatório.');
   else if (!PERFIS_CADASTRO.includes(perfil)) erros.push('O perfil deve ser "organizador" ou "fornecedor".');
 
-  // Organizadores e fornecedores se cadastram como empresa: o CNPJ é obrigatório.
-  // Aceita com ou sem máscara e grava só os 14 dígitos.
+  // Documento: fornecedor se cadastra como empresa (CNPJ obrigatório); organizador
+  // escolhe entre CNPJ (empresa) e CPF (pessoa física) e manda só um dos dois.
+  // Aceita com ou sem máscara e grava só os dígitos.
   let cnpj = null;
-  if (vazio(dados.cnpj)) erros.push('O campo "cnpj" é obrigatório.');
-  else if (typeof dados.cnpj !== "string" || !cnpjValido(dados.cnpj)) erros.push("CNPJ inválido.");
-  else cnpj = somenteDigitos(dados.cnpj);
+  let cpf = null;
+  const temCnpj = !vazio(dados.cnpj);
+  const temCpf = !vazio(dados.cpf);
+  if (temCpf && perfil === "fornecedor") erros.push("Fornecedores se cadastram com CNPJ.");
+  else if (temCnpj && temCpf) erros.push('Informe só um documento: "cnpj" ou "cpf".');
+  else if (temCpf) {
+    if (typeof dados.cpf !== "string" || !cpfValido(dados.cpf)) erros.push("CPF inválido.");
+    else cpf = somenteDigitos(dados.cpf);
+  } else if (temCnpj) {
+    if (typeof dados.cnpj !== "string" || !cnpjValido(dados.cnpj)) erros.push("CNPJ inválido.");
+    else cnpj = somenteDigitos(dados.cnpj);
+  } else {
+    erros.push(perfil === "organizador" ? 'Informe o "cnpj" ou o "cpf".' : 'O campo "cnpj" é obrigatório.');
+  }
 
   if (erros.length) throw HttpError.badRequest(erros.join(" "));
 
-  const [existentes] = await pool.query("SELECT email FROM usuarios WHERE email = ? OR cnpj = ?", [email, cnpj]);
+  const [existentes] = await pool.query("SELECT email FROM usuarios WHERE email = ? OR cnpj = ? OR cpf = ?", [
+    email,
+    cnpj,
+    cpf,
+  ]);
   if (existentes.some((u) => u.email === email)) throw HttpError.conflict("Este e-mail já está cadastrado.");
-  if (existentes.length) throw HttpError.conflict("Este CNPJ já está cadastrado.");
+  if (existentes.length) throw HttpError.conflict(`Este ${cpf ? "CPF" : "CNPJ"} já está cadastrado.`);
 
   const senhaHash = await bcrypt.hash(senha, CUSTO_BCRYPT);
   try {
     const [resultado] = await pool.query(
-      "INSERT INTO usuarios (nome, email, cnpj, senha_hash, perfil, status) VALUES (?, ?, ?, ?, ?, 'pendente')",
-      [nome, email, cnpj, senhaHash, perfil],
+      "INSERT INTO usuarios (nome, email, cnpj, cpf, senha_hash, perfil, status) VALUES (?, ?, ?, ?, ?, ?, 'pendente')",
+      [nome, email, cnpj, cpf, senhaHash, perfil],
     );
-    return { id: resultado.insertId, nome, email, cnpj, perfil, status: "pendente" };
+    return { id: resultado.insertId, nome, email, cnpj, cpf, perfil, status: "pendente" };
   } catch (err) {
-    // dois cadastros com o mesmo e-mail (ou CNPJ) ao mesmo tempo
+    // dois cadastros com o mesmo e-mail (ou documento) ao mesmo tempo
     if (err.code === "ER_DUP_ENTRY") {
       throw HttpError.conflict(
-        err.message.includes("uq_usuarios_cnpj") ? "Este CNPJ já está cadastrado." : "Este e-mail já está cadastrado.",
+        err.message.includes("uq_usuarios_cnpj")
+          ? "Este CNPJ já está cadastrado."
+          : err.message.includes("uq_usuarios_cpf")
+            ? "Este CPF já está cadastrado."
+            : "Este e-mail já está cadastrado.",
       );
     }
     throw err;

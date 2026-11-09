@@ -9,6 +9,7 @@ import { aprovarUsuario, rejeitarUsuario } from "../../services/authService";
 import { ROTULO_PERFIL } from "../../data/perfis";
 import { tempoDesde } from "../../utils/formatar";
 import { mascararCnpj } from "../../utils/cnpj";
+import { mascararCpf } from "../../utils/cpf";
 
 const abas = [
   { rotulo: "Todos", perfil: null },
@@ -20,7 +21,10 @@ const variantePerfil = { fornecedor: "info", organizador: "success" };
 const iconePerfil = { fornecedor: Briefcase, organizador: CalendarDays };
 
 const aguardando = (u) => (u.criadoEm ? tempoDesde(u.criadoEm) : "—");
-const cnpjDe = (u) => (u.cnpj ? mascararCnpj(u.cnpj) : "Não informado");
+// Organizador pode ter CPF no lugar do CNPJ.
+const rotuloDocumento = (u) => (u.cpf ? "CPF" : "CNPJ");
+const documentoDe = (u) => (u.cpf ? mascararCpf(u.cpf) : u.cnpj ? mascararCnpj(u.cnpj) : "Não informado");
+const resumoDocumento = (u) => (u.cpf ? `CPF ${mascararCpf(u.cpf)}` : documentoDe(u));
 
 // "Ana Paula Souza" -> "AS"
 function iniciais(nome = "") {
@@ -33,7 +37,7 @@ function detalhes(u) {
   return [
     { rotulo: "Nome", valor: u.nome },
     { rotulo: "E-mail", valor: u.email },
-    { rotulo: "CNPJ", valor: cnpjDe(u) },
+    { rotulo: rotuloDocumento(u), valor: documentoDe(u) },
     { rotulo: "Perfil", valor: ROTULO_PERFIL[u.perfil] },
     { rotulo: "Aguardando", valor: aguardando(u) },
   ];
@@ -154,7 +158,7 @@ export default function Aprovacoes() {
                       {u.email}
                     </TextoComIcone>
                     <TextoComIcone icone={Building2} tamanho={14}>
-                      {cnpjDe(u)}
+                      {resumoDocumento(u)}
                     </TextoComIcone>
                     <TextoComIcone icone={Clock} tamanho={14}>
                       Aguardando {aguardando(u)}

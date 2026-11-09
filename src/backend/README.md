@@ -69,7 +69,7 @@ Ou no MySQL Workbench: abra cada arquivo em **File → Open SQL Script** e execu
 
 > **Banco criado antes de existir a tabela `redefinicoes_senha`?** Rode `npm run db:migrar -- 002_redefinicoes_senha.sql`, que não apaga dados.
 
-> **Banco criado antes de existir a coluna `cnpj` em `usuarios`?** Rode uma vez `npm run db:migrar -- 003_cnpj_usuarios.sql`, que não apaga dados e preenche o CNPJ dos usuários de exemplo.
+> **Banco criado antes de existir a coluna `cnpj` em `usuarios`?** Rode uma vez `npm run db:migrar -- 003_cnpj_usuarios.sql`, que não apaga dados e preenche o CNPJ dos usuários de exemplo. Depois, para o CPF do organizador, rode uma vez `npm run db:migrar -- 004_cpf_usuarios.sql`.
 
 ## 4. Rodar a API
 
@@ -114,7 +114,7 @@ Rotas protegidas exigem o cabeçalho `Authorization: Bearer <token>`, com o toke
 
 | Método | Rota | Acesso | Descrição |
 |---|---|---|---|
-| POST | `/auth/registrar` | público | Cadastra organizador ou fornecedor com status `pendente`. Corpo: `nome`, `email`, `cnpj` (obrigatório, com ou sem máscara; precisa ser válido e não pode estar cadastrado), `senha` (mín. 6), `perfil` (`organizador` ou `fornecedor`) |
+| POST | `/auth/registrar` | público | Cadastra organizador ou fornecedor com status `pendente`. Corpo: `nome`, `email`, um documento com ou sem máscara, válido e ainda não cadastrado (fornecedor: `cnpj`; organizador: `cnpj` **ou** `cpf`, nunca os dois), `senha` (mín. 6), `perfil` (`organizador` ou `fornecedor`) |
 | POST | `/auth/login` | público | Corpo: `email`, `senha`. Devolve `{ token, usuario }`. Bloqueia cadastros pendentes ou rejeitados (403) |
 | POST | `/auth/esqueci-senha` | público | Corpo: `email`. Registra um pedido de redefinição. A resposta é sempre a mesma, para não revelar quais e-mails existem. Só contas aprovadas, sem o admin |
 | POST | `/auth/redefinir-senha` | público | Corpo: `email`, `codigo`, `senha`. Troca a senha com o código gerado pelo admin. Código errado, expirado ou já usado → 400 |

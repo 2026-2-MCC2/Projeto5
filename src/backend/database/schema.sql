@@ -12,8 +12,9 @@ CREATE TABLE usuarios (
   id               INT UNSIGNED  NOT NULL AUTO_INCREMENT,
   nome             VARCHAR(120)  NOT NULL,
   email            VARCHAR(160)  NOT NULL,
-  cnpj             CHAR(14)      NULL,               -- só os 14 dígitos; obrigatório no cadastro (admin fica NULL)
-  senha_hash      CHAR(60)      NOT NULL,           -- hash bcrypt (sempre 60 caracteres)
+  cnpj             CHAR(14)      NULL,               -- só os 14 dígitos; fornecedor sempre tem, organizador tem CNPJ ou CPF (admin fica NULL)
+  cpf              CHAR(11)      NULL,               -- só os 11 dígitos; opção do organizador pessoa física
+  senha_hash     CHAR(60)      NOT NULL,           -- hash bcrypt (sempre 60 caracteres)
   perfil           ENUM('admin', 'organizador', 'fornecedor') NOT NULL,
   status           ENUM('pendente', 'aprovado', 'rejeitado')  NOT NULL DEFAULT 'pendente',
   motivo_rejeicao  VARCHAR(500)  NULL,
@@ -23,6 +24,9 @@ CREATE TABLE usuarios (
   CONSTRAINT uq_usuarios_email UNIQUE (email),
   CONSTRAINT uq_usuarios_cnpj UNIQUE (cnpj),
   CONSTRAINT ck_usuarios_cnpj CHECK (cnpj IS NULL OR cnpj REGEXP '^[0-9]{14}$'),
+  CONSTRAINT uq_usuarios_cpf UNIQUE (cpf),
+  CONSTRAINT ck_usuarios_cpf CHECK (cpf IS NULL OR cpf REGEXP '^[0-9]{11}$'),
+  CONSTRAINT ck_usuarios_um_documento CHECK (cnpj IS NULL OR cpf IS NULL), -- nunca os dois ao mesmo tempo
   CONSTRAINT ck_usuarios_nome CHECK (CHAR_LENGTH(TRIM(nome)) > 0),
   -- só usuários rejeitados têm motivo de rejeição, e ele é obrigatório nesse caso
   CONSTRAINT ck_usuarios_motivo CHECK (

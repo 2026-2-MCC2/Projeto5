@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registrar } from "../services/authService";
 import { cnpjValido, mascararCnpj, somenteDigitos } from "../utils/cnpj";
-import { Briefcase, Building2, CalendarDays, CalendarPlus, CircleAlert, Lock, Mail, ShieldCheck, Ticket, User } from "lucide-react";
+import { cpfValido, mascararCpf } from "../utils/cpf";
+import { Briefcase, Building2, CalendarDays, CalendarPlus, CircleAlert, IdCard, Lock, Mail, ShieldCheck, Ticket, User } from "lucide-react";
 import RightPanel from "../components/RightPanel";
 import { Icone } from "../components/ui";
 import {
@@ -28,6 +29,18 @@ const perfis = [
   { valor: "fornecedor", icone: Briefcase, titulo: "Fornecedor", texto: "Envio propostas para eventos" },
 ];
 
+// O organizador escolhe o documento; o fornecedor sempre usa CNPJ (a API exige).
+const documentos = [
+  { valor: "cnpj", icone: Building2, titulo: "CNPJ", texto: "Organizo eventos por uma empresa" },
+  { valor: "cpf", icone: IdCard, titulo: "CPF", texto: "Organizo eventos como pessoa física" },
+];
+
+// Tamanho, máscara, validação e textos de cada documento.
+const DOC = {
+  cnpj: { digitos: 14, mascarar: mascararCnpj, valido: cnpjValido, placeholder: "00.000.000/0000-00", pattern: "\\d{2}\\.\\d{3}\\.\\d{3}/\\d{4}-\\d{2}", vazio: "Informe o CNPJ da empresa." },
+  cpf: { digitos: 11, mascarar: mascararCpf, valido: cpfValido, placeholder: "000.000.000-00", pattern: "\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}", vazio: "Informe o seu CPF." },
+};
+
 // Mesmas regras da API (src/backend/src/services/authService.js), só para avisar antes de enviar.
 const EMAIL_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const SENHA_MIN = 6;
@@ -37,7 +50,8 @@ export default function CriarConta() {
   const navigate = useNavigate();
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
-  const [cnpj, setCnpj] = useState(""); // guardado já com máscara
+  const [tipoDocEscolhido, setTipoDoc] = useState("cnpj"); // só vale para organizador
+  const [documento, setDocumento] = useState(""); // guardado já com máscara
   const [pass, setPass] = useState("");
   const [conf, setConf] = useState("");
   const [showPass, setShowPass] = useState(false);
@@ -54,18 +68,38 @@ export default function CriarConta() {
   const mostrar = (campo) => tentou || tocados[campo];
   const tocar = (campo) => () => setTocados((t) => ({ ...t, [campo]: true }));
 
+  const tipoDoc = perfil === "organizador" ? tipoDocEscolhido : "cnpj";
+  const doc = DOC[tipoDoc];
+  const rotuloDoc = tipoDoc.toUpperCase();
+
+  // Trocar de documento (ou de perfil, que pode forçar o CNPJ) limpa o campo:
+  // a máscara e o tamanho de um não servem para o outro.
+  function trocarTipoDoc(novo) {
+    if (novo === tipoDoc) return;
+    setTipoDoc(novo);
+    setDocumento("");
+    setTocados((t) => ({ ...t, documento: false }));
+  }
+  function trocarPerfil(novo) {
+    if (novo !== "organizador" && tipoDoc !== "cnpj") {
+      setDocumento("");
+      setTocados((t) => ({ ...t, documento: false }));
+    }
+    setPerfil(novo);
+  }
+
   async function handleRegister(e) {
     e.preventDefault();
     setErro("");
 
-    if (!cnpjValido(cnpj)) return setErro("Informe um CNPJ válido.");
+    if (!doc.valido(documento)) return setErro(`Informe um ${rotuloDoc} válido.`);
     if (pass.length < 6) return setErro("A senha precisa ter no mínimo 6 caracteres.");
     if (pass !== conf) return setErro("As senhas não coincidem.");
     if (!aceito) return setErro("Aceite os Termos de Uso e a Política de Privacidade para continuar.");
 
     setEnviando(true);
     try {
-      await registrar({ nome, email, cnpj: somenteDigitos(cnpj), senha: pass, perfil });
+      await registrar({ nome, email, [tipoDoc]: somenteDigitos(documento), senha: pass, perfil });
       setSucesso("Conta criada! Aguarde a aprovação do administrador para entrar.");
       setTimeout(() => navigate("/login"), 2500);
     } catch (err) {
@@ -95,16 +129,16 @@ export default function CriarConta() {
         ? { estado: "erro", mensagem: "Digite um e-mail válido, como nome@empresa.com." }
         : { estado: "ok" };
 
-  const digitosCnpj = somenteDigitos(cnpj).length;
-  const cnpjCampo = cnpjValido(cnpj)
-    ? { estado: "ok", mensagem: "CNPJ válido." }
-    : !mostrar("cnpj") && digitosCnpj < 14
+  const digitosDoc = somenteDigitos(documento).length;
+  const docCampo = doc.valido(documento)
+    ? { estado: "ok", mensagem: `${rotuloDoc} válido.` }
+    : !mostrar("documento") && digitosDoc < doc.digitos
       ? {}
-      : !digitosCnpj
-        ? { estado: "erro", mensagem: "Informe o CNPJ da empresa." }
-        : digitosCnpj < 14
-          ? { estado: "erro", mensagem: `${faltam(14 - digitosCnpj).replace("caractere", "dígito")} para completar o CNPJ.` }
-          : { estado: "erro", mensagem: "CNPJ inválido. Confira os números digitados." };
+      : !digitosDoc
+        ? { estado: "erro", mensagem: doc.vazio }
+        : digitosDoc < doc.digitos
+          ? { estado: "erro", mensagem: `${faltam(doc.digitos - digitosDoc).replace("caractere", "dígito")} para completar o ${rotuloDoc}.` }
+          : { estado: "erro", mensagem: `${rotuloDoc} inválido. Confira os números digitados.` };
 
   const senhaCampo =
     pass.length >= SENHA_MIN
@@ -164,7 +198,11 @@ export default function CriarConta() {
             )}
 
             <fieldset className="tt-acesso__travado" disabled={enviando}>
-              <EscolhaPerfil rotulo="Como você vai usar o TrocaTicket?" opcoes={perfis} valor={perfil} onChange={setPerfil} />
+              <EscolhaPerfil rotulo="Como você vai usar o TrocaTicket?" opcoes={perfis} valor={perfil} onChange={trocarPerfil} />
+
+              {perfil === "organizador" && (
+                <EscolhaPerfil rotulo="Você vai se cadastrar com CNPJ ou CPF?" opcoes={documentos} valor={tipoDoc} onChange={trocarTipoDoc} />
+              )}
 
               <CampoAcesso
                 rotulo="Nome completo"
@@ -195,19 +233,20 @@ export default function CriarConta() {
               />
 
               <CampoAcesso
-                rotulo="CNPJ"
-                icone={Building2}
+                key={tipoDoc}
+                rotulo={rotuloDoc}
+                icone={tipoDoc === "cpf" ? IdCard : Building2}
                 type="text"
                 inputMode="numeric"
                 autoComplete="off"
-                placeholder="00.000.000/0000-00"
-                maxLength={18}
-                pattern="\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}"
-                value={cnpj}
-                onChange={(e) => setCnpj(mascararCnpj(e.target.value))}
-                onBlur={tocar("cnpj")}
+                placeholder={doc.placeholder}
+                maxLength={doc.placeholder.length}
+                pattern={doc.pattern}
+                value={documento}
+                onChange={(e) => setDocumento(doc.mascarar(e.target.value))}
+                onBlur={tocar("documento")}
                 required
-                {...cnpjCampo}
+                {...docCampo}
               />
 
               <div className="tt-acesso__dupla">
